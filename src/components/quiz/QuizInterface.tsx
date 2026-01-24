@@ -58,7 +58,7 @@ export const QuizInterface = ({
     lessonId,
     timePerQuestion: quizType === 'lesson' ? 45 : 60,
     passingScore: 80,
-    cooldownMinutes: quizType === 'level' ? 3 : 2
+    cooldownMinutes: quizType === 'level' ? 0 : 2 // No cooldown for level quizzes
   });
 
   useEffect(() => {

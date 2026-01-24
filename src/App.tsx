@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import Module from "./pages/Module";
 import Lesson from "./pages/Lesson";
 import Quiz from "./pages/Quiz";
+import Profile from "./pages/Profile";
+import LevelFinal from "./pages/LevelFinal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/level/:levelId/final" element={<LevelFinal />} />
             <Route path="/module/:levelId/:moduleId" element={<Module />} />
             <Route path="/lesson/:levelId/:moduleId/:lessonId" element={<Lesson />} />
             <Route path="/quiz/:quizType/:levelId" element={<Quiz />} />
