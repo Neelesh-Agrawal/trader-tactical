@@ -12,6 +12,14 @@ interface Profile {
   current_level: string;
 }
 
+interface SignUpData {
+  name: string;
+  phone_number: string;
+  email: string;
+  date_of_birth: string;
+  pin: string;
+}
+
 interface Streak {
   current_streak: number;
   longest_streak: number;
@@ -24,7 +32,7 @@ interface AuthContextType {
   profile: Profile | null;
   streak: Streak | null;
   loading: boolean;
-  signUp: (email: string, password: string, profileData: Omit<Profile, 'id' | 'user_id'>) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, profileData: SignUpData) => Promise<{ error: Error | null }>;
   signIn: (phoneNumber: string, pin: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateStreak: () => Promise<number>;
