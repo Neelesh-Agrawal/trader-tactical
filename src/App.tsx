@@ -8,6 +8,9 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Module from "./pages/Module";
+import Lesson from "./pages/Lesson";
+import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,11 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/module/:levelId/:moduleId" element={<Module />} />
+            <Route path="/lesson/:levelId/:moduleId/:lessonId" element={<Lesson />} />
+            <Route path="/quiz/:quizType/:levelId" element={<Quiz />} />
+            <Route path="/quiz/:quizType/:levelId/:moduleId" element={<Quiz />} />
+            <Route path="/quiz/:quizType/:levelId/:moduleId/:lessonId" element={<Quiz />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
