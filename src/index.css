@@ -2,95 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* TradeMaster Design System - Tactical Options Trading Platform
+   Typography inspired by Medium.com for optimal readability
+   Color palette: Deep Navy, Growth Green, Active Yellow
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Tactical Colors */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Navy accent */
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary */
+    --secondary: 222 47% 14%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted */
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 20% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent */
+    --accent: 222 47% 14%;
+    --accent-foreground: 210 40% 96%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Destructive */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Tactical Status Colors */
+    --success: 160 84% 39%;
+    --success-foreground: 160 84% 95%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 10%;
+    --locked: 222 30% 25%;
+    --locked-foreground: 222 20% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Hex Grid Colors */
+    --hex-complete: 160 84% 39%;
+    --hex-active: 38 92% 50%;
+    --hex-locked: 222 30% 20%;
+    --hex-border: 217 91% 60%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Gradients */
+    --gradient-tactical: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(222 47% 12%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(160 84% 35%) 0%, hsl(160 84% 45%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(38 92% 45%) 0%, hsl(38 92% 55%) 100%);
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Shadows */
+    --shadow-tactical: 0 4px 20px -4px hsla(222, 47%, 4%, 0.8);
+    --shadow-glow: 0 0 30px -5px hsla(217, 91%, 60%, 0.3);
+    --shadow-success-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.4);
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 47% 12%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 222 30% 15%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Same as root - dark theme by default */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
   }
 }
 
@@ -100,6 +95,200 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Libre Baskerville', Georgia, serif;
+  }
+
+  /* Medium-inspired Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+    line-height: 1.2;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+    line-height: 1.25;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+    line-height: 1.3;
+  }
+
+  /* Subheaders - Sans-serif */
+  .subheader {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply text-lg md:text-xl font-medium;
+  }
+
+  /* Body text optimized for reading */
+  .prose-body {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    @apply text-lg md:text-xl;
+    line-height: 1.58;
+    letter-spacing: -0.003em;
+  }
+
+  /* Data/Terminal style */
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    @apply text-sm;
+  }
+
+  /* Caption text */
+  .caption {
+    font-family: 'JetBrains Mono', monospace;
+    @apply text-xs uppercase tracking-wider;
+  }
+}
+
+@layer components {
+  /* Hexagon shape */
+  .hex-shape {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  /* Tactical card styling */
+  .tactical-card {
+    @apply bg-card border border-border rounded-lg;
+    box-shadow: var(--shadow-tactical);
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glow-success {
+    box-shadow: var(--shadow-success-glow);
+  }
+
+  /* Status badges */
+  .status-complete {
+    @apply bg-success text-success-foreground;
+  }
+
+  .status-active {
+    @apply bg-warning text-warning-foreground;
+  }
+
+  .status-locked {
+    @apply bg-locked text-locked-foreground;
+  }
+
+  /* Quiz timer animation */
+  @keyframes timer-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .timer-critical {
+    animation: timer-pulse 0.5s ease-in-out infinite;
+  }
+
+  /* Confetti container */
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Streak fire animation */
+  @keyframes flame {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.1); }
+  }
+
+  .streak-flame {
+    animation: flame 0.8s ease-in-out infinite;
+  }
+
+  /* Lesson content styling */
+  .lesson-content {
+    @apply prose-body;
+  }
+
+  .lesson-content p {
+    @apply mb-6;
+  }
+
+  .lesson-content ul, .lesson-content ol {
+    @apply mb-6 pl-6;
+  }
+
+  .lesson-content li {
+    @apply mb-2;
+  }
+
+  .lesson-content strong {
+    @apply font-bold;
+  }
+
+  .lesson-content em {
+    @apply italic;
+  }
+
+  /* Mission briefing card */
+  .mission-briefing {
+    @apply tactical-card p-6 border-l-4 border-l-primary;
+  }
+
+  /* Intel section */
+  .intel-section {
+    @apply tactical-card p-8;
+  }
+
+  /* Signal/Takeaway items */
+  .signal-item {
+    @apply flex items-start gap-3 p-3 rounded-lg bg-muted/30;
+  }
+
+  /* FAQ accordion styling */
+  .faq-item {
+    @apply border-b border-border;
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbar */
+  .scrollbar-tactical::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-tactical::-webkit-scrollbar-track {
+    @apply bg-muted/20 rounded;
+  }
+
+  .scrollbar-tactical::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded;
+  }
+
+  .scrollbar-tactical::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Text gradient */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
+  }
+
+  /* Blur overlay for locked content */
+  .locked-blur {
+    @apply blur-sm opacity-60 pointer-events-none select-none;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md;
   }
 }
