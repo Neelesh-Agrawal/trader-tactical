@@ -2,52 +2,71 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { courseData } from '@/data/courseData';
 import { useProgress } from '@/hooks/useProgress';
-import { Flame, Lock, CheckCircle, Play } from 'lucide-react';
+import { useEnrollment } from '@/hooks/useEnrollment';
+import { Header } from '@/components/layout/Header';
+import { DashboardSkeleton } from '@/components/layout/LoadingSkeleton';
+import { QnAWidget } from '@/components/qna/QnAWidget';
 import { Button } from '@/components/ui/button';
-
-const HexModule = ({ 
-  module, 
-  levelId,
-  status, 
-  onClick 
-}: { 
-  module: { id: string; title: string; icon: string; description: string };
-  levelId: string;
-  status: 'complete' | 'active' | 'locked';
-  onClick: () => void;
-}) => {
-  const statusColors = {
-    complete: 'bg-success border-success text-success-foreground',
-    active: 'bg-warning/20 border-warning text-foreground hover:bg-warning/30',
-    locked: 'bg-locked border-locked text-locked-foreground cursor-not-allowed'
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={status === 'locked'}
-      className={`hex-shape w-32 h-36 md:w-40 md:h-44 flex flex-col items-center justify-center border-2 transition-all ${statusColors[status]} ${status !== 'locked' ? 'hover:scale-105' : ''}`}
-    >
-      <span className="text-3xl mb-2">{module.icon}</span>
-      <span className="text-xs md:text-sm font-medium text-center px-2 leading-tight">
-        {module.title.split(' ').slice(0, 3).join(' ')}
-      </span>
-      {status === 'complete' && <CheckCircle className="h-4 w-4 mt-2" />}
-      {status === 'locked' && <Lock className="h-4 w-4 mt-2" />}
-      {status === 'active' && <Play className="h-4 w-4 mt-2" />}
-    </button>
-  );
-};
+import { Progress } from '@/components/ui/progress';
+import { 
+  Flame, Lock, CheckCircle, Star, Crown, Award, Trophy, 
+  Target, BarChart3, ArrowRight, Sparkles, Clock
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  const { user, profile, streak, loading, signOut } = useAuth();
-  const { isModuleUnlocked, isModuleCompleted, isLevelUnlocked } = useProgress();
+  const { user, profile, streak, loading: authLoading } = useAuth();
+  const { 
+    isModuleUnlocked, isModuleCompleted, isLevelUnlocked, isLevelCompleted,
+    lessonProgress, loading: progressLoading 
+  } = useProgress();
+  const { getEnrollment, enrollInLevel, getRemainingDays } = useEnrollment();
   const navigate = useNavigate();
+  const [lastLesson, setLastLesson] = useState<{ levelId: string; moduleId: string; lessonId: string } | null>(null);
+  const [quizStats, setQuizStats] = useState({ averageScore: 0, totalAttempts: 0 });
 
-  if (loading) {
+  // Fetch last lesson and quiz stats
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+
+      // Fetch last lesson from profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('last_lesson_level_id, last_lesson_module_id, last_lesson_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileData?.last_lesson_id) {
+        setLastLesson({
+          levelId: profileData.last_lesson_level_id,
+          moduleId: profileData.last_lesson_module_id,
+          lessonId: profileData.last_lesson_id
+        });
+      }
+
+      // Fetch quiz stats
+      const { data: quizData } = await supabase
+        .from('quiz_attempts')
+        .select('score')
+        .eq('user_id', user.id)
+        .eq('passed', true);
+
+      if (quizData && quizData.length > 0) {
+        const avgScore = quizData.reduce((sum, q) => sum + q.score, 0) / quizData.length;
+        setQuizStats({ averageScore: Math.round(avgScore), totalAttempts: quizData.length });
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  if (authLoading || progressLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="mono text-muted-foreground">LOADING TACTICAL MAP...</div>
+      <div className="min-h-screen bg-background">
+        <Header showStreak />
+        <DashboardSkeleton />
       </div>
     );
   }
@@ -56,80 +75,230 @@ const Dashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const getModuleStatus = (levelId: string, moduleId: string): 'complete' | 'active' | 'locked' => {
-    if (!isLevelUnlocked(levelId)) return 'locked';
-    if (isModuleCompleted(levelId, moduleId)) return 'complete';
-    if (isModuleUnlocked(levelId, moduleId)) return 'active';
-    return 'locked';
+  const getLevelProgress = (levelId: string) => {
+    const level = courseData.find(l => l.id === levelId);
+    if (!level) return 0;
+    
+    let completedModules = 0;
+    level.modules.forEach(m => {
+      if (isModuleCompleted(levelId, m.id)) completedModules++;
+    });
+    
+    return Math.round((completedModules / level.modules.length) * 100);
+  };
+
+  const getLevelIcon = (levelId: string) => {
+    switch (levelId) {
+      case 'beginner': return Star;
+      case 'intermediate': return Crown;
+      case 'advanced': return Award;
+      default: return Star;
+    }
+  };
+
+  const getLevelColor = (levelId: string) => {
+    switch (levelId) {
+      case 'beginner': return 'primary';
+      case 'intermediate': return 'warning';
+      case 'advanced': return 'success';
+      default: return 'primary';
+    }
+  };
+
+  const getCurrentLevel = () => {
+    for (const level of courseData) {
+      if (!isLevelCompleted(level.id)) return level;
+    }
+    return courseData[courseData.length - 1];
+  };
+
+  const currentLevel = getCurrentLevel();
+  const completedCertificates = courseData.filter(l => isLevelCompleted(l.id)).length;
+
+  const handleStartLevel = async (levelId: string) => {
+    // Enroll if not already enrolled
+    const enrollment = getEnrollment(levelId);
+    if (!enrollment) {
+      await enrollInLevel(levelId);
+    }
+    
+    // Navigate to the level's first module
+    const level = courseData.find(l => l.id === levelId);
+    if (level && level.modules.length > 0) {
+      navigate(`/module/${levelId}/${level.modules[0].id}`);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">TRADEMASTER</h1>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-warning/20 text-warning">
-              <Flame className="h-4 w-4 streak-flame" />
-              <span className="mono text-sm font-medium">{streak?.current_streak || 0} DAY STREAK</span>
-            </div>
+      <Header showStreak />
+      <QnAWidget contextType="dashboard" />
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Welcome Card */}
+        <div className="tactical-card p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold mb-1 flex items-center gap-2">
+              Hello, {profile?.name}! 
+              <span className="text-2xl">👋</span>
+            </h1>
+            <p className="text-muted-foreground">
+              Complete all 3 levels to get certified and join our trading team.
+            </p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden md:block">
-              Welcome, {profile?.name?.split(' ')[0]}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              Sign Out
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="text-sm">Current Level</span>
+            <span className="font-bold text-primary capitalize">{currentLevel.id}</span>
+          </div>
+        </div>
+
+        {/* Progress Stats */}
+        <div className="mb-8">
+          <h2 className="subheader mb-4">Your Progress</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="tactical-card p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center">
+                <Flame className="h-6 w-6 text-warning" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{streak?.current_streak || 0}</div>
+                <div className="text-sm text-muted-foreground">Day Streak</div>
+              </div>
+            </div>
+
+            <div className="tactical-card p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
+                <Target className="h-6 w-6 text-success" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{lessonProgress.filter(l => l.completed).length}</div>
+                <div className="text-sm text-muted-foreground">Lessons Completed</div>
+              </div>
+            </div>
+
+            <div className="tactical-card p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                <BarChart3 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{quizStats.averageScore}%</div>
+                <div className="text-sm text-muted-foreground">Quiz Score</div>
+              </div>
+            </div>
+
+            <div className="tactical-card p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center">
+                <Trophy className="h-6 w-6 text-warning" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{completedCertificates}/3</div>
+                <div className="text-sm text-muted-foreground">Certificates</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Continue Where Left Off */}
+        {lastLesson && (
+          <div className="mb-8">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="w-full justify-between gap-2"
+              onClick={() => navigate(`/lesson/${lastLesson.levelId}/${lastLesson.moduleId}/${lastLesson.lessonId}`)}
+            >
+              <span className="flex items-center gap-2">
+                <ArrowRight className="h-5 w-5" />
+                Continue where you left off
+              </span>
+              <span className="text-muted-foreground text-sm">Resume lesson</span>
             </Button>
           </div>
+        )}
+
+        {/* Learning Path */}
+        <div>
+          <h2 className="subheader mb-4">Your Learning Path</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {courseData.map((level) => {
+              const isUnlocked = isLevelUnlocked(level.id);
+              const isComplete = isLevelCompleted(level.id);
+              const progress = getLevelProgress(level.id);
+              const isCurrent = currentLevel.id === level.id && !isComplete;
+              const LevelIcon = getLevelIcon(level.id);
+              const color = getLevelColor(level.id);
+              const enrollment = getEnrollment(level.id);
+              const remainingDays = enrollment ? getRemainingDays(level.id) : null;
+
+              return (
+                <div 
+                  key={level.id}
+                  className={`tactical-card p-6 relative transition-all ${
+                    isCurrent ? `border-${color} ring-2 ring-${color}/20` : ''
+                  } ${!isUnlocked ? 'opacity-60' : ''}`}
+                >
+                  {isCurrent && (
+                    <div className={`absolute -top-3 right-4 px-3 py-1 bg-${color} text-${color}-foreground text-xs font-medium rounded-full flex items-center gap-1`}>
+                      <Sparkles className="h-3 w-3" />
+                      Current
+                    </div>
+                  )}
+
+                  {!isUnlocked && (
+                    <div className="absolute top-4 right-4">
+                      <Lock className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+
+                  <div className={`w-12 h-12 rounded-xl bg-${color}/20 flex items-center justify-center mb-4`}>
+                    <LevelIcon className={`h-6 w-6 text-${color}`} />
+                  </div>
+
+                  <div className="caption text-muted-foreground mb-1">LEVEL {courseData.indexOf(level) + 1}</div>
+                  <h3 className="text-xl font-bold mb-1 capitalize">{level.id}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{level.description}</p>
+
+                  {/* Deadline Badge */}
+                  {enrollment && remainingDays !== null && remainingDays > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                      <Clock className="h-4 w-4" />
+                      <span>{remainingDays} days remaining</span>
+                    </div>
+                  )}
+
+                  {/* Progress Bar */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{progress}%</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                  </div>
+
+                  <Button 
+                    className="w-full"
+                    variant={isComplete ? 'outline' : isUnlocked ? 'default' : 'secondary'}
+                    disabled={!isUnlocked}
+                    onClick={() => isUnlocked && handleStartLevel(level.id)}
+                  >
+                    {isComplete ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Completed
+                      </>
+                    ) : isUnlocked ? (
+                      'Continue'
+                    ) : (
+                      'Locked'
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </header>
-
-      {/* Mobile Streak */}
-      <div className="md:hidden p-4 flex justify-center">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-warning/20 text-warning">
-          <Flame className="h-5 w-5 streak-flame" />
-          <span className="mono font-medium">{streak?.current_streak || 0} DAY STREAK</span>
-        </div>
-      </div>
-
-      {/* Tactical Map */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-2">Tactical Map</h2>
-          <p className="text-muted-foreground">Select a module to begin your training</p>
-        </div>
-
-        {courseData.map((level) => {
-          const isUnlocked = isLevelUnlocked(level.id);
-          
-          return (
-            <div key={level.id} className="mb-16">
-              <div className="flex items-center justify-center gap-3 mb-8">
-                <div className={`h-px flex-1 max-w-24 ${isUnlocked ? 'bg-primary' : 'bg-border'}`} />
-                <h3 className={`text-xl font-bold uppercase tracking-wider ${!isUnlocked ? 'text-locked-foreground' : ''}`}>
-                  {!isUnlocked && <Lock className="inline h-4 w-4 mr-2" />}
-                  {level.title} Level
-                </h3>
-                <div className={`h-px flex-1 max-w-24 ${isUnlocked ? 'bg-primary' : 'bg-border'}`} />
-              </div>
-
-              <div className={`flex flex-wrap justify-center gap-4 md:gap-6 ${!isUnlocked ? 'locked-blur' : ''}`}>
-                {level.modules.map((module, idx) => (
-                  <HexModule
-                    key={module.id}
-                    module={module}
-                    levelId={level.id}
-                    status={getModuleStatus(level.id, module.id)}
-                    onClick={() => navigate(`/module/${level.id}/${module.id}`)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      level_enrollments: {
+        Row: {
+          created_at: string
+          deadline_at: string
+          enrolled_at: string
+          id: string
+          level_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deadline_at: string
+          enrolled_at?: string
+          id?: string
+          level_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deadline_at?: string
+          enrolled_at?: string
+          id?: string
+          level_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       level_progress: {
         Row: {
           completed: boolean
@@ -117,6 +144,9 @@ export type Database = {
           date_of_birth: string
           email: string
           id: string
+          last_lesson_id: string | null
+          last_lesson_level_id: string | null
+          last_lesson_module_id: string | null
           name: string
           phone_number: string
           pin_hash: string
@@ -129,6 +159,9 @@ export type Database = {
           date_of_birth: string
           email: string
           id?: string
+          last_lesson_id?: string | null
+          last_lesson_level_id?: string | null
+          last_lesson_module_id?: string | null
           name: string
           phone_number: string
           pin_hash: string
@@ -141,10 +174,46 @@ export type Database = {
           date_of_birth?: string
           email?: string
           id?: string
+          last_lesson_id?: string | null
+          last_lesson_level_id?: string | null
+          last_lesson_module_id?: string | null
           name?: string
           phone_number?: string
           pin_hash?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      qna_inquiries: {
+        Row: {
+          context_id: string | null
+          context_type: string
+          created_at: string
+          id: string
+          question: string
+          status: string
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type: string
+          created_at?: string
+          id?: string
+          question: string
+          status?: string
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string
+          created_at?: string
+          id?: string
+          question?: string
+          status?: string
+          user_email?: string
           user_id?: string
         }
         Relationships: []

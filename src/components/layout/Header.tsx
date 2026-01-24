@@ -1,0 +1,123 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator,
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { Flame, TrendingUp, Moon, Sun, User, LogOut, ChevronDown } from 'lucide-react';
+
+interface HeaderProps {
+  showAuth?: boolean;
+  showStreak?: boolean;
+}
+
+export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => {
+  const { user, profile, streak, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(true);
+
+  const getInitials = (name: string) => {
+    const parts = name.split(' ').filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return parts[0]?.[0]?.toUpperCase() || 'U';
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  return (
+    <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Logo */}
+        <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 hover-scale">
+          <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+            <TrendingUp className="h-5 w-5 text-primary" />
+          </div>
+          <span className="text-xl font-bold">TradeMaster</span>
+        </Link>
+
+        {/* Nav Links - Desktop */}
+        {!user && (
+          <nav className="hidden md:flex items-center gap-8">
+            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
+            </a>
+            <a href="#levels" className="text-muted-foreground hover:text-foreground transition-colors">
+              Levels
+            </a>
+            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
+              About Us
+            </a>
+          </nav>
+        )}
+
+        {/* Right Side */}
+        <div className="flex items-center gap-3">
+          {/* Streak Badge */}
+          {showStreak && streak && (
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/20 text-warning border border-warning/30">
+              <Flame className="h-4 w-4 streak-flame" />
+              <span className="mono text-sm font-medium">{streak.current_streak}</span>
+            </div>
+          )}
+
+          {/* Theme Toggle */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full"
+            onClick={() => setIsDark(!isDark)}
+          >
+            {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          </Button>
+
+          {user && profile ? (
+            <>
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="gap-2 px-2">
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-sm">
+                      {getInitials(profile.name)}
+                    </div>
+                    <span className="hidden md:block text-sm">{profile.name.split(' ')[0]}</span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-3 py-2">
+                    <p className="font-medium">{profile.name}</p>
+                    <p className="text-sm text-muted-foreground">{profile.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <User className="h-4 w-4 mr-2" />
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : showAuth ? (
+            <Button onClick={() => navigate('/dashboard')} className="gap-2">
+              Dashboard
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </header>
+  );
+};
