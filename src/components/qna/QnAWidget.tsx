@@ -7,7 +7,7 @@ import { MessageCircle, Send, X, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface QnAWidgetProps {
-  contextType: 'dashboard' | 'lesson';
+  contextType: 'dashboard' | 'lesson' | 'level';
   contextId?: string;
 }
 

@@ -292,13 +292,36 @@
     @apply bg-card/80 backdrop-blur-md;
   }
 
+  /* Glassmorphism card */
+  .glass-card {
+    background: hsla(222, 47%, 8%, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid hsla(210, 40%, 96%, 0.1);
+  }
+
   /* Hover scale animation */
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Card hover glow */
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 30px -5px hsla(217, 91%, 60%, 0.2);
   }
 
   /* Page transitions */
   .page-enter {
     @apply animate-fade-in;
   }
+
+  /* Stagger animation delay helpers */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
 }

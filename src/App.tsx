@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Level from "./pages/Level";
 import Module from "./pages/Module";
 import Lesson from "./pages/Lesson";
 import Quiz from "./pages/Quiz";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/level/:levelId" element={<Level />} />
             <Route path="/level/:levelId/final" element={<LevelFinal />} />
             <Route path="/module/:levelId/:moduleId" element={<Module />} />
             <Route path="/lesson/:levelId/:moduleId/:lessonId" element={<Lesson />} />
