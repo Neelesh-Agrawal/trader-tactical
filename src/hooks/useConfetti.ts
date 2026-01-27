@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import confetti from 'canvas-confetti';
 
 type ConfettiIntensity = 'low' | 'medium' | 'high';
 
@@ -7,12 +6,15 @@ interface UseConfettiOptions {
   colors?: string[];
 }
 
+// Use dynamic import to avoid bundling issues with canvas-confetti
+const loadConfetti = () => import('canvas-confetti').then(m => m.default);
+
 export const useConfetti = (options: UseConfettiOptions = {}) => {
   const {
     colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6']
   } = options;
 
-  const fire = useCallback((intensity: ConfettiIntensity = 'medium') => {
+  const fire = useCallback(async (intensity: ConfettiIntensity = 'medium') => {
     const duration = intensity === 'high' ? 3000 : intensity === 'medium' ? 2000 : 1000;
     const particleCount = intensity === 'high' ? 150 : intensity === 'medium' ? 100 : 50;
     
@@ -20,6 +22,8 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
+
+    const confetti = await loadConfetti();
 
     const defaults = {
       startVelocity: 30,
@@ -50,10 +54,12 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
     setTimeout(() => clearInterval(interval), duration);
   }, [colors]);
 
-  const fireBurst = useCallback((x = 0.5, y = 0.5) => {
+  const fireBurst = useCallback(async (x = 0.5, y = 0.5) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
+
+    const confetti = await loadConfetti();
 
     confetti({
       particleCount: 100,
@@ -65,10 +71,12 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
     });
   }, [colors]);
 
-  const fireFromElement = useCallback((element: HTMLElement) => {
+  const fireFromElement = useCallback(async (element: HTMLElement) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
+
+    const confetti = await loadConfetti();
 
     const rect = element.getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
