@@ -60,22 +60,24 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
       {/* Scroll Progress Indicator */}
       <ScrollProgressBar />
 
-      {/* Reading Time Remaining */}
-      <ReadingTimeRemaining totalReadingTime={readingTime} />
+      {/* Reading Time Remaining - Hidden on very small screens */}
+      <div className="hidden sm:block">
+        <ReadingTimeRemaining totalReadingTime={readingTime} />
+      </div>
 
       {/* Jump to Quiz Button */}
       <JumpToQuizButton onJumpToQuiz={handleJumpToQuiz} />
 
-      {/* Back Button */}
+      {/* Back Button - Touch friendly */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground active:scale-95 transition-all mb-4 sm:mb-6 py-2 touch-manipulation"
       >
         <ChevronLeft className="h-4 w-4" />
-        Back to Overview
+        <span className="text-sm sm:text-base">Back to Overview</span>
       </button>
 
-      {/* Content Container - Optimized width for readability */}
+      {/* Content Container - Full width on mobile, optimized on larger screens */}
       <div className="reading-container">
         {/* Lesson Header */}
         <LessonHeader
@@ -88,14 +90,14 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
 
         {/* Mission Briefing */}
         <div className={cn(
-          "tactical-card p-6 mb-8 border-l-4 border-l-primary",
+          "tactical-card p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-l-primary",
           "bg-gradient-to-r from-primary/5 to-transparent"
         )}>
-          <div className="flex items-center gap-2 mb-3">
-            <Target className="h-5 w-5 text-primary" />
-            <span className="subheader">Mission Briefing</span>
+          <div className="flex items-center gap-2 mb-2 sm:mb-3">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="subheader text-sm sm:text-base">Mission Briefing</span>
           </div>
-          <p className="font-body text-lg text-muted-foreground" style={{ lineHeight: '1.75' }}>
+          <p className="font-body text-base sm:text-lg text-muted-foreground" style={{ lineHeight: '1.75' }}>
             {lesson.objective}
           </p>
         </div>

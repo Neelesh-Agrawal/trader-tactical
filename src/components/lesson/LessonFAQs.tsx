@@ -16,22 +16,22 @@ export const LessonFAQs = ({ faqs }: LessonFAQsProps) => {
 
   return (
     <AnimatedSection>
-      <div className="tactical-card p-6 mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <HelpCircle className="h-5 w-5 text-primary" />
-          <span className="subheader">Recon (FAQs)</span>
+      <div className="tactical-card p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <span className="subheader text-sm sm:text-base">Recon (FAQs)</span>
         </div>
         <Accordion type="single" collapsible className="space-y-2">
           {faqs.map((faq, index) => (
             <AccordionItem 
               key={index} 
               value={`faq-${index}`}
-              className="border border-border rounded-lg px-4 data-[state=open]:bg-muted/30"
+              className="border border-border rounded-lg px-3 sm:px-4 data-[state=open]:bg-muted/30"
             >
-              <AccordionTrigger className="text-left hover:text-primary hover:no-underline py-4">
+              <AccordionTrigger className="text-left hover:text-primary hover:no-underline py-3 sm:py-4 text-sm sm:text-base touch-manipulation">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground pb-4">
+              <AccordionContent className="text-muted-foreground pb-3 sm:pb-4 text-sm sm:text-base">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

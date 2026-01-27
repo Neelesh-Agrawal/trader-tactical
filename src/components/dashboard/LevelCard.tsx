@@ -103,44 +103,44 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
     <div
       onClick={handleClick}
       className={cn(
-        "group relative rounded-xl p-6 transition-all duration-300 cursor-pointer",
+        "group relative rounded-xl p-4 sm:p-6 transition-all duration-300 cursor-pointer touch-manipulation",
         "bg-gradient-to-br border",
         colors.bg,
         isUnlocked ? colors.border : "border-muted/30",
-        isUnlocked && `hover:scale-[1.03] hover:shadow-xl hover:-translate-y-1 ${colors.glow}`,
+        isUnlocked && `active:scale-[0.98] md:hover:scale-[1.03] md:hover:shadow-xl md:hover:-translate-y-1 ${colors.glow}`,
         !isUnlocked && "opacity-60 cursor-not-allowed grayscale",
         isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-primary/50 animate-pulse-glow"
       )}
     >
       {/* Completed Badge */}
       {isComplete && (
-        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-success flex items-center justify-center shadow-lg animate-bounce-in">
-          <CheckCircle className="h-5 w-5 text-success-foreground" />
+        <div className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-success flex items-center justify-center shadow-lg animate-bounce-in">
+          <CheckCircle className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-success-foreground" />
         </div>
       )}
 
       {/* Lock Icon for locked levels */}
       {!isUnlocked && (
-        <div className="absolute top-4 right-4">
-          <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
-            <Lock className="h-4 w-4 text-muted-foreground" />
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-muted/50 flex items-center justify-center">
+            <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </div>
         </div>
       )}
 
       <div className="flex flex-col items-center text-center">
         {/* Progress Ring */}
-        <div className="relative mb-4 transition-transform duration-300 group-hover:scale-110">
+        <div className="relative mb-3 sm:mb-4 transition-transform duration-300 group-hover:scale-110">
           {isUnlocked ? (
             <ProgressRing 
               progress={progress} 
-              size={80} 
-              strokeWidth={6}
+              size={64} 
+              strokeWidth={5}
               className={colors.ring}
             />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-muted/30 flex items-center justify-center">
-              <Lock className="h-8 w-8 text-muted-foreground" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted/30 flex items-center justify-center">
+              <Lock className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
             </div>
           )}
           
@@ -148,43 +148,43 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
           {isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12",
+                "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12",
                 colors.icon
               )}>
-                <LevelIcon className="h-5 w-5" />
+                <LevelIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
             </div>
           )}
         </div>
 
         {/* Level Label */}
-        <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-1">
+        <span className="font-mono text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-0.5 sm:mb-1">
           Level {levelIndex + 1}
         </span>
 
         {/* Level Name */}
-        <h3 className="font-ui text-xl font-semibold capitalize mb-2">{level.id}</h3>
+        <h3 className="font-ui text-lg sm:text-xl font-semibold capitalize mb-1.5 sm:mb-2">{level.id}</h3>
 
         {/* Progress or Status */}
         {isUnlocked ? (
           <>
-            <p className="font-mono text-2xl font-bold mb-1" style={{ color: `var(--${colors.accent}-500, currentColor)` }}>
+            <p className="font-mono text-xl sm:text-2xl font-bold mb-0.5 sm:mb-1" style={{ color: `var(--${colors.accent}-500, currentColor)` }}>
               {progress}%
             </p>
-            <p className="font-ui text-sm text-muted-foreground">
+            <p className="font-ui text-xs sm:text-sm text-muted-foreground">
               {isComplete ? 'Completed' : getRemainingTime()}
             </p>
           </>
         ) : (
-          <p className="font-ui text-sm text-muted-foreground">
+          <p className="font-ui text-xs sm:text-sm text-muted-foreground px-2">
             Complete previous level to unlock
           </p>
         )}
 
         {/* Deadline */}
         {enrollment && remainingDays !== null && remainingDays > 0 && !isComplete && (
-          <div className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-1 sm:gap-1.5 mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground">
+            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             <span>{remainingDays} days left</span>
           </div>
         )}

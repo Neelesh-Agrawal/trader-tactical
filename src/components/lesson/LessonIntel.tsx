@@ -21,7 +21,7 @@ export const LessonIntel = ({ content }: LessonIntelProps) => {
       if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
         return (
           <AnimatedSection key={index} delay={index * 50}>
-            <h3 className="font-ui text-xl font-semibold mt-12 mb-4 text-foreground">
+            <h3 className="font-ui text-lg sm:text-xl font-semibold mt-8 sm:mt-12 mb-3 sm:mb-4 text-foreground">
               {paragraph.replace(/\*\*/g, '')}
             </h3>
           </AnimatedSection>
@@ -45,7 +45,7 @@ export const LessonIntel = ({ content }: LessonIntelProps) => {
       return (
         <AnimatedSection key={index} delay={index * 50}>
           <p 
-            className={`font-body text-foreground/90 leading-relaxed mb-6 ${isFirstParagraph ? 'text-lg' : 'text-base md:text-lg'}`}
+            className={`font-body text-foreground/90 leading-relaxed mb-4 sm:mb-6 ${isFirstParagraph ? 'text-base sm:text-lg' : 'text-base'}`}
             style={{ lineHeight: '1.75' }}
           >
             {renderFormattedText(paragraph)}
@@ -56,10 +56,10 @@ export const LessonIntel = ({ content }: LessonIntelProps) => {
   };
 
   return (
-    <div className="tactical-card p-6 md:p-8 mb-8 content-depth">
-      <div className="flex items-center gap-2 mb-6">
-        <BookOpen className="h-5 w-5 text-primary" />
-        <span className="subheader">Intel</span>
+    <div className="tactical-card p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 content-depth">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
+        <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+        <span className="subheader text-sm sm:text-base">Intel</span>
       </div>
       <div className="lesson-content space-y-2">
         {renderContent()}
