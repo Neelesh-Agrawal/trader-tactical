@@ -29,13 +29,18 @@ export const JumpToQuizButton = ({ onJumpToQuiz, threshold = 50 }: JumpToQuizBut
       onClick={onJumpToQuiz}
       size="sm"
       className={cn(
-        "fixed bottom-24 right-6 z-40 shadow-lg gap-2",
-        "bg-success hover:bg-success/90 text-success-foreground",
+        "fixed z-40 shadow-lg gap-2 touch-manipulation",
+        // Position: avoid overlap with FAB on mobile
+        "bottom-24 right-4 sm:bottom-24 sm:right-6",
+        // Larger touch target on mobile
+        "h-10 sm:h-9 px-4 sm:px-3",
+        "bg-success hover:bg-success/90 active:scale-95 text-success-foreground",
         "transition-all duration-300 animate-fade-in"
       )}
     >
       <ArrowDown className="h-4 w-4" />
-      Jump to Quiz
+      <span className="hidden xs:inline">Jump to Quiz</span>
+      <span className="xs:hidden">Quiz</span>
     </Button>
   );
 };

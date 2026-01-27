@@ -63,16 +63,17 @@ const Dashboard = () => {
       <Header showStreak />
       <QnAWidget contextType="dashboard" />
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
         {/* Continue Learning Hero Card */}
-        <div className="mb-10 animate-fade-in">
+        <div className="mb-8 sm:mb-10 animate-fade-in">
           <ContinueLearning />
         </div>
 
         {/* Level Cards Section */}
-        <div className="mb-10">
-          <h2 className="font-ui text-xl font-semibold mb-6 text-foreground">Your Learning Path</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mb-8 sm:mb-10">
+          <h2 className="font-ui text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Your Learning Path</h2>
+          {/* Single column on mobile, 3 columns on desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {courseData.map((level, index) => {
               const isCurrent = currentLevel.id === level.id && !isLevelCompleted(level.id);
               
@@ -93,40 +94,40 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Quick Stats Section */}
+        {/* Quick Stats Section - 2 columns on mobile, 3 on desktop */}
         <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <h2 className="font-ui text-xl font-semibold mb-6 text-foreground">Quick Stats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="font-ui text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Quick Stats</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Lessons Completed */}
-            <div className="flex items-center gap-4 p-5 rounded-xl bg-card border border-border hover:border-emerald-500/30 transition-colors">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-emerald-500" />
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-emerald-500/30 transition-colors touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
               </div>
-              <div>
-                <p className="font-mono text-2xl font-bold text-foreground">{completedLessons}</p>
-                <p className="font-ui text-sm text-muted-foreground">Lessons Completed</p>
+              <div className="min-w-0">
+                <p className="font-mono text-xl sm:text-2xl font-bold text-foreground">{completedLessons}</p>
+                <p className="font-ui text-xs sm:text-sm text-muted-foreground truncate">Lessons</p>
               </div>
             </div>
 
             {/* Current Streak */}
-            <div className="flex items-center gap-4 p-5 rounded-xl bg-card border border-border hover:border-orange-500/30 transition-colors">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                <Flame className="h-6 w-6 text-orange-500" />
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-orange-500/30 transition-colors touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
+                <Flame className="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" />
               </div>
-              <div>
-                <p className="font-mono text-2xl font-bold text-foreground">{streak?.current_streak || 0}</p>
-                <p className="font-ui text-sm text-muted-foreground">Day Streak</p>
+              <div className="min-w-0">
+                <p className="font-mono text-xl sm:text-2xl font-bold text-foreground">{streak?.current_streak || 0}</p>
+                <p className="font-ui text-xs sm:text-sm text-muted-foreground truncate">Day Streak</p>
               </div>
             </div>
 
-            {/* Next Milestone */}
-            <div className="flex items-center gap-4 p-5 rounded-xl bg-card border border-border hover:border-blue-500/30 transition-colors">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-blue-500" />
+            {/* Next Milestone - Full width on mobile when 3rd item */}
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-blue-500/30 transition-colors col-span-2 lg:col-span-1 touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
               </div>
-              <div>
-                <p className="font-ui text-sm font-medium text-foreground">Next Milestone</p>
-                <p className="font-body text-sm text-muted-foreground line-clamp-1">{getNextMilestone()}</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-ui text-xs sm:text-sm font-medium text-foreground">Next Milestone</p>
+                <p className="font-body text-xs sm:text-sm text-muted-foreground line-clamp-1">{getNextMilestone()}</p>
               </div>
             </div>
           </div>

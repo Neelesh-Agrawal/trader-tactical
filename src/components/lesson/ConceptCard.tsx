@@ -46,19 +46,20 @@ export const ConceptCard = ({ children, variant = 'info', title, className }: Co
 
   return (
     <div className={cn(
-      "my-6 p-5 rounded-lg border-l-4 transition-all",
+      "my-4 sm:my-6 p-4 sm:p-5 rounded-lg border-l-4 transition-all",
       config.borderColor,
       `bg-gradient-to-r ${config.bgColor} to-transparent`,
-      "hover:shadow-lg",
+      // Remove hover on touch devices, keep for desktop
+      "md:hover:shadow-lg",
       className
     )}>
-      <div className="flex items-start gap-3">
-        <Icon className={cn("h-5 w-5 mt-0.5 shrink-0", config.iconColor)} />
-        <div className="flex-1">
+      <div className="flex items-start gap-2.5 sm:gap-3">
+        <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0", config.iconColor)} />
+        <div className="flex-1 min-w-0">
           {(title || config.defaultTitle) && (
-            <h4 className="font-semibold mb-2">{title || config.defaultTitle}</h4>
+            <h4 className="font-semibold mb-1.5 sm:mb-2 text-sm sm:text-base">{title || config.defaultTitle}</h4>
           )}
-          <div className="text-foreground/80 leading-relaxed">
+          <div className="text-foreground/80 leading-relaxed text-sm sm:text-base">
             {children}
           </div>
         </div>

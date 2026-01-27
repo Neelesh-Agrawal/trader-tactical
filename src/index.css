@@ -300,7 +300,7 @@
 
   /* Reading content area - optimized width for readability */
   .reading-container {
-    @apply max-w-[680px] mx-auto px-4 md:px-8 lg:px-16;
+    @apply max-w-full sm:max-w-[680px] mx-auto px-0 sm:px-4 md:px-8 lg:px-16;
   }
 
   /* Content depth effect - white content on off-white background */
@@ -310,7 +310,7 @@
 
   /* Reading time badge */
   .reading-time-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 text-sm rounded-full;
+    @apply inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm rounded-full;
     @apply bg-muted text-muted-foreground;
   }
 
@@ -322,6 +322,17 @@
   /* Reading progress gradient bar */
   .reading-progress-bar {
     background: linear-gradient(90deg, hsl(var(--success)) 0%, hsl(160 60% 45%) 100%);
+  }
+
+  /* Touch manipulation for mobile */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Safe area for iOS */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
 

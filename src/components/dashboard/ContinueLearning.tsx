@@ -74,37 +74,37 @@ export const ContinueLearning = () => {
     // Show a welcome card for new users
     return (
       <div className={cn(
-        "relative rounded-2xl p-8 overflow-hidden",
+        "relative rounded-2xl p-5 sm:p-8 overflow-hidden",
         "bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-blue-500/10",
         "border border-emerald-500/20"
       )}>
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-emerald-500" />
-            <span className="font-ui text-sm font-medium text-emerald-600">START YOUR JOURNEY</span>
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+            <span className="font-ui text-xs sm:text-sm font-medium text-emerald-600">START YOUR JOURNEY</span>
           </div>
           
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 text-foreground">
+          <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 text-foreground">
             Welcome to TradeMaster, {profile?.name?.split(' ')[0]}!
           </h2>
           
-          <p className="font-body text-muted-foreground mb-6 max-w-xl" style={{ lineHeight: '1.75' }}>
+          <p className="font-body text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 max-w-xl" style={{ lineHeight: '1.75' }}>
             Begin your journey to becoming a certified options trader. Start with the fundamentals and work your way up.
           </p>
 
           <RippleButton 
             size="lg" 
-            className="gap-2 bg-success hover:bg-success/90 text-success-foreground shadow-lg"
+            className="gap-2 bg-success hover:bg-success/90 text-success-foreground shadow-lg h-11 sm:h-12 touch-manipulation w-full sm:w-auto"
             onClick={() => navigate('/level/beginner')}
           >
-            <Play className="h-5 w-5" />
+            <Play className="h-4 w-4 sm:h-5 sm:w-5" />
             Start Learning
           </RippleButton>
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
+        <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
       </div>
     );
   }
@@ -133,74 +133,75 @@ export const ContinueLearning = () => {
   return (
     <div 
       className={cn(
-        "relative rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer group",
+        "relative rounded-2xl p-4 sm:p-6 md:p-8 overflow-hidden cursor-pointer group touch-manipulation",
         "bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-blue-500/10",
         "border border-emerald-500/20 hover:border-emerald-500/40",
-        "transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10"
+        "transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10",
+        "active:scale-[0.99]"
       )} 
       onClick={handleContinue}
     >
       {/* Streak Badge - Top Right */}
       {streak && streak.current_streak > 0 && (
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/20 border border-warning/30 group-hover:scale-110 transition-transform duration-300">
-          <Flame className="h-4 w-4 text-warning animate-streak-pulse" />
-          <span className="font-mono text-sm font-bold text-warning">{streak.current_streak}</span>
-          <span className="text-xs text-warning/80 hidden sm:inline">day streak</span>
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-warning/20 border border-warning/30 group-hover:scale-110 transition-transform duration-300">
+          <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-warning animate-streak-pulse" />
+          <span className="font-mono text-xs sm:text-sm font-bold text-warning">{streak.current_streak}</span>
+          <span className="text-[10px] sm:text-xs text-warning/80 hidden md:inline">day streak</span>
         </div>
       )}
 
       <div className="relative z-10">
         {/* Welcome Message */}
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-4 w-4 text-emerald-500" />
-          <span className="font-ui text-sm font-medium text-emerald-600 uppercase tracking-wide">Continue Learning</span>
+        <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
+          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
+          <span className="font-ui text-xs sm:text-sm font-medium text-emerald-600 uppercase tracking-wide">Continue Learning</span>
         </div>
         
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2 text-foreground">
+        <h2 className="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-2 text-foreground">
           Welcome back, {profile?.name?.split(' ')[0]}! 👋
         </h2>
 
         {/* Last Lesson Info */}
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl">{moduleIcon}</span>
-          <div>
-            <p className="font-ui text-sm text-muted-foreground">You were learning:</p>
-            <p className="font-body text-lg font-medium text-foreground group-hover:text-emerald-600 transition-colors">
+        <div className="flex items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <span className="text-xl sm:text-2xl shrink-0">{moduleIcon}</span>
+          <div className="min-w-0">
+            <p className="font-ui text-xs sm:text-sm text-muted-foreground">You were learning:</p>
+            <p className="font-body text-sm sm:text-lg font-medium text-foreground group-hover:text-emerald-600 transition-colors truncate">
               {lesson.title}
             </p>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-6 max-w-md">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-ui text-sm text-muted-foreground">
+        <div className="mb-4 sm:mb-6 max-w-md">
+          <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+            <span className="font-ui text-xs sm:text-sm text-muted-foreground truncate pr-2">
               {module.title} • Lesson {lessonIndex + 1} of {totalLessons}
             </span>
-            <span className="font-mono text-sm font-medium text-success">{moduleProgress}%</span>
+            <span className="font-mono text-xs sm:text-sm font-medium text-success shrink-0">{moduleProgress}%</span>
           </div>
-          <AnimatedProgress value={moduleProgress} className="h-2" variant="success" />
+          <AnimatedProgress value={moduleProgress} className="h-1.5 sm:h-2" variant="success" />
         </div>
 
         {/* Meta Info & Button */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
-              {readingTime} min read
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              {readingTime} min
             </span>
-            <span className="flex items-center gap-1.5">
-              <BookOpen className="h-4 w-4" />
-              <span className="capitalize">{level.id} Level</span>
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="capitalize">{level.id}</span>
             </span>
           </div>
 
           <RippleButton 
             size="lg" 
             className={cn(
-              "gap-2 sm:ml-auto",
+              "gap-2 sm:ml-auto w-full sm:w-auto",
               "bg-success hover:bg-success/90 text-success-foreground",
-              "shadow-lg",
+              "shadow-lg h-11 sm:h-12 touch-manipulation",
               "transition-all duration-300 group-hover:gap-3"
             )}
             onClick={(e) => {
@@ -208,16 +209,16 @@ export const ContinueLearning = () => {
               handleContinue();
             }}
           >
-            <Play className="h-5 w-5" />
+            <Play className="h-4 w-4 sm:h-5 sm:w-5" />
             Continue Learning
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
           </RippleButton>
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+      {/* Decorative elements - smaller on mobile */}
+      <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4 pointer-events-none" />
     </div>
   );
 };

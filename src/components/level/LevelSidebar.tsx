@@ -68,26 +68,27 @@ export const LevelSidebar = ({
   const levelProgress = calculateLevelProgress();
 
   return (
-    <div className="w-[280px] bg-sidebar border-r border-sidebar-border overflow-y-auto scrollbar-tactical h-full flex flex-col">
+    <div className="w-[280px] sm:w-[300px] lg:w-[280px] bg-sidebar border-r border-sidebar-border overflow-y-auto scrollbar-tactical h-full flex flex-col">
       {/* Level Header with Progress */}
-      <div className="p-4 border-b border-sidebar-border bg-gradient-to-b from-sidebar to-sidebar/80">
+      <div className="p-3 sm:p-4 border-b border-sidebar-border bg-gradient-to-b from-sidebar to-sidebar/80">
         <button 
           onClick={onOverviewSelect}
           className={cn(
-            "w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+            "w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-xl transition-all duration-200 touch-manipulation",
+            "active:scale-[0.98]",
             "hover:bg-sidebar-accent/50",
             !currentModuleId && !currentLessonId && "bg-sidebar-accent ring-2 ring-primary/20"
           )}
         >
           <ProgressRing 
             progress={levelProgress} 
-            size={44} 
+            size={40} 
             strokeWidth={3}
             showPercentage={false}
           />
-          <div className="flex-1 text-left">
-            <h2 className="font-ui font-semibold text-base text-sidebar-foreground capitalize">{level.id} Level</h2>
-            <p className="font-ui text-xs text-muted-foreground">{level.modules.length} modules • {levelProgress}% complete</p>
+          <div className="flex-1 text-left min-w-0">
+            <h2 className="font-ui font-semibold text-sm sm:text-base text-sidebar-foreground capitalize truncate">{level.id} Level</h2>
+            <p className="font-ui text-xs text-muted-foreground">{level.modules.length} modules • {levelProgress}%</p>
           </div>
         </button>
       </div>
@@ -119,21 +120,22 @@ export const LevelSidebar = ({
               <CollapsibleTrigger
                 disabled={!isUnlocked}
                 className={cn(
-                  "w-full flex items-center gap-2 p-2.5 rounded-lg text-left transition-all duration-200",
-                  isUnlocked ? "hover:bg-sidebar-accent cursor-pointer" : "opacity-50 cursor-not-allowed",
+                  "w-full flex items-center gap-2 p-2.5 sm:p-3 rounded-lg text-left transition-all duration-200 touch-manipulation",
+                  "min-h-[44px]", // Minimum touch target
+                  isUnlocked ? "hover:bg-sidebar-accent active:scale-[0.98] cursor-pointer" : "opacity-50 cursor-not-allowed",
                   isCurrent && "bg-sidebar-accent"
                 )}
               >
                 <div className={cn(
-                  "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
+                  "w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
                   isComplete ? "bg-success/20 text-success" :
                   isCurrent ? "bg-primary/20 text-primary" :
                   isUnlocked ? "bg-warning/20 text-warning" :
                   "bg-muted text-muted-foreground"
                 )}>
-                  {isComplete ? <CheckCircle className="h-3.5 w-3.5" /> :
-                   !isUnlocked ? <Lock className="h-3.5 w-3.5" /> :
-                   <BookOpen className="h-3.5 w-3.5" />}
+                  {isComplete ? <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> :
+                   !isUnlocked ? <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> :
+                   <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 </div>
                 
                 <div className="flex-1 min-w-0">
@@ -143,7 +145,7 @@ export const LevelSidebar = ({
                       <span className="font-mono text-[10px] text-primary">{moduleProgress}%</span>
                     )}
                   </div>
-                  <p className="font-ui font-medium text-sm truncate text-sidebar-foreground leading-tight">{module.title}</p>
+                  <p className="font-ui font-medium text-xs sm:text-sm truncate text-sidebar-foreground leading-tight">{module.title}</p>
                 </div>
 
                 {isUnlocked && (
@@ -169,14 +171,15 @@ export const LevelSidebar = ({
                         onClick={() => status !== 'locked' && onLessonSelect(module.id, lesson.id)}
                         disabled={status === 'locked'}
                         className={cn(
-                          "w-full flex items-center gap-2 py-2 px-2 rounded-md text-left transition-all duration-200 group",
-                          status === 'locked' ? "opacity-40 cursor-not-allowed" : "hover:bg-sidebar-accent/70 hover:translate-x-1 cursor-pointer",
+                          "w-full flex items-center gap-2 py-2.5 sm:py-2 px-2 rounded-md text-left transition-all duration-200 group touch-manipulation",
+                          "min-h-[44px] sm:min-h-0", // Larger touch target on mobile
+                          status === 'locked' ? "opacity-40 cursor-not-allowed" : "hover:bg-sidebar-accent/70 active:scale-[0.98] md:hover:translate-x-1 cursor-pointer",
                           isCurrentLesson && "bg-primary/10 border-l-2 border-primary -ml-0.5 pl-[7px]",
                           status === 'active' && !isCurrentLesson && "animate-unlock-glow"
                         )}
                       >
                         <div className={cn(
-                          "w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 text-[10px] font-mono",
+                          "w-5 h-5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 text-[10px] font-mono",
                           status === 'complete' ? "bg-success text-success-foreground" :
                           isCurrentLesson ? "bg-primary text-primary-foreground" :
                           status === 'active' ? "bg-primary/20 text-primary ring-2 ring-primary/30" :
@@ -193,7 +196,7 @@ export const LevelSidebar = ({
                           )}
                         </div>
                         <span className={cn(
-                          "text-sm truncate flex-1 font-ui transition-colors duration-200",
+                          "text-xs sm:text-sm truncate flex-1 font-ui transition-colors duration-200",
                           isCurrentLesson ? "text-primary font-medium" : "text-sidebar-foreground/80 group-hover:text-sidebar-foreground"
                         )}>
                           {lesson.title}
@@ -209,7 +212,7 @@ export const LevelSidebar = ({
       </div>
 
       {/* Bottom Progress Bar */}
-      <div className="p-4 border-t border-sidebar-border bg-gradient-to-t from-sidebar to-sidebar/80">
+      <div className="p-3 sm:p-4 border-t border-sidebar-border bg-gradient-to-t from-sidebar to-sidebar/80">
         <div className="flex justify-between items-center text-sm mb-2">
           <span className="font-ui text-xs text-muted-foreground">Level Progress</span>
           <span className="font-mono text-xs font-medium text-primary">{levelProgress}%</span>

@@ -54,24 +54,24 @@ export const ChecklistTakeaways = ({ takeaways, lessonId }: ChecklistTakeawaysPr
     <div 
       ref={containerRef}
       className={cn(
-        "tactical-card p-6 mb-8 transition-all duration-300",
+        "tactical-card p-4 sm:p-6 mb-6 sm:mb-8 transition-all duration-300",
         allComplete && "border-success/50 bg-gradient-to-br from-card to-success/5",
         justCompleted && "animate-milestone-glow"
       )}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center gap-2">
           <Lightbulb className={cn(
-            "h-5 w-5 transition-colors duration-300",
+            "h-4 w-4 sm:h-5 sm:w-5 transition-colors duration-300",
             allComplete ? "text-success" : "text-warning"
           )} />
-          <span className="font-ui text-lg font-medium">Key Signals</span>
+          <span className="font-ui text-base sm:text-lg font-medium">Key Signals</span>
           {allComplete && (
-            <Sparkles className="h-4 w-4 text-success animate-spin-slow" />
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success animate-spin-slow" />
           )}
         </div>
         <span className={cn(
-          "text-sm font-mono px-3 py-1 rounded-full transition-all duration-300",
+          "text-xs sm:text-sm font-mono px-2 sm:px-3 py-0.5 sm:py-1 rounded-full transition-all duration-300",
           allComplete 
             ? "bg-success/20 text-success" 
             : "bg-muted text-muted-foreground"
@@ -80,7 +80,7 @@ export const ChecklistTakeaways = ({ takeaways, lessonId }: ChecklistTakeawaysPr
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         {takeaways.map((takeaway, index) => {
           const isChecked = checkedItems[index];
           
@@ -89,18 +89,19 @@ export const ChecklistTakeaways = ({ takeaways, lessonId }: ChecklistTakeawaysPr
               key={index}
               onClick={() => toggleItem(index)}
               className={cn(
-                "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all duration-200",
-                "hover:bg-muted/50 hover:translate-x-1",
+                "w-full flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3 rounded-lg text-left transition-all duration-200 touch-manipulation",
+                "min-h-[44px]", // Minimum touch target
+                "active:scale-[0.98] md:hover:bg-muted/50 md:hover:translate-x-1",
                 isChecked && "bg-success/10"
               )}
             >
               <AnimatedCheckbox 
                 checked={isChecked} 
                 onChange={() => {}} 
-                className="mt-0.5"
+                className="mt-0.5 shrink-0"
               />
               <p className={cn(
-                "text-sm transition-all duration-200",
+                "text-sm sm:text-base transition-all duration-200 leading-relaxed",
                 isChecked && "text-muted-foreground line-through"
               )}>
                 {takeaway}
@@ -111,11 +112,11 @@ export const ChecklistTakeaways = ({ takeaways, lessonId }: ChecklistTakeawaysPr
       </div>
 
       {allComplete && (
-        <div className="mt-4 pt-4 border-t border-success/20 text-center animate-fade-in">
-          <span className="text-success font-medium flex items-center justify-center gap-2">
-            <Sparkles className="h-4 w-4" />
+        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-success/20 text-center animate-fade-in">
+          <span className="text-success font-medium flex items-center justify-center gap-2 text-sm sm:text-base">
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             All key signals reviewed!
-            <Sparkles className="h-4 w-4" />
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </span>
         </div>
       )}
