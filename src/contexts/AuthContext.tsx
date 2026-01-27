@@ -167,30 +167,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signIn = async (phoneNumber: string, pin: string): Promise<{ error: Error | null }> => {
     try {
+      // Normalize phone number (remove spaces, dashes)
+      const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+      
       // Find user by phone number
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('email, pin_hash, user_id')
-        .eq('phone_number', phoneNumber)
-        .single();
+        .eq('phone_number', normalizedPhone)
+        .maybeSingle();
 
-      if (profileError || !profileData) {
-        throw new Error('Phone number not found');
+      if (profileError) {
+        console.error('Profile lookup error:', profileError);
+        throw new Error('Unable to verify credentials');
+      }
+      
+      if (!profileData) {
+        throw new Error('Phone number not found. Please check and try again.');
       }
 
       // Verify PIN
       const hashedPin = await hashPin(pin);
       if (hashedPin !== profileData.pin_hash) {
-        throw new Error('Invalid PIN');
+        throw new Error('Invalid PIN. Please try again.');
       }
 
-      // Sign in with email (we use email internally)
+      // Sign in with email (we use phone+pin as password, matching registration)
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: profileData.email,
-        password: pin + phoneNumber // Use phone+pin as password
+        password: pin + normalizedPhone
       });
 
-      if (signInError) throw signInError;
+      if (signInError) {
+        console.error('Auth sign in error:', signInError);
+        throw new Error('Authentication failed. Please try again.');
+      }
 
       return { error: null };
     } catch (error) {

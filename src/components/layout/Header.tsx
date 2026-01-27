@@ -117,8 +117,8 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
               </DropdownMenu>
             </>
           ) : showAuth ? (
-            <Button onClick={() => navigate('/dashboard')} className="gap-2 h-9 sm:h-10 px-3 sm:px-4 text-sm touch-manipulation">
-              Dashboard
+            <Button onClick={() => navigate('/login')} className="gap-2 h-9 sm:h-10 px-3 sm:px-4 text-sm touch-manipulation">
+              Sign In
             </Button>
           ) : null}
         </div>
