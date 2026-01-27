@@ -35,12 +35,15 @@ const Register = () => {
 
     setLoading(true);
     
-    // Use phone+pin as password
-    const password = formData.pin + formData.phoneNumber;
+    // Normalize phone number
+    const normalizedPhone = formData.phoneNumber.replace(/[\s\-\(\)]/g, '');
+    
+    // Use pin+phone as password (must match login)
+    const password = formData.pin + normalizedPhone;
     
     const { error } = await signUp(formData.email, password, {
       name: formData.name,
-      phone_number: formData.phoneNumber,
+      phone_number: normalizedPhone,
       email: formData.email,
       date_of_birth: formData.dateOfBirth,
       pin: formData.pin
