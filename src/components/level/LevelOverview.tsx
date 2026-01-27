@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/hooks/useProgress';
 import { useEnrollment } from '@/hooks/useEnrollment';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, BookOpen, Lock, ArrowRight } from 'lucide-react';
+import { Breadcrumb } from '@/components/layout/Breadcrumb';
+import { CheckCircle, Clock, BookOpen, Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Level } from '@/data/courseData';
 
@@ -14,6 +16,7 @@ interface LevelOverviewProps {
 }
 
 export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOverviewProps) => {
+  const navigate = useNavigate();
   const { isModuleUnlocked, isModuleCompleted, isLessonCompleted } = useProgress();
   const { getEnrollment, getRemainingDays } = useEnrollment();
 
@@ -45,8 +48,25 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
     return null;
   };
 
+  // Format level name for display
+  const levelDisplayName = level.id.charAt(0).toUpperCase() + level.id.slice(1);
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-fade-in">
+      {/* Back Button & Breadcrumb */}
+      <div className="space-y-2">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground active:scale-95 transition-all py-2 touch-manipulation group"
+          aria-label="Back to dashboard"
+        >
+          <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <span className="text-sm sm:text-base font-medium">Back to Dashboard</span>
+        </button>
+        
+        <Breadcrumb items={[{ label: `${levelDisplayName} Level` }]} />
+      </div>
+
       {/* Level Header */}
       <div className="text-center pb-6 sm:pb-8 border-b border-border">
         <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2 capitalize text-foreground">{level.id} Level</h1>
@@ -55,7 +75,7 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
         {/* Deadline Badge */}
         {enrollment && remainingDays !== null && remainingDays > 0 && (
           <div className="inline-flex items-center gap-2 mt-4 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-warning/10 border border-warning/20 text-warning text-sm">
-            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
             <span className="font-medium">{remainingDays} days remaining</span>
           </div>
         )}
