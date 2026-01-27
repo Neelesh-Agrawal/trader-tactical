@@ -143,13 +143,17 @@ export type Database = {
           current_level: string
           date_of_birth: string
           email: string
+          gender: string | null
           id: string
           last_lesson_id: string | null
           last_lesson_level_id: string | null
           last_lesson_module_id: string | null
           name: string
+          occupation: string | null
           phone_number: string
           pin_hash: string
+          reset_token: string | null
+          reset_token_expires_at: string | null
           updated_at: string
           user_id: string
         }
@@ -158,13 +162,17 @@ export type Database = {
           current_level?: string
           date_of_birth: string
           email: string
+          gender?: string | null
           id?: string
           last_lesson_id?: string | null
           last_lesson_level_id?: string | null
           last_lesson_module_id?: string | null
           name: string
+          occupation?: string | null
           phone_number: string
           pin_hash: string
+          reset_token?: string | null
+          reset_token_expires_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -173,13 +181,17 @@ export type Database = {
           current_level?: string
           date_of_birth?: string
           email?: string
+          gender?: string | null
           id?: string
           last_lesson_id?: string | null
           last_lesson_level_id?: string | null
           last_lesson_module_id?: string | null
           name?: string
+          occupation?: string | null
           phone_number?: string
           pin_hash?: string
+          reset_token?: string | null
+          reset_token_expires_at?: string | null
           updated_at?: string
           user_id?: string
         }

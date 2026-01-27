@@ -9,6 +9,7 @@ import { SkipLink } from "@/components/ui/skip-link";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPin from "./pages/ForgotPin";
 import Dashboard from "./pages/Dashboard";
 import Level from "./pages/Level";
 import Module from "./pages/Module";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-pin" element={<ForgotPin />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/level/:levelId" element={<Level />} />
