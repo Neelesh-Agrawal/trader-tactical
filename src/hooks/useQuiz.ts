@@ -251,8 +251,8 @@ export const useQuiz = ({
           await unlockNextLevel('advanced');
         }
       }
-    } else if (!passed) {
-      // Set cooldown
+    } else if (!passed && quizType !== 'lesson') {
+      // Set cooldown only for module and level quizzes (not lesson quizzes)
       const cooldownMins = quizType === 'level' ? 3 : 2;
       await setCooldown(quizType, levelId, moduleId, cooldownMins);
     }
