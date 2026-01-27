@@ -7,7 +7,7 @@
    Color palette: Deep Navy, Growth Green, Active Yellow
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 
 @layer base {
   :root {
@@ -96,54 +96,95 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Libre Baskerville', Georgia, serif;
+    font-family: 'Lora', Georgia, serif;
   }
 
-  /* Medium-inspired Typography */
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Libre Baskerville', Georgia, serif;
-    @apply font-bold tracking-tight;
-  }
-
+  /* Premium Typography System
+     H1 (Lesson titles): Libre Baskerville, display font
+     H2/H3 (Section headings): Work Sans, clean UI font  
+     Body: Lora, optimized for extended reading
+     UI elements: Work Sans
+     Data: JetBrains Mono
+  */
+  
+  /* Display Headers - Libre Baskerville for premium titles */
   h1 {
-    @apply text-4xl md:text-5xl;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    @apply text-4xl font-bold tracking-tight;
     line-height: 1.2;
+    color: hsl(var(--foreground));
   }
 
+  /* Section Headers - Work Sans for clean hierarchy */
   h2 {
-    @apply text-3xl md:text-4xl;
-    line-height: 1.25;
+    font-family: 'Work Sans', system-ui, sans-serif;
+    @apply text-2xl font-semibold tracking-tight;
+    line-height: 1.3;
+    color: hsl(var(--foreground) / 0.95);
   }
 
   h3 {
-    @apply text-2xl md:text-3xl;
-    line-height: 1.3;
+    font-family: 'Work Sans', system-ui, sans-serif;
+    @apply text-xl font-semibold;
+    line-height: 1.35;
+    color: hsl(var(--foreground) / 0.9);
   }
 
-  /* Subheaders - Sans-serif */
+  h4, h5, h6 {
+    font-family: 'Work Sans', system-ui, sans-serif;
+    @apply font-medium;
+  }
+
+  /* Subheaders - Work Sans UI font */
   .subheader {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Work Sans', system-ui, sans-serif;
     @apply text-lg md:text-xl font-medium;
   }
 
-  /* Body text optimized for reading */
+  /* Body text - Lora for optimal reading experience */
   .prose-body {
-    font-family: 'Libre Baskerville', Georgia, serif;
-    @apply text-lg md:text-xl;
-    line-height: 1.58;
+    font-family: 'Lora', Georgia, serif;
+    @apply text-lg;
+    line-height: 1.75;
     letter-spacing: -0.003em;
+    color: hsl(var(--foreground) / 0.9);
   }
 
-  /* Data/Terminal style */
+  /* Enhanced paragraph styling for content-heavy pages */
+  .reading-content p {
+    font-family: 'Lora', Georgia, serif;
+    @apply text-lg leading-relaxed mb-6;
+    line-height: 1.75;
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  /* UI Text - Work Sans for interface elements */
+  .ui-text {
+    font-family: 'Work Sans', system-ui, sans-serif;
+    @apply text-sm md:text-base font-medium;
+  }
+
+  /* Data/Terminal style - JetBrains Mono */
   .mono {
     font-family: 'JetBrains Mono', monospace;
     @apply text-sm;
   }
 
-  /* Caption text */
+  /* Caption text - Monospace for data labels */
   .caption {
     font-family: 'JetBrains Mono', monospace;
     @apply text-xs uppercase tracking-wider;
+  }
+
+  /* Pull quotes for impactful statements */
+  .pull-quote {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    @apply text-xl md:text-2xl italic;
+    line-height: 1.5;
+    color: hsl(var(--primary));
+    border-left: 3px solid hsl(var(--primary));
+    padding-left: 1.5rem;
+    margin: 2rem 0;
   }
 }
 

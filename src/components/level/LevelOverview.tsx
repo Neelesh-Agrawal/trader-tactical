@@ -49,8 +49,8 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
     <div className="space-y-8 animate-fade-in">
       {/* Level Header */}
       <div className="text-center pb-8 border-b border-border">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 capitalize">{level.id} Level</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{level.description}</p>
+        <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 capitalize text-foreground">{level.id} Level</h1>
+        <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto" style={{ lineHeight: '1.75' }}>{level.description}</p>
         
         {/* Deadline Badge */}
         {enrollment && remainingDays !== null && remainingDays > 0 && (
@@ -64,26 +64,26 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-4">
         <div className="tactical-card p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{level.modules.length}</div>
-          <div className="text-sm text-muted-foreground">Modules</div>
+          <div className="font-mono text-3xl font-bold text-primary">{level.modules.length}</div>
+          <div className="font-ui text-sm text-muted-foreground">Modules</div>
         </div>
         <div className="tactical-card p-4 text-center">
-          <div className="text-3xl font-bold text-primary">
+          <div className="font-mono text-3xl font-bold text-primary">
             {level.modules.reduce((acc, m) => acc + m.lessons.length, 0)}
           </div>
-          <div className="text-sm text-muted-foreground">Lessons</div>
+          <div className="font-ui text-sm text-muted-foreground">Lessons</div>
         </div>
         <div className="tactical-card p-4 text-center">
-          <div className="text-3xl font-bold text-primary">
+          <div className="font-mono text-3xl font-bold text-primary">
             {level.modules.filter(m => isModuleCompleted(level.id, m.id)).length}
           </div>
-          <div className="text-sm text-muted-foreground">Completed</div>
+          <div className="font-ui text-sm text-muted-foreground">Completed</div>
         </div>
       </div>
 
       {/* Module Cards */}
       <div className="space-y-4">
-        <h2 className="subheader">Modules</h2>
+        <h2 className="font-ui text-xl font-semibold">Modules</h2>
         
         {level.modules.map((module, index) => {
           const isUnlocked = isModuleUnlocked(level.id, module.id);
@@ -130,10 +130,10 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                  <h3 className="font-ui text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                     {module.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">{module.description}</p>
+                  <p className="font-body text-sm text-muted-foreground mb-4">{module.description}</p>
 
                   {/* Progress Bar */}
                   <div className="mb-4">
@@ -184,8 +184,8 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
               🏆
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold mb-1">Final Assessment</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="font-ui text-xl font-semibold mb-1">Final Assessment</h3>
+              <p className="font-body text-sm text-muted-foreground mb-4">
                 Complete all modules to unlock the final assessment and earn your certificate.
               </p>
               <Button disabled variant="secondary" className="gap-2">
