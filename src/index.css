@@ -297,6 +297,32 @@
   .faq-item {
     @apply border-b border-border;
   }
+
+  /* Reading content area - optimized width for readability */
+  .reading-container {
+    @apply max-w-[680px] mx-auto px-4 md:px-8 lg:px-16;
+  }
+
+  /* Content depth effect - white content on off-white background */
+  .content-depth {
+    @apply bg-card rounded-xl shadow-lg;
+  }
+
+  /* Reading time badge */
+  .reading-time-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-sm rounded-full;
+    @apply bg-muted text-muted-foreground;
+  }
+
+  /* Sidebar dim effect when reading */
+  .sidebar-dimmed {
+    @apply opacity-60 transition-opacity duration-300;
+  }
+
+  /* Reading progress gradient bar */
+  .reading-progress-bar {
+    background: linear-gradient(90deg, hsl(var(--success)) 0%, hsl(160 60% 45%) 100%);
+  }
 }
 
 @layer utilities {
