@@ -81,99 +81,107 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
         </div>
       </div>
 
-      {/* Module Cards */}
+      {/* Module Cards - 2 Column Grid */}
       <div className="space-y-4">
         <h2 className="font-ui text-xl font-semibold">Modules</h2>
         
-        {level.modules.map((module, index) => {
-          const isUnlocked = isModuleUnlocked(level.id, module.id);
-          const isComplete = isModuleCompleted(level.id, module.id);
-          const progress = getModuleProgress(module.id);
-          const nextLesson = getNextLesson(module.id);
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {level.modules.map((module, index) => {
+            const isUnlocked = isModuleUnlocked(level.id, module.id);
+            const isComplete = isModuleCompleted(level.id, module.id);
+            const progress = getModuleProgress(module.id);
+            const nextLesson = getNextLesson(module.id);
+            const isCurrent = isUnlocked && !isComplete && progress > 0;
 
-          return (
-            <div
-              key={module.id}
-              className={cn(
-                "tactical-card p-6 transition-all duration-300",
-                isUnlocked ? "hover:border-primary/50 cursor-pointer group" : "opacity-60",
-                isComplete && "border-success/30"
-              )}
-              onClick={() => isUnlocked && onModuleSelect(module.id)}
-            >
-              <div className="flex items-start gap-4">
-                {/* Progress Ring or Lock */}
-                <div className="shrink-0">
-                  {isUnlocked ? (
-                    <ProgressRing 
-                      progress={progress} 
-                      size={64} 
-                      strokeWidth={5}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl">{module.icon}</span>
-                    <span className="caption text-muted-foreground">MODULE {index + 1}</span>
-                    {isComplete && (
-                      <span className="ml-auto flex items-center gap-1 text-success text-sm">
-                        <CheckCircle className="h-4 w-4" />
-                        Complete
-                      </span>
+            return (
+              <div
+                key={module.id}
+                className={cn(
+                  "rounded-xl border bg-card p-5 transition-all duration-300",
+                  isUnlocked ? "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 cursor-pointer group" : "opacity-60",
+                  isComplete && "border-success/40 bg-success/5",
+                  isCurrent && "border-primary/40 ring-2 ring-primary/20 animate-pulse-glow"
+                )}
+                onClick={() => isUnlocked && onModuleSelect(module.id)}
+              >
+                <div className="flex items-start gap-4">
+                  {/* Progress Ring or Lock */}
+                  <div className="shrink-0">
+                    {isUnlocked ? (
+                      <ProgressRing 
+                        progress={progress} 
+                        size={56} 
+                        strokeWidth={4}
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full bg-muted/30 flex items-center justify-center">
+                        <Lock className="h-5 w-5 text-muted-foreground" />
+                      </div>
                     )}
                   </div>
-                  
-                  <h3 className="font-ui text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                    {module.title}
-                  </h3>
-                  <p className="font-body text-sm text-muted-foreground mb-4">{module.description}</p>
 
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">
-                        {module.lessons.filter(l => isLessonCompleted(level.id, module.id, l.id)).length} of {module.lessons.length} lessons
-                      </span>
-                      <span className="font-medium">{progress}%</span>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">{module.icon}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">Module {index + 1}</span>
+                      {isComplete && (
+                        <span className="ml-auto flex items-center gap-1 text-success text-xs font-medium">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                        </span>
+                      )}
                     </div>
-                    <Progress value={progress} className="h-2" />
+                    
+                    <h3 className="font-ui text-base font-semibold mb-1.5 group-hover:text-primary transition-colors leading-tight">
+                      {module.title}
+                    </h3>
+                    
+                    <p className="font-ui text-xs text-muted-foreground mb-3 line-clamp-2">{module.description}</p>
+
+                    {/* Lessons count and progress */}
+                    <div className="flex items-center justify-between text-xs mb-2">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <BookOpen className="h-3 w-3" />
+                        {module.lessons.length} lessons
+                      </span>
+                      {isUnlocked && (
+                        <span className="font-mono font-medium text-primary">{progress}%</span>
+                      )}
+                    </div>
+
+                    {/* Progress Bar */}
+                    {isUnlocked && (
+                      <Progress value={progress} className="h-1.5" />
+                    )}
+
+                    {/* Action */}
+                    {isUnlocked && nextLesson && !isComplete && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1.5 mt-3 h-8 text-xs px-2 -ml-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLessonSelect(module.id, nextLesson.id);
+                        }}
+                      >
+                        Continue
+                        <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    )}
+
+                    {isComplete && (
+                      <Button variant="ghost" size="sm" className="gap-1.5 mt-3 h-8 text-xs px-2 -ml-2 text-success">
+                        Review
+                        <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    )}
                   </div>
-
-                  {/* Action */}
-                  {isUnlocked && nextLesson && !isComplete && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLessonSelect(module.id, nextLesson.id);
-                      }}
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      Continue: {nextLesson.title}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  )}
-
-                  {isComplete && (
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      Review Module
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  )}
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Final Assessment Card */}

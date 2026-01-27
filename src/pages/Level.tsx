@@ -81,15 +81,23 @@ const Level = () => {
         {/* Mobile Sidebar Toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="lg:hidden fixed bottom-24 left-4 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
+          className={cn(
+            "lg:hidden fixed bottom-24 left-4 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300",
+            sidebarOpen 
+              ? "bg-destructive text-destructive-foreground rotate-90" 
+              : "bg-primary text-primary-foreground hover:scale-105"
+          )}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
         {/* Sidebar */}
-        <div className={cn(
-          "fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-40 transition-transform lg:translate-x-0",
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        <aside className={cn(
+          "fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-40 transition-all duration-300 ease-out",
+          "lg:translate-x-0 lg:opacity-100",
+          sidebarOpen 
+            ? "translate-x-0 opacity-100" 
+            : "-translate-x-full opacity-0 lg:opacity-100"
         )}>
           <LevelSidebar 
             level={level}
@@ -98,33 +106,38 @@ const Level = () => {
             onLessonSelect={handleLessonSelect}
             onOverviewSelect={handleOverviewSelect}
           />
-        </div>
+        </aside>
 
-        {/* Overlay */}
+        {/* Overlay for mobile */}
         {sidebarOpen && (
           <div 
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden" 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden animate-fade-in" 
             onClick={() => setSidebarOpen(false)} 
           />
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0 py-8 px-4 lg:px-8">
-          {currentLesson && currentModule ? (
-            <LessonContent 
-              lesson={currentLesson}
-              module={currentModule}
-              levelId={levelId}
-              lessonIndex={lessonIndex}
-              onBack={handleOverviewSelect}
-            />
-          ) : (
-            <LevelOverview 
-              level={level}
-              onModuleSelect={handleModuleSelect}
-              onLessonSelect={handleLessonSelect}
-            />
-          )}
+        <main className="flex-1 min-w-0 py-6 px-4 lg:px-8 lg:py-8">
+          <div className={cn(
+            "transition-all duration-300 ease-out",
+            currentLesson ? "animate-fade-in" : ""
+          )}>
+            {currentLesson && currentModule ? (
+              <LessonContent 
+                lesson={currentLesson}
+                module={currentModule}
+                levelId={levelId}
+                lessonIndex={lessonIndex}
+                onBack={handleOverviewSelect}
+              />
+            ) : (
+              <LevelOverview 
+                level={level}
+                onModuleSelect={handleModuleSelect}
+                onLessonSelect={handleLessonSelect}
+              />
+            )}
+          </div>
         </main>
       </div>
     </div>

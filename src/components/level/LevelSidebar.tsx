@@ -1,7 +1,7 @@
 import { useProgress } from '@/hooks/useProgress';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight, CheckCircle, Lock, Play, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronRight, CheckCircle, Lock, BookOpen, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import type { Level } from '@/data/courseData';
@@ -54,47 +54,59 @@ export const LevelSidebar = ({
 
   // Calculate overall level progress
   const calculateLevelProgress = () => {
-    let completedModules = 0;
+    let completedLessons = 0;
+    let totalLessons = 0;
     level.modules.forEach(m => {
-      if (isModuleCompleted(level.id, m.id)) completedModules++;
+      m.lessons.forEach(l => {
+        totalLessons++;
+        if (isLessonCompleted(level.id, m.id, l.id)) completedLessons++;
+      });
     });
-    return Math.round((completedModules / level.modules.length) * 100);
+    return totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   };
 
   const levelProgress = calculateLevelProgress();
 
   return (
-    <div className="w-80 bg-sidebar border-r border-sidebar-border overflow-y-auto scrollbar-tactical h-full flex flex-col">
+    <div className="w-[280px] bg-sidebar border-r border-sidebar-border overflow-y-auto scrollbar-tactical h-full flex flex-col">
       {/* Level Header with Progress */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="p-4 border-b border-sidebar-border bg-gradient-to-b from-sidebar to-sidebar/80">
         <button 
           onClick={onOverviewSelect}
           className={cn(
-            "w-full flex items-center gap-4 p-3 rounded-lg transition-all",
-            "hover:bg-sidebar-accent",
-            !currentModuleId && !currentLessonId && "bg-sidebar-accent"
+            "w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+            "hover:bg-sidebar-accent/50",
+            !currentModuleId && !currentLessonId && "bg-sidebar-accent ring-2 ring-primary/20"
           )}
         >
           <ProgressRing 
             progress={levelProgress} 
-            size={48} 
-            strokeWidth={4}
+            size={44} 
+            strokeWidth={3}
             showPercentage={false}
           />
           <div className="flex-1 text-left">
-            <h2 className="font-ui font-semibold text-lg text-sidebar-foreground capitalize">{level.id} Level</h2>
-            <p className="font-ui text-sm text-muted-foreground">{level.modules.length} modules</p>
+            <h2 className="font-ui font-semibold text-base text-sidebar-foreground capitalize">{level.id} Level</h2>
+            <p className="font-ui text-xs text-muted-foreground">{level.modules.length} modules • {levelProgress}% complete</p>
           </div>
         </button>
       </div>
 
       {/* Modules List */}
-      <div className="p-2 flex-1">
+      <div className="p-2 flex-1 overflow-y-auto">
         {level.modules.map((module, moduleIndex) => {
           const isUnlocked = isModuleUnlocked(level.id, module.id);
           const isComplete = isModuleCompleted(level.id, module.id);
           const isExpanded = expandedModules.includes(module.id);
           const isCurrent = module.id === currentModuleId;
+
+          // Calculate module progress
+          const completedLessons = module.lessons.filter(l => 
+            isLessonCompleted(level.id, module.id, l.id)
+          ).length;
+          const moduleProgress = module.lessons.length > 0 
+            ? Math.round((completedLessons / module.lessons.length) * 100) 
+            : 0;
 
           return (
             <Collapsible
@@ -107,44 +119,49 @@ export const LevelSidebar = ({
               <CollapsibleTrigger
                 disabled={!isUnlocked}
                 className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
+                  "w-full flex items-center gap-2 p-2.5 rounded-lg text-left transition-all duration-200",
                   isUnlocked ? "hover:bg-sidebar-accent cursor-pointer" : "opacity-50 cursor-not-allowed",
                   isCurrent && "bg-sidebar-accent"
                 )}
               >
                 <div className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                  "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
                   isComplete ? "bg-success/20 text-success" :
                   isCurrent ? "bg-primary/20 text-primary" :
                   isUnlocked ? "bg-warning/20 text-warning" :
                   "bg-muted text-muted-foreground"
                 )}>
-                  {isComplete ? <CheckCircle className="h-4 w-4" /> :
-                   !isUnlocked ? <Lock className="h-4 w-4" /> :
-                   <BookOpen className="h-4 w-4" />}
+                  {isComplete ? <CheckCircle className="h-3.5 w-3.5" /> :
+                   !isUnlocked ? <Lock className="h-3.5 w-3.5" /> :
+                   <BookOpen className="h-3.5 w-3.5" />}
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="font-ui text-xs text-muted-foreground">Module {moduleIndex + 1}</p>
-                  <p className="font-ui font-medium text-sm truncate text-sidebar-foreground">{module.title}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-[10px] text-muted-foreground">M{moduleIndex + 1}</span>
+                    {isUnlocked && !isComplete && (
+                      <span className="font-mono text-[10px] text-primary">{moduleProgress}%</span>
+                    )}
+                  </div>
+                  <p className="font-ui font-medium text-sm truncate text-sidebar-foreground leading-tight">{module.title}</p>
                 </div>
 
                 {isUnlocked && (
-                  <div className="shrink-0">
+                  <div className="shrink-0 transition-transform duration-200">
                     {isExpanded ? 
-                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" /> :
-                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform" />
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" /> :
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     }
                   </div>
                 )}
               </CollapsibleTrigger>
 
               {/* Lessons */}
-              <CollapsibleContent className="animate-accordion-down">
-                <div className="ml-4 pl-4 border-l border-sidebar-border mt-1 space-y-1">
+              <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+                <div className="ml-3 pl-3 border-l-2 border-sidebar-border/50 mt-1 space-y-0.5 pb-2">
                   {module.lessons.map((lesson, lessonIndex) => {
                     const status = getLessonStatus(module.id, lesson.id, lessonIndex);
-                    const isCurrentLesson = lesson.id === currentLessonId;
+                    const isCurrentLesson = lesson.id === currentLessonId && module.id === currentModuleId;
 
                     return (
                       <button
@@ -152,38 +169,32 @@ export const LevelSidebar = ({
                         onClick={() => status !== 'locked' && onLessonSelect(module.id, lesson.id)}
                         disabled={status === 'locked'}
                         className={cn(
-                          "w-full flex items-center gap-2 p-2 rounded-md text-left text-sm transition-all",
-                          status === 'locked' ? "opacity-50 cursor-not-allowed" : "hover:bg-sidebar-accent cursor-pointer",
-                          isCurrentLesson && "bg-primary/10 text-primary border-l-2 border-primary -ml-px pl-[7px]"
+                          "w-full flex items-center gap-2 py-2 px-2 rounded-md text-left transition-all duration-200 group",
+                          status === 'locked' ? "opacity-40 cursor-not-allowed" : "hover:bg-sidebar-accent/70 cursor-pointer",
+                          isCurrentLesson && "bg-primary/10 border-l-2 border-primary -ml-0.5 pl-[7px]"
                         )}
                       >
                         <div className={cn(
-                          "w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all",
+                          "w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 text-[10px] font-mono",
                           status === 'complete' ? "bg-success text-success-foreground" :
-                          status === 'active' ? "bg-warning/20 text-warning" :
+                          isCurrentLesson ? "bg-primary text-primary-foreground" :
+                          status === 'active' ? "bg-primary/20 text-primary ring-2 ring-primary/30" :
                           "bg-muted text-muted-foreground"
                         )}>
                           {status === 'complete' ? <CheckCircle className="h-3 w-3" /> :
-                           status === 'locked' ? <Lock className="h-3 w-3" /> :
-                           <Play className="h-3 w-3" />}
+                           status === 'locked' ? <Lock className="h-2.5 w-2.5" /> :
+                           isCurrentLesson ? <ArrowRight className="h-3 w-3" /> :
+                           <span>{lessonIndex + 1}</span>}
                         </div>
-                        <span className="truncate flex-1">{lesson.title}</span>
+                        <span className={cn(
+                          "text-sm truncate flex-1 font-ui transition-colors",
+                          isCurrentLesson ? "text-primary font-medium" : "text-sidebar-foreground/80 group-hover:text-sidebar-foreground"
+                        )}>
+                          {lesson.title}
+                        </span>
                       </button>
                     );
                   })}
-                  
-                  {/* Module Quiz Link */}
-                  {module.finalQuiz.length > 0 && (
-                    <button
-                      onClick={() => {/* Navigate to quiz */}}
-                      className="w-full flex items-center gap-2 p-2 rounded-md text-left text-sm hover:bg-sidebar-accent text-warning"
-                    >
-                      <div className="w-5 h-5 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
-                        📝
-                      </div>
-                      <span className="truncate flex-1">Module Quiz</span>
-                    </button>
-                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -192,14 +203,14 @@ export const LevelSidebar = ({
       </div>
 
       {/* Bottom Progress Bar */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="font-ui text-muted-foreground">Level Progress</span>
-          <span className="font-mono font-medium">{levelProgress}%</span>
+      <div className="p-4 border-t border-sidebar-border bg-gradient-to-t from-sidebar to-sidebar/80">
+        <div className="flex justify-between items-center text-sm mb-2">
+          <span className="font-ui text-xs text-muted-foreground">Level Progress</span>
+          <span className="font-mono text-xs font-medium text-primary">{levelProgress}%</span>
         </div>
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
+            className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-700 ease-out rounded-full"
             style={{ width: `${levelProgress}%` }}
           />
         </div>
