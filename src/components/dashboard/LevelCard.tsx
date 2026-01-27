@@ -114,8 +114,8 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
             <span className="caption text-muted-foreground">LEVEL {levelIndex + 1}</span>
           </div>
           
-          <h3 className="text-xl font-bold mb-2 capitalize">{level.id}</h3>
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{level.description}</p>
+          <h3 className="font-ui text-xl font-semibold mb-2 capitalize">{level.id}</h3>
+          <p className="font-body text-sm text-muted-foreground mb-4 line-clamp-2">{level.description}</p>
 
           {/* Deadline */}
           {enrollment && remainingDays !== null && remainingDays > 0 && !isComplete && (

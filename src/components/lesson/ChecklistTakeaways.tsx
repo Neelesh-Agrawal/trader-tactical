@@ -47,7 +47,7 @@ export const ChecklistTakeaways = ({ takeaways, lessonId }: ChecklistTakeawaysPr
             "h-5 w-5 transition-colors",
             allComplete ? "text-success" : "text-warning"
           )} />
-          <span className="subheader">Key Signals</span>
+          <span className="font-ui text-lg font-medium">Key Signals</span>
         </div>
         <span className={cn(
           "text-sm font-mono px-3 py-1 rounded-full transition-colors",

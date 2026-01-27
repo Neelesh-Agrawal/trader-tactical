@@ -56,7 +56,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
       // Headers (bold text)
       if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
         return (
-          <h3 key={index} className="text-xl font-bold mt-8 mb-4 text-foreground">
+          <h3 key={index} className="font-ui text-xl font-semibold mt-8 mb-4 text-foreground">
             {paragraph.replace(/\*\*/g, '')}
           </h3>
         );
@@ -71,9 +71,9 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         );
       }
 
-      // Regular paragraphs
+      // Regular paragraphs - premium reading experience
       return (
-        <p key={index} className="prose-body text-foreground/90 leading-relaxed mb-6">
+        <p key={index} className="font-body text-lg text-foreground/90 leading-relaxed mb-6" style={{ lineHeight: '1.75' }}>
           {renderFormattedText(paragraph)}
         </p>
       );
@@ -124,7 +124,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
           )}
         </div>
         
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{lesson.title}</h1>
+        <h1 className="font-display text-3xl md:text-4xl font-bold mb-4 text-foreground">{lesson.title}</h1>
       </div>
 
       {/* Mission Briefing */}
@@ -136,7 +136,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
           <Target className="h-5 w-5 text-primary" />
           <span className="subheader">Mission Briefing</span>
         </div>
-        <p className="prose-body text-muted-foreground">{lesson.objective}</p>
+        <p className="font-body text-lg text-muted-foreground" style={{ lineHeight: '1.75' }}>{lesson.objective}</p>
       </div>
 
       {/* Intel Section */}

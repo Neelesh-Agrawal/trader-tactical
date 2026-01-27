@@ -102,12 +102,12 @@ const Index = () => {
                 Learn. Trade. Get Hired.
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              <h1 className="font-display text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
                 Master the Art of{' '}
                 <span className="text-gradient-primary">Professional Trading</span>
               </h1>
               
-              <p className="prose-body text-muted-foreground mb-10 max-w-xl">
+              <p className="font-body text-lg md:text-xl text-muted-foreground mb-10 max-w-xl" style={{ lineHeight: '1.75' }}>
                 Complete our 3-level certification program and get hired by our firm. 
                 We provide the funds, you bring the skills.
               </p>
@@ -189,10 +189,10 @@ const Index = () => {
       <section id="levels" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="font-ui text-3xl md:text-4xl font-semibold mb-4 text-foreground">
               <span className="text-primary">Three Levels</span> to Mastery
             </h2>
-            <p className="text-muted-foreground prose-body max-w-2xl mx-auto">
+            <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto" style={{ lineHeight: '1.75' }}>
               Progress through our comprehensive curriculum and earn certifications at each level.
             </p>
           </div>
@@ -216,8 +216,8 @@ const Index = () => {
                 </div>
 
                 <div className="caption text-muted-foreground mb-1">LEVEL {level.number}</div>
-                <h3 className="text-xl font-bold mb-1">{level.title}</h3>
-                <p className="text-muted-foreground text-sm mb-6">{level.subtitle}</p>
+                <h3 className="font-ui text-xl font-semibold mb-1">{level.title}</h3>
+                <p className="font-body text-muted-foreground text-sm mb-6">{level.subtitle}</p>
 
                 <ul className="space-y-3 mb-6">
                   {level.features.map((feature) => (
@@ -246,10 +246,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <h2 className="font-ui text-3xl md:text-4xl font-semibold mb-6 text-foreground">
                 Why Choose <span className="text-primary">TradeMaster</span>?
               </h2>
-              <p className="text-muted-foreground prose-body mb-8">
+              <p className="font-body text-lg text-muted-foreground mb-8" style={{ lineHeight: '1.75' }}>
                 We're not just another trading course. We're a pathway to a career. 
                 Our unique model aligns our success with yours – when you succeed, we succeed.
               </p>
@@ -261,8 +261,8 @@ const Index = () => {
                       <benefit.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-bold mb-1">{benefit.title}</h4>
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                      <h4 className="font-ui font-semibold mb-1">{benefit.title}</h4>
+                      <p className="font-body text-sm text-muted-foreground">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
@@ -270,7 +270,7 @@ const Index = () => {
             </div>
 
             <div className="tactical-card p-8 rounded-2xl">
-              <h3 className="text-xl font-bold mb-6 text-center">Our Track Record</h3>
+              <h3 className="font-ui text-xl font-semibold mb-6 text-center">Our Track Record</h3>
               
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {stats.map((stat) => (
@@ -297,8 +297,8 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-primary/10 to-success/10">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Trading?</h2>
-          <p className="text-muted-foreground prose-body mb-8 max-w-xl mx-auto">
+          <h2 className="font-ui text-3xl md:text-4xl font-semibold mb-6 text-foreground">Ready to Transform Your Trading?</h2>
+          <p className="font-body text-lg text-muted-foreground mb-8 max-w-xl mx-auto" style={{ lineHeight: '1.75' }}>
             Join thousands of traders who have accelerated their careers through our program.
           </p>
           <Button size="lg" className="text-lg px-10 gap-2" onClick={() => navigate('/register')}>

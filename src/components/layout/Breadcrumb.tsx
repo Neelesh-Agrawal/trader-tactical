@@ -12,8 +12,8 @@ interface BreadcrumbProps {
 
 export const Breadcrumb = ({ items }: BreadcrumbProps) => {
   return (
-    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-      <Link to="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
+    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6 font-ui">
+      <Link to="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1 font-medium">
         <Home className="h-4 w-4" />
         <span className="hidden sm:inline">Dashboard</span>
       </Link>

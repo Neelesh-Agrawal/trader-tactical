@@ -14,9 +14,13 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ["Libre Baskerville", "Georgia", "serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Libre Baskerville", "Georgia", "serif"],
+        body: ["Lora", "Georgia", "serif"],
+        ui: ["Work Sans", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        // Legacy aliases for compatibility
+        serif: ["Libre Baskerville", "Georgia", "serif"],
+        sans: ["Work Sans", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

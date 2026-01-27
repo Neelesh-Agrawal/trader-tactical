@@ -42,19 +42,19 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
           <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
             <TrendingUp className="h-5 w-5 text-primary" />
           </div>
-          <span className="text-xl font-bold">TradeMaster</span>
+          <span className="font-display text-xl font-bold">TradeMaster</span>
         </Link>
 
         {/* Nav Links - Desktop */}
         {!user && (
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+          <nav className="hidden md:flex items-center gap-8 font-ui">
+            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               How It Works
             </a>
-            <a href="#levels" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#levels" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Levels
             </a>
-            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               About Us
             </a>
           </nav>

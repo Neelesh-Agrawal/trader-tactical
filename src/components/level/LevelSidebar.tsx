@@ -82,8 +82,8 @@ export const LevelSidebar = ({
             showPercentage={false}
           />
           <div className="flex-1 text-left">
-            <h2 className="font-bold text-lg text-sidebar-foreground capitalize">{level.id} Level</h2>
-            <p className="text-sm text-muted-foreground">{level.modules.length} modules</p>
+            <h2 className="font-ui font-semibold text-lg text-sidebar-foreground capitalize">{level.id} Level</h2>
+            <p className="font-ui text-sm text-muted-foreground">{level.modules.length} modules</p>
           </div>
         </button>
       </div>
@@ -125,8 +125,8 @@ export const LevelSidebar = ({
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground">Module {moduleIndex + 1}</p>
-                  <p className="font-medium text-sm truncate text-sidebar-foreground">{module.title}</p>
+                  <p className="font-ui text-xs text-muted-foreground">Module {moduleIndex + 1}</p>
+                  <p className="font-ui font-medium text-sm truncate text-sidebar-foreground">{module.title}</p>
                 </div>
 
                 {isUnlocked && (
@@ -194,7 +194,7 @@ export const LevelSidebar = ({
       {/* Bottom Progress Bar */}
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex justify-between text-sm mb-2">
-          <span className="text-muted-foreground">Level Progress</span>
+          <span className="font-ui text-muted-foreground">Level Progress</span>
           <span className="font-mono font-medium">{levelProgress}%</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
