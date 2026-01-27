@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
+import { useScrollProgress } from '@/hooks/useScrollProgress';
 import { getLevelById, getModuleById, getLessonById } from '@/data/courseData';
 import { Header } from '@/components/layout/Header';
 import { LevelSidebar } from '@/components/level/LevelSidebar';
@@ -18,6 +19,7 @@ const Level = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { loading: progressLoading } = useProgress();
+  const { progress: scrollProgress, isScrolling } = useScrollProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const currentModuleId = searchParams.get('module') || undefined;
@@ -91,13 +93,15 @@ const Level = () => {
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        {/* Sidebar */}
+        {/* Sidebar - dims slightly when scrolling lesson content */}
         <aside className={cn(
           "fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-40 transition-all duration-300 ease-out",
           "lg:translate-x-0 lg:opacity-100",
           sidebarOpen 
             ? "translate-x-0 opacity-100" 
-            : "-translate-x-full opacity-0 lg:opacity-100"
+            : "-translate-x-full opacity-0 lg:opacity-100",
+          // Dim sidebar when reading lesson content
+          currentLesson && isScrolling && scrollProgress > 10 && "lg:opacity-70"
         )}>
           <LevelSidebar 
             level={level}
