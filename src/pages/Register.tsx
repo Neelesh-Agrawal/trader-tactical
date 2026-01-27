@@ -58,96 +58,126 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md tactical-card">
-        <CardHeader className="text-center">
-          <div className="caption text-primary mb-2">RECRUITMENT</div>
-          <CardTitle className="text-2xl">Begin Your Journey</CardTitle>
-          <CardDescription>Create your trading profile</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">FULL NAME</label>
-              <Input
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">PHONE NUMBER</label>
-              <Input
-                type="tel"
-                placeholder="Enter phone number"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">EMAIL</label>
-              <Input
-                type="email"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">DATE OF BIRTH</label>
-              <Input
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+      <main id="main-content">
+        <Card className="w-full max-w-md tactical-card">
+          <CardHeader className="text-center">
+            <div className="caption text-primary mb-2">RECRUITMENT</div>
+            <CardTitle className="text-2xl">Begin Your Journey</CardTitle>
+            <CardDescription>Create your trading profile</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label className="mono text-xs text-muted-foreground mb-2 block">CREATE PIN</label>
+                <label htmlFor="name" className="mono text-xs text-muted-foreground mb-2 block">
+                  FULL NAME
+                </label>
                 <Input
-                  type="password"
-                  placeholder="••••"
-                  maxLength={4}
-                  value={formData.pin}
-                  onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
+                  id="name"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="text-center text-xl tracking-widest"
+                  autoComplete="name"
                 />
               </div>
+
               <div>
-                <label className="mono text-xs text-muted-foreground mb-2 block">CONFIRM PIN</label>
+                <label htmlFor="phone" className="mono text-xs text-muted-foreground mb-2 block">
+                  PHONE NUMBER
+                </label>
                 <Input
-                  type="password"
-                  placeholder="••••"
-                  maxLength={4}
-                  value={formData.confirmPin}
-                  onChange={(e) => setFormData({ ...formData, confirmPin: e.target.value.replace(/\D/g, '') })}
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter phone number"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                   required
-                  className="text-center text-xl tracking-widest"
+                  autoComplete="tel"
                 />
               </div>
-            </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating Profile...' : 'Enlist Now'}
-            </Button>
-          </form>
+              <div>
+                <label htmlFor="email" className="mono text-xs text-muted-foreground mb-2 block">
+                  EMAIL
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                  autoComplete="email"
+                />
+              </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Already registered?{' '}
-            <Link to="/login" className="text-primary hover:underline">
-              Sign In
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+              <div>
+                <label htmlFor="dob" className="mono text-xs text-muted-foreground mb-2 block">
+                  DATE OF BIRTH
+                </label>
+                <Input
+                  id="dob"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                  required
+                  autoComplete="bday"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="pin" className="mono text-xs text-muted-foreground mb-2 block">
+                    CREATE PIN
+                  </label>
+                  <Input
+                    id="pin"
+                    type="password"
+                    placeholder="••••"
+                    maxLength={4}
+                    value={formData.pin}
+                    onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
+                    required
+                    autoComplete="new-password"
+                    className="text-center text-xl tracking-widest"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="confirmPin" className="mono text-xs text-muted-foreground mb-2 block">
+                    CONFIRM PIN
+                  </label>
+                  <Input
+                    id="confirmPin"
+                    type="password"
+                    placeholder="••••"
+                    maxLength={4}
+                    value={formData.confirmPin}
+                    onChange={(e) => setFormData({ ...formData, confirmPin: e.target.value.replace(/\D/g, '') })}
+                    required
+                    autoComplete="new-password"
+                    className="text-center text-xl tracking-widest"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                  />
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating Profile...' : 'Enlist Now'}
+              </Button>
+            </form>
+
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Already registered?{' '}
+              <Link to="/login" className="text-primary hover:underline font-medium">
+                Sign In
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 };

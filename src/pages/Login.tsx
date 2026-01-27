@@ -35,51 +35,63 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md tactical-card">
-        <CardHeader className="text-center">
-          <div className="caption text-primary mb-2">AUTHENTICATION</div>
-          <CardTitle className="text-2xl">Welcome Back, Trader</CardTitle>
-          <CardDescription>Enter your credentials to continue</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">PHONE NUMBER</label>
-              <Input
-                type="tel"
-                placeholder="Enter your phone number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="mono text-xs text-muted-foreground mb-2 block">4-DIGIT PIN</label>
-              <Input
-                type="password"
-                placeholder="••••"
-                maxLength={4}
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                required
-                className="text-center text-2xl tracking-widest"
-              />
-            </div>
+      <main id="main-content">
+        <Card className="w-full max-w-md tactical-card">
+          <CardHeader className="text-center">
+            <div className="caption text-primary mb-2">AUTHENTICATION</div>
+            <CardTitle className="text-2xl">Welcome Back, Trader</CardTitle>
+            <CardDescription>Enter your credentials to continue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div>
+                <label htmlFor="phone" className="mono text-xs text-muted-foreground mb-2 block">
+                  PHONE NUMBER
+                </label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  required
+                  autoComplete="tel"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="pin" className="mono text-xs text-muted-foreground mb-2 block">
+                  4-DIGIT PIN
+                </label>
+                <Input
+                  id="pin"
+                  type="password"
+                  placeholder="••••"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                  required
+                  autoComplete="current-password"
+                  className="text-center text-2xl tracking-widest"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                />
+              </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Authenticating...' : 'Enter Command Center'}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Authenticating...' : 'Enter Command Center'}
+              </Button>
+            </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            New recruit?{' '}
-            <Link to="/register" className="text-primary hover:underline">
-              Create Account
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              New recruit?{' '}
+              <Link to="/register" className="text-primary hover:underline font-medium">
+                Create Account
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 };
