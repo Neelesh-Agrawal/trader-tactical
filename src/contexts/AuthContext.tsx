@@ -18,6 +18,8 @@ interface SignUpData {
   email: string;
   date_of_birth: string;
   pin: string;
+  gender?: string;
+  occupation?: string;
 }
 
 interface Streak {
@@ -129,7 +131,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signUp = async (
     email: string,
     password: string,
-    profileData: { name: string; phone_number: string; email: string; date_of_birth: string; pin: string }
+    profileData: SignUpData
   ): Promise<{ error: Error | null }> => {
     try {
       const pinHash = await hashPin(profileData.pin);
@@ -154,7 +156,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           email: profileData.email,
           date_of_birth: profileData.date_of_birth,
           pin_hash: pinHash,
-          current_level: 'beginner'
+          current_level: 'beginner',
+          gender: profileData.gender || null,
+          occupation: profileData.occupation || null,
         });
 
       if (profileError) throw profileError;
