@@ -45,14 +45,18 @@ export const ConceptCard = ({ children, variant = 'info', title, className }: Co
   const Icon = config.icon;
 
   return (
-    <div className={cn(
-      "my-4 sm:my-6 p-4 sm:p-5 rounded-lg border-l-4 transition-all",
-      config.borderColor,
-      `bg-gradient-to-r ${config.bgColor} to-transparent`,
-      // Remove hover on touch devices, keep for desktop
-      "md:hover:shadow-lg",
-      className
-    )}>
+    <div 
+      className={cn(
+        "my-4 sm:my-6 p-4 sm:p-5 rounded-xl border-l-4 transition-all duration-200",
+        config.borderColor,
+        `bg-gradient-to-r ${config.bgColor} to-transparent`,
+        // Remove hover on touch devices, keep for desktop
+        "md:hover:shadow-lg",
+        className
+      )}
+      role="note"
+      aria-label={title || config.defaultTitle}
+    >
       <div className="flex items-start gap-2.5 sm:gap-3">
         <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0", config.iconColor)} />
         <div className="flex-1 min-w-0">

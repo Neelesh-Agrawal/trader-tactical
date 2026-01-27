@@ -89,6 +89,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header showAuth />
+      <main id="main-content">
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
@@ -308,12 +309,14 @@ const Index = () => {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
-      <footer className="border-t border-border py-8 bg-card">
+      <footer className="border-t border-border py-8 bg-card" role="contentinfo">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
+              <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
               <span className="font-bold">TradeMaster</span>
             </div>
             <p className="mono text-sm text-muted-foreground">

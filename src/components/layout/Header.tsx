@@ -35,19 +35,23 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   };
 
   return (
-    <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50">
+    <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50" role="banner">
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
         {/* Logo - Smaller on mobile */}
-        <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 hover-scale touch-manipulation">
+        <Link 
+          to={user ? '/dashboard' : '/'} 
+          className="flex items-center gap-2 hover-scale touch-manipulation"
+          aria-label="TradeMaster - Go to home"
+        >
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" aria-hidden="true" />
           </div>
           <span className="font-display text-lg sm:text-xl font-bold hidden xs:inline">TradeMaster</span>
         </Link>
 
         {/* Nav Links - Desktop only */}
         {!user && (
-          <nav className="hidden md:flex items-center gap-8 font-ui">
+          <nav className="hidden md:flex items-center gap-8 font-ui" aria-label="Main navigation">
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               How It Works
             </a>
@@ -76,8 +80,9 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
             size="icon" 
             className="rounded-full h-9 w-9 sm:h-10 sm:w-10 touch-manipulation"
             onClick={() => setIsDark(!isDark)}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDark ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" />}
+            {isDark ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />}
           </Button>
 
           {user && profile ? (
