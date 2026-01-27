@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Question } from '@/data/courseData';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { AnimatedProgress } from '@/components/ui/animated-progress';
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle, Clock, XCircle, Trophy, RotateCcw } from 'lucide-react';
-import { Confetti } from '@/components/ui/confetti';
+import { useConfetti } from '@/hooks/useConfetti';
+import { useCountUp } from '@/hooks/useCountUp';
+import { cn } from '@/lib/utils';
 
 interface QuizInterfaceProps {
   questions: Question[];
@@ -27,7 +29,9 @@ export const QuizInterface = ({
   returnPath
 }: QuizInterfaceProps) => {
   const navigate = useNavigate();
-  const [showConfetti, setShowConfetti] = useState(false);
+  const { fire } = useConfetti();
+  const hasFireRef = useRef(false);
+  const [selectedAnimation, setSelectedAnimation] = useState<number | null>(null);
 
   const {
     currentQuestion,
@@ -58,15 +62,22 @@ export const QuizInterface = ({
     lessonId,
     timePerQuestion: quizType === 'lesson' ? 45 : 60,
     passingScore: 80,
-    cooldownMinutes: quizType === 'level' ? 0 : 2 // No cooldown for level quizzes
+    cooldownMinutes: quizType === 'level' ? 0 : 2
+  });
+
+  const { count: scoreCount } = useCountUp({
+    end: isSubmitted ? score : 0,
+    duration: 1000,
+    delay: 300
   });
 
   useEffect(() => {
-    if (isSubmitted && passed && quizType === 'level') {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000);
+    if (isSubmitted && passed && !hasFireRef.current) {
+      hasFireRef.current = true;
+      const intensity = quizType === 'level' ? 'high' : quizType === 'module' ? 'high' : 'medium';
+      fire(intensity);
     }
-  }, [isSubmitted, passed, quizType]);
+  }, [isSubmitted, passed, quizType, fire]);
 
   // Warn about leaving
   useEffect(() => {
@@ -109,12 +120,18 @@ export const QuizInterface = ({
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        {showConfetti && <Confetti />}
-        
-        <div className={`tactical-card max-w-lg w-full p-8 text-center ${passed ? 'border-success' : 'border-destructive'}`}>
+        <div className={cn(
+          "tactical-card max-w-lg w-full p-8 text-center animate-scale-in",
+          passed ? "border-success" : "border-destructive"
+        )}>
           {passed ? (
             <>
-              <Trophy className="h-16 w-16 mx-auto mb-6 text-warning" />
+              <div className="relative mx-auto w-20 h-20 mb-6">
+                <div className="absolute inset-0 bg-success/20 rounded-full animate-pulse" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Trophy className="h-12 w-12 text-warning animate-bounce-in" />
+                </div>
+              </div>
               <h2 className="text-2xl font-bold mb-2 text-success">Mission Complete!</h2>
               <p className="text-muted-foreground mb-6">
                 Outstanding performance, trader.
@@ -122,7 +139,7 @@ export const QuizInterface = ({
             </>
           ) : (
             <>
-              <XCircle className="h-16 w-16 mx-auto mb-6 text-destructive" />
+              <XCircle className="h-16 w-16 mx-auto mb-6 text-destructive animate-scale-in" />
               <h2 className="text-2xl font-bold mb-2 text-destructive">Mission Failed</h2>
               <p className="text-muted-foreground mb-6">
                 Review the material and try again.
@@ -131,12 +148,15 @@ export const QuizInterface = ({
           )}
 
           <div className="flex justify-center gap-8 mb-8">
-            <div>
-              <div className="text-4xl font-bold">{score}%</div>
+            <div className={cn(
+              "p-4 rounded-lg",
+              passed ? "bg-success/10" : "bg-muted"
+            )}>
+              <div className="text-4xl font-bold font-mono">{scoreCount}%</div>
               <div className="caption text-muted-foreground">SCORE</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold">{answers.filter((a, i) => a === shuffledQuestions[i].correctIndex).length}/{totalQuestions}</div>
+            <div className="p-4 rounded-lg bg-muted">
+              <div className="text-4xl font-bold font-mono">{answers.filter((a, i) => a === shuffledQuestions[i].correctIndex).length}/{totalQuestions}</div>
               <div className="caption text-muted-foreground">CORRECT</div>
             </div>
           </div>
@@ -219,7 +239,7 @@ export const QuizInterface = ({
           </div>
           
           {/* Progress bar */}
-          <Progress value={progress} className="mt-3 h-2" />
+          <AnimatedProgress value={progress} className="mt-3 h-2" />
         </div>
       </header>
 
@@ -244,19 +264,26 @@ export const QuizInterface = ({
             {currentQuestion.options.map((option, idx) => (
               <button
                 key={idx}
-                onClick={() => selectAnswer(idx)}
-                className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                onClick={() => {
+                  setSelectedAnimation(idx);
+                  selectAnswer(idx);
+                  setTimeout(() => setSelectedAnimation(null), 200);
+                }}
+                className={cn(
+                  "w-full p-4 text-left rounded-lg border-2 transition-all duration-200",
                   currentAnswer === idx
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border hover:border-primary/50 hover:bg-card/80'
-                }`}
+                    ? "border-primary bg-primary/10 scale-[1.02]"
+                    : "border-border hover:border-primary/50 hover:bg-card/80 hover:scale-[1.01]",
+                  selectedAnimation === idx && "animate-scale-in"
+                )}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0 ${
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0 transition-all duration-200",
                     currentAnswer === idx
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
+                      ? "bg-primary text-primary-foreground scale-110"
+                      : "bg-muted text-muted-foreground"
+                  )}>
                     {String.fromCharCode(65 + idx)}
                   </div>
                   <span className="flex-1">{option}</span>
@@ -272,7 +299,7 @@ export const QuizInterface = ({
             variant="outline"
             onClick={previousQuestion}
             disabled={currentQuestionIndex === 0}
-            className="gap-2"
+            className="gap-2 active:scale-95"
           >
             <ArrowLeft className="h-4 w-4" />
             Previous
@@ -282,11 +309,12 @@ export const QuizInterface = ({
             {Array.from({ length: totalQuestions }).map((_, idx) => (
               <div
                 key={idx}
-                className={`w-3 h-3 rounded-full ${
-                  answers[idx] !== null ? 'bg-success' :
-                  idx === currentQuestionIndex ? 'bg-primary' :
-                  'bg-muted'
-                }`}
+                className={cn(
+                  "w-3 h-3 rounded-full transition-all duration-300",
+                  answers[idx] !== null ? "bg-success scale-110" :
+                  idx === currentQuestionIndex ? "bg-primary animate-pulse" :
+                  "bg-muted"
+                )}
               />
             ))}
           </div>
@@ -295,7 +323,7 @@ export const QuizInterface = ({
             <Button
               onClick={submitQuiz}
               disabled={!canSubmit}
-              className="gap-2"
+              className="gap-2 active:scale-95"
             >
               Submit Quiz
               <CheckCircle className="h-4 w-4" />
@@ -303,7 +331,7 @@ export const QuizInterface = ({
           ) : (
             <Button
               onClick={nextQuestion}
-              className="gap-2"
+              className="gap-2 active:scale-95"
             >
               Next
               <ArrowRight className="h-4 w-4" />

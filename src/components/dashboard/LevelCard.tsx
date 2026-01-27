@@ -103,19 +103,19 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
     <div
       onClick={handleClick}
       className={cn(
-        "relative rounded-xl p-6 transition-all duration-300 cursor-pointer",
+        "group relative rounded-xl p-6 transition-all duration-300 cursor-pointer",
         "bg-gradient-to-br border",
         colors.bg,
         isUnlocked ? colors.border : "border-muted/30",
-        isUnlocked && `hover:scale-[1.02] hover:shadow-xl ${colors.glow}`,
+        isUnlocked && `hover:scale-[1.03] hover:shadow-xl hover:-translate-y-1 ${colors.glow}`,
         !isUnlocked && "opacity-60 cursor-not-allowed grayscale",
-        isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-primary/50"
+        isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-primary/50 animate-pulse-glow"
       )}
     >
       {/* Completed Badge */}
       {isComplete && (
-        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
-          <CheckCircle className="h-5 w-5 text-white" />
+        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-success flex items-center justify-center shadow-lg animate-bounce-in">
+          <CheckCircle className="h-5 w-5 text-success-foreground" />
         </div>
       )}
 
@@ -130,7 +130,7 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
 
       <div className="flex flex-col items-center text-center">
         {/* Progress Ring */}
-        <div className="relative mb-4">
+        <div className="relative mb-4 transition-transform duration-300 group-hover:scale-110">
           {isUnlocked ? (
             <ProgressRing 
               progress={progress} 
@@ -147,7 +147,10 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
           {/* Icon in center of ring */}
           {isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", colors.icon)}>
+              <div className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12",
+                colors.icon
+              )}>
                 <LevelIcon className="h-5 w-5" />
               </div>
             </div>

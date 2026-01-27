@@ -4,8 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
 import { supabase } from '@/integrations/supabase/client';
 import { getLessonById, getModuleById, getLevelById, courseData } from '@/data/courseData';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { RippleButton } from '@/components/ui/ripple-button';
+import { AnimatedProgress } from '@/components/ui/animated-progress';
+import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { ArrowRight, BookOpen, Clock, Flame, Sparkles, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -66,11 +67,7 @@ export const ContinueLearning = () => {
   }, [user, isLessonCompleted]);
 
   if (loading) {
-    return (
-      <div className="rounded-2xl p-8 animate-pulse bg-gradient-to-br from-emerald-50/10 to-blue-50/10">
-        <div className="h-32 bg-muted/20 rounded-xl"></div>
-      </div>
-    );
+    return <CardSkeleton variant="hero" className="bg-gradient-to-br from-emerald-50/10 to-blue-50/10" />;
   }
 
   if (!lastLesson) {
@@ -95,14 +92,14 @@ export const ContinueLearning = () => {
             Begin your journey to becoming a certified options trader. Start with the fundamentals and work your way up.
           </p>
 
-          <Button 
+          <RippleButton 
             size="lg" 
-            className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/25"
+            className="gap-2 bg-success hover:bg-success/90 text-success-foreground shadow-lg"
             onClick={() => navigate('/level/beginner')}
           >
             <Play className="h-5 w-5" />
             Start Learning
-          </Button>
+          </RippleButton>
         </div>
 
         {/* Decorative elements */}
@@ -145,10 +142,10 @@ export const ContinueLearning = () => {
     >
       {/* Streak Badge - Top Right */}
       {streak && streak.current_streak > 0 && (
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/30">
-          <Flame className="h-4 w-4 text-orange-500 animate-pulse" />
-          <span className="font-mono text-sm font-bold text-orange-500">{streak.current_streak}</span>
-          <span className="text-xs text-orange-500/80 hidden sm:inline">day streak</span>
+        <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/20 border border-warning/30 group-hover:scale-110 transition-transform duration-300">
+          <Flame className="h-4 w-4 text-warning animate-streak-pulse" />
+          <span className="font-mono text-sm font-bold text-warning">{streak.current_streak}</span>
+          <span className="text-xs text-warning/80 hidden sm:inline">day streak</span>
         </div>
       )}
 
@@ -180,9 +177,9 @@ export const ContinueLearning = () => {
             <span className="font-ui text-sm text-muted-foreground">
               {module.title} • Lesson {lessonIndex + 1} of {totalLessons}
             </span>
-            <span className="font-mono text-sm font-medium text-emerald-600">{moduleProgress}%</span>
+            <span className="font-mono text-sm font-medium text-success">{moduleProgress}%</span>
           </div>
-          <Progress value={moduleProgress} className="h-2 bg-emerald-500/20" />
+          <AnimatedProgress value={moduleProgress} className="h-2" variant="success" />
         </div>
 
         {/* Meta Info & Button */}
@@ -198,12 +195,12 @@ export const ContinueLearning = () => {
             </span>
           </div>
 
-          <Button 
+          <RippleButton 
             size="lg" 
             className={cn(
               "gap-2 sm:ml-auto",
-              "bg-emerald-600 hover:bg-emerald-700 text-white",
-              "shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40",
+              "bg-success hover:bg-success/90 text-success-foreground",
+              "shadow-lg",
               "transition-all duration-300 group-hover:gap-3"
             )}
             onClick={(e) => {
@@ -214,7 +211,7 @@ export const ContinueLearning = () => {
             <Play className="h-5 w-5" />
             Continue Learning
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Button>
+          </RippleButton>
         </div>
       </div>
 

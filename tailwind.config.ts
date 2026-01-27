@@ -123,6 +123,41 @@ export default {
           "0%": { transform: "translateY(0) rotateZ(0)", opacity: "1" },
           "100%": { transform: "translateY(100vh) rotateZ(720deg)", opacity: "0" },
         },
+        ripple: {
+          "0%": { transform: "scale(0)", opacity: "0.5" },
+          "100%": { transform: "scale(1)", opacity: "0" },
+        },
+        "checkbox-flash": {
+          "0%, 100%": { backgroundColor: "transparent" },
+          "50%": { backgroundColor: "hsl(var(--success) / 0.3)" },
+        },
+        "checkbox-check": {
+          "0%": { transform: "translate(-50%, -50%) scale(0)" },
+          "50%": { transform: "translate(-50%, -50%) scale(1.2)" },
+          "100%": { transform: "translate(-50%, -50%) scale(1)" },
+        },
+        "bounce-in": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "50%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "milestone-glow": {
+          "0%, 100%": { boxShadow: "0 0 5px hsl(var(--success))" },
+          "50%": { boxShadow: "0 0 20px hsl(var(--success))" },
+        },
+        "streak-pulse": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.2)" },
+        },
+        "unlock-glow": {
+          "0%": { boxShadow: "0 0 0 0 hsl(var(--success) / 0.7)" },
+          "70%": { boxShadow: "0 0 0 15px hsl(var(--success) / 0)" },
+          "100%": { boxShadow: "0 0 0 0 hsl(var(--success) / 0)" },
+        },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -133,6 +168,14 @@ export default {
         "fade-in": "fade-in 0.3s ease-out forwards",
         "scale-in": "scale-in 0.2s ease-out forwards",
         confetti: "confetti 3s ease-out forwards",
+        ripple: "ripple 0.6s ease-out forwards",
+        "checkbox-flash": "checkbox-flash 0.2s ease-out",
+        "checkbox-check": "checkbox-check 0.3s ease-out forwards",
+        "bounce-in": "bounce-in 0.5s ease-out forwards",
+        "milestone-glow": "milestone-glow 1s ease-in-out",
+        "streak-pulse": "streak-pulse 0.5s ease-in-out",
+        "unlock-glow": "unlock-glow 1s ease-out",
+        "spin-slow": "spin-slow 3s linear infinite",
       },
     },
   },

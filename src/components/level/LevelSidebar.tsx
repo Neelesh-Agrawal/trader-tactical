@@ -170,8 +170,9 @@ export const LevelSidebar = ({
                         disabled={status === 'locked'}
                         className={cn(
                           "w-full flex items-center gap-2 py-2 px-2 rounded-md text-left transition-all duration-200 group",
-                          status === 'locked' ? "opacity-40 cursor-not-allowed" : "hover:bg-sidebar-accent/70 cursor-pointer",
-                          isCurrentLesson && "bg-primary/10 border-l-2 border-primary -ml-0.5 pl-[7px]"
+                          status === 'locked' ? "opacity-40 cursor-not-allowed" : "hover:bg-sidebar-accent/70 hover:translate-x-1 cursor-pointer",
+                          isCurrentLesson && "bg-primary/10 border-l-2 border-primary -ml-0.5 pl-[7px]",
+                          status === 'active' && !isCurrentLesson && "animate-unlock-glow"
                         )}
                       >
                         <div className={cn(
@@ -181,13 +182,18 @@ export const LevelSidebar = ({
                           status === 'active' ? "bg-primary/20 text-primary ring-2 ring-primary/30" :
                           "bg-muted text-muted-foreground"
                         )}>
-                          {status === 'complete' ? <CheckCircle className="h-3 w-3" /> :
-                           status === 'locked' ? <Lock className="h-2.5 w-2.5" /> :
-                           isCurrentLesson ? <ArrowRight className="h-3 w-3" /> :
-                           <span>{lessonIndex + 1}</span>}
+                          {status === 'complete' ? (
+                            <CheckCircle className="h-3 w-3" />
+                          ) : status === 'locked' ? (
+                            <Lock className="h-2.5 w-2.5 transition-opacity duration-300" />
+                          ) : isCurrentLesson ? (
+                            <ArrowRight className="h-3 w-3" />
+                          ) : (
+                            <span>{lessonIndex + 1}</span>
+                          )}
                         </div>
                         <span className={cn(
-                          "text-sm truncate flex-1 font-ui transition-colors",
+                          "text-sm truncate flex-1 font-ui transition-colors duration-200",
                           isCurrentLesson ? "text-primary font-medium" : "text-sidebar-foreground/80 group-hover:text-sidebar-foreground"
                         )}>
                           {lesson.title}

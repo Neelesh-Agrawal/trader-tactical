@@ -371,6 +371,12 @@
     @apply transition-transform duration-200 hover:scale-105;
   }
 
+  /* Interactive card hover */
+  .interactive-card {
+    @apply transition-all duration-200 cursor-pointer;
+    @apply hover:scale-[1.02] hover:shadow-lg;
+  }
+
   /* Card hover glow */
   .hover-glow {
     @apply transition-all duration-300;
@@ -378,6 +384,13 @@
   
   .hover-glow:hover {
     box-shadow: 0 0 30px -5px hsla(217, 91%, 60%, 0.2);
+  }
+
+  /* Interactive button lift */
+  .button-lift {
+    @apply transition-all duration-200;
+    @apply hover:scale-[1.05] hover:-translate-y-0.5;
+    @apply active:scale-95 active:translate-y-0;
   }
 
   /* Page transitions */
@@ -391,4 +404,44 @@
   .stagger-3 { animation-delay: 0.3s; }
   .stagger-4 { animation-delay: 0.4s; }
   .stagger-5 { animation-delay: 0.5s; }
+
+  /* Animation delay utility */
+  .animation-delay-150 { animation-delay: 150ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+
+  /* Shimmer effect for loading states */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsla(var(--foreground) / 0.05),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
