@@ -6,7 +6,7 @@ import {
   TrendingUp, ArrowRight, Play, Target, Users, Shield, Zap, 
   CheckCircle, Star, Crown, Award, ChevronDown, Lock 
 } from 'lucide-react';
-
+import heroImage from '@/assets/hero-trading.jpg';
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -139,42 +139,22 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Trading Card Visual */}
+            {/* Hero Image */}
             <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <div className="tactical-card p-6 rounded-2xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-success" />
-                    <span className="font-medium">BTC/USD</span>
-                  </div>
-                  <span className="text-success font-bold">+12.5%</span>
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+                <img 
+                  src={heroImage} 
+                  alt="Professional trading dashboard with multiple monitors showing charts and financial data"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              {/* Floating stats overlay */}
+              <div className="absolute -bottom-4 -left-4 tactical-card p-4 rounded-xl shadow-lg">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-success" />
+                  <span className="font-bold text-success">+12.5%</span>
                 </div>
-                
-                {/* Chart bars */}
-                <div className="flex items-end gap-2 h-40 mb-4">
-                  {[40, 55, 45, 70, 60, 80, 75, 90, 85, 95, 88, 92].map((height, i) => (
-                    <div 
-                      key={i}
-                      className="flex-1 bg-success rounded-t-sm transition-all hover:bg-success/80"
-                      style={{ height: `${height}%` }}
-                    />
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="caption text-muted-foreground">24h High</p>
-                    <p className="font-bold">$68,245</p>
-                  </div>
-                  <div>
-                    <p className="caption text-muted-foreground">24h Low</p>
-                    <p className="font-bold">$65,102</p>
-                  </div>
-                  <div>
-                    <p className="caption text-muted-foreground">Volume</p>
-                    <p className="font-bold">$2.4B</p>
-                  </div>
-                </div>
+                <p className="text-xs text-muted-foreground mt-1">Today's Gain</p>
               </div>
             </div>
           </div>

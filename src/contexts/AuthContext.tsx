@@ -174,21 +174,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Normalize phone number (remove spaces, dashes)
       const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
       
-      // Find user by phone number
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('email, pin_hash, user_id')
-        .eq('phone_number', normalizedPhone)
-        .maybeSingle();
+      // Use secure database function to get login credentials
+      const { data: credentials, error: lookupError } = await supabase
+        .rpc('get_login_credentials', { p_phone_number: normalizedPhone });
 
-      if (profileError) {
-        console.error('Profile lookup error:', profileError);
+      if (lookupError) {
+        console.error('Credentials lookup error:', lookupError);
         throw new Error('Unable to verify credentials');
       }
       
-      if (!profileData) {
+      if (!credentials || credentials.length === 0) {
         throw new Error('Phone number not found. Please check and try again.');
       }
+
+      const profileData = credentials[0];
 
       // Verify PIN
       const hashedPin = await hashPin(pin);

@@ -343,6 +343,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_login_credentials: {
+        Args: { p_phone_number: string }
+        Returns: {
+          email: string
+          pin_hash: string
+          user_id: string
+        }[]
+      }
       update_daily_streak: { Args: { p_user_id: string }; Returns: number }
     }
     Enums: {

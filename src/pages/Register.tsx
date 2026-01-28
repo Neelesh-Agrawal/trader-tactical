@@ -9,6 +9,7 @@ import { PinInput } from '@/components/ui/pin-input';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, Check, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import authImage from '@/assets/auth-trading.jpg';
 
 type Step = 'details' | 'pin';
 
@@ -138,17 +139,33 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <main id="main-content" className="w-full max-w-md">
-        <Card className="tactical-card">
-          <CardHeader className="text-center">
-            <div className="caption text-primary mb-2">RECRUITMENT</div>
-            <CardTitle className="text-2xl">
-              {step === 'details' ? 'Begin Your Journey' : 'Secure Your Account'}
-            </CardTitle>
-            <CardDescription>
-              {step === 'details' ? 'Create your trading profile' : 'Create a 4-digit PIN for quick login'}
-            </CardDescription>
+    <div className="min-h-screen bg-background flex">
+      {/* Left side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <img 
+          src={authImage} 
+          alt="Trading chart visualization"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
+        <div className="relative z-10 p-12 flex flex-col justify-end">
+          <h2 className="text-3xl font-bold mb-2">Start Your Trading Journey</h2>
+          <p className="text-muted-foreground">Join thousands of traders mastering the markets</p>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <main id="main-content" className="w-full max-w-md">
+          <Card className="tactical-card">
+            <CardHeader className="text-center">
+              <div className="caption text-primary mb-2">RECRUITMENT</div>
+              <CardTitle className="text-2xl">
+                {step === 'details' ? 'Begin Your Journey' : 'Secure Your Account'}
+              </CardTitle>
+              <CardDescription>
+                {step === 'details' ? 'Create your trading profile' : 'Create a 4-digit PIN for quick login'}
+              </CardDescription>
             
             {/* Step Indicator */}
             <div className="flex items-center justify-center gap-2 mt-4">
@@ -344,7 +361,8 @@ const Register = () => {
             </p>
           </CardContent>
         </Card>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
