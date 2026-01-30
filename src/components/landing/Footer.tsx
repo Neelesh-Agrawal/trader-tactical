@@ -1,5 +1,6 @@
 import { TrendingUp, Shield, MapPin, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AnimatedSection } from './AnimatedSection';
 
 const quickLinks = [
   { label: 'Levels', href: '#levels' },
@@ -31,24 +32,26 @@ export const Footer = () => {
   return (
     <footer className="border-t border-border bg-card" role="contentinfo">
       {/* Trust Signals */}
-      <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12">
-            {trustSignals.map((signal) => (
-              <div key={signal.text} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <signal.icon className="h-4 w-4 text-primary" />
-                <span>{signal.text}</span>
-              </div>
-            ))}
+      <AnimatedSection direction="up" delay={0}>
+        <div className="border-b border-border">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex flex-wrap justify-center gap-6 md:gap-12">
+              {trustSignals.map((signal) => (
+                <div key={signal.text} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <signal.icon className="h-4 w-4 text-primary" />
+                  <span>{signal.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </AnimatedSection>
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="md:col-span-2">
+          <AnimatedSection direction="up" delay={100} className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-primary" />
@@ -59,10 +62,10 @@ export const Footer = () => {
               A structured options trading education platform designed to help you think like a trader, 
               not guess like one.
             </p>
-          </div>
+          </AnimatedSection>
 
           {/* Quick Links */}
-          <div>
+          <AnimatedSection direction="up" delay={150}>
             <h4 className="font-ui font-semibold mb-4 text-foreground">Quick Links</h4>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
@@ -76,10 +79,10 @@ export const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </AnimatedSection>
 
           {/* Legal */}
-          <div>
+          <AnimatedSection direction="up" delay={200}>
             <h4 className="font-ui font-semibold mb-4 text-foreground">Legal</h4>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
@@ -93,15 +96,17 @@ export const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </AnimatedSection>
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-border text-center">
-          <p className="mono text-sm text-muted-foreground">
-            © {new Date().getFullYear()} TradeMaster — Options Education Platform
-          </p>
-        </div>
+        <AnimatedSection direction="up" delay={250}>
+          <div className="mt-8 pt-8 border-t border-border text-center">
+            <p className="mono text-sm text-muted-foreground">
+              © {new Date().getFullYear()} TradeMaster — Options Education Platform
+            </p>
+          </div>
+        </AnimatedSection>
       </div>
     </footer>
   );
