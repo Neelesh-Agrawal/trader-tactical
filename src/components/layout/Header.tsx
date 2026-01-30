@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -19,7 +20,7 @@ interface HeaderProps {
 export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => {
   const { user, profile, streak, signOut } = useAuth();
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getInitials = (name: string) => {
@@ -97,7 +98,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
             variant="ghost" 
             size="icon" 
             className="rounded-full h-9 w-9 sm:h-10 sm:w-10 touch-manipulation"
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDark ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />}

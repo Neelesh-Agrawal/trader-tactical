@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, TrendingUp, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatedSection } from './AnimatedSection';
 import heroImage from '@/assets/hero-trading.jpg';
 
 export const HeroSection = () => {
@@ -14,61 +15,63 @@ export const HeroSection = () => {
       <div className="container mx-auto px-4 relative">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
-          <div className="animate-fade-in max-w-xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Learn Options Trading Step by Step
-            </div>
-            
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
-              Options Trading{' '}
-              <span className="text-gradient-primary">Made Clear</span>
-            </h1>
-            
-            <p className="font-body text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Build conceptual clarity first. No guessing, no shortcuts—just structured learning 
-              that helps you think like a trader.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Button 
-                size="lg" 
-                className="text-base md:text-lg px-6 md:px-8 gap-2 h-12 md:h-14" 
-                onClick={() => navigate('/register')}
-              >
-                Start with the Basics
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-base md:text-lg px-6 md:px-8 gap-2 h-12 md:h-14"
-                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <Play className="h-5 w-5" />
-                How This Course Works
-              </Button>
-            </div>
+          <AnimatedSection direction="up" delay={0}>
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                Learn Options Trading Step by Step
+              </div>
+              
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
+                Options Trading{' '}
+                <span className="text-gradient-primary">Made Clear</span>
+              </h1>
+              
+              <p className="font-body text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
+                Build conceptual clarity first. No guessing, no shortcuts—just structured learning 
+                that helps you think like a trader.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                <Button 
+                  size="lg" 
+                  className="text-base md:text-lg px-6 md:px-8 gap-2 h-12 md:h-14" 
+                  onClick={() => navigate('/register')}
+                >
+                  Start with the Basics
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="text-base md:text-lg px-6 md:px-8 gap-2 h-12 md:h-14"
+                  onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <Play className="h-5 w-5" />
+                  How This Course Works
+                </Button>
+              </div>
 
-            {/* Progress indicators */}
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-primary" />
+              {/* Progress indicators */}
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                  </div>
+                  <span>3 Structured Levels</span>
                 </div>
-                <span>3 Structured Levels</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center">
-                  <BarChart3 className="h-4 w-4 text-success" />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center">
+                    <BarChart3 className="h-4 w-4 text-success" />
+                  </div>
+                  <span>Learn by Doing</span>
                 </div>
-                <span>Learn by Doing</span>
               </div>
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Hero Image */}
-          <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <AnimatedSection direction="right" delay={200} className="relative hidden lg:block">
             <div className="rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-card">
               <img 
                 src={heroImage} 
@@ -88,7 +91,7 @@ export const HeroSection = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>
