@@ -34,23 +34,23 @@ export const WhyChooseUsSection = () => {
           {/* Left Content */}
           <AnimatedSection direction="left" delay={0}>
             <div>
-              <span className="text-sm font-medium text-success uppercase tracking-wider mb-3 block">
+              <span className="font-ui text-sm font-medium text-success uppercase tracking-wider mb-3 block">
                 WHY US
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground leading-tight">
                 Because trading deserves{' '}
                 <span className="text-success">clarity, not confusion.</span>
               </h2>
-              <p className="font-body text-lg text-muted-foreground leading-relaxed mb-8">
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 We believe education should build confidence, not overwhelm. Every lesson is designed to give you understanding you can trust.
               </p>
 
               {/* Stats */}
               <div className="flex items-center gap-8">
-                {stats.map((stat, index) => (
+              {stats.map((stat, index) => (
                   <div key={stat.label} className="text-center">
-                    <div className="font-display text-3xl md:text-4xl font-bold text-foreground">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-foreground">{stat.value}</div>
+                    <div className="font-ui text-sm text-muted-foreground">{stat.label}</div>
                     {index < stats.length - 1 && (
                       <div className="hidden" />
                     )}
@@ -72,7 +72,7 @@ export const WhyChooseUsSection = () => {
                     <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
                       <CheckCircle className="h-4 w-4 text-success" />
                     </div>
-                    <h3 className="font-ui font-semibold text-foreground">{reason.title}</h3>
+                    <h3 className="font-semibold text-foreground">{reason.title}</h3>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed pl-11">
                     {reason.description}

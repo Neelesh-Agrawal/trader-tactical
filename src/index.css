@@ -183,39 +183,43 @@
   }
 
   /* Premium Typography System
-     H1 (Lesson titles): Libre Baskerville, display font
-     H2/H3 (Section headings): Work Sans, clean UI font  
-     Body: Lora, optimized for extended reading
-     UI elements: Work Sans
+     All Headers: Libre Baskerville (display font)
+     Body/Paragraphs: Lora (reading font)
+     UI elements/labels: Work Sans
      Data: JetBrains Mono
   */
   
-  /* Display Headers - Libre Baskerville for premium titles */
-  h1 {
+  /* All Headers - Libre Baskerville for premium consistent look */
+  h1, h2, h3, h4, h5, h6 {
     font-family: 'Libre Baskerville', Georgia, serif;
+  }
+
+  h1 {
     @apply text-4xl font-bold tracking-tight;
     line-height: 1.2;
     color: hsl(var(--foreground));
   }
 
-  /* Section Headers - Work Sans for clean hierarchy */
   h2 {
-    font-family: 'Work Sans', system-ui, sans-serif;
     @apply text-2xl font-semibold tracking-tight;
     line-height: 1.3;
-    color: hsl(var(--foreground) / 0.95);
+    color: hsl(var(--foreground));
   }
 
   h3 {
-    font-family: 'Work Sans', system-ui, sans-serif;
     @apply text-xl font-semibold;
     line-height: 1.35;
-    color: hsl(var(--foreground) / 0.9);
+    color: hsl(var(--foreground));
   }
 
   h4, h5, h6 {
-    font-family: 'Work Sans', system-ui, sans-serif;
     @apply font-medium;
+  }
+
+  /* Default paragraph styling */
+  p {
+    font-family: 'Lora', Georgia, serif;
+    line-height: 1.7;
   }
 
   /* Subheaders - Work Sans UI font */

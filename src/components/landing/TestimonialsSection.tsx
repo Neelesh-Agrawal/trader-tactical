@@ -20,7 +20,7 @@ export const TestimonialsSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               What Learners <span className="text-success">Are Saying</span>
             </h2>
           </div>
@@ -33,18 +33,18 @@ export const TestimonialsSection = () => {
                 <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center mb-5">
                   <Quote className="h-5 w-5 text-success" />
                 </div>
-                <blockquote className="font-body text-lg text-foreground leading-relaxed mb-6 italic">
+                <blockquote className="text-lg text-foreground leading-relaxed mb-6 italic">
                   "{testimonial.quote}"
                 </blockquote>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <span className="font-semibold text-sm text-muted-foreground">
+                    <span className="font-ui font-semibold text-sm text-muted-foreground">
                       {testimonial.author.split(' ').map(n => n[0]).join('')}
                     </span>
                   </div>
                   <div>
-                    <p className="font-ui font-semibold text-foreground">{testimonial.author}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="font-semibold text-foreground">{testimonial.author}</p>
+                    <p className="font-ui text-sm text-muted-foreground">{testimonial.role}</p>
                   </div>
                 </div>
               </div>

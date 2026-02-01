@@ -19,12 +19,12 @@ export const HeroSection = () => {
                 Designed for Indian Markets
               </div>
               
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight text-foreground">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight text-foreground">
                 Learn Options Trading{' '}
                 <span className="text-success">Step by Step</span>
               </h1>
               
-              <p className="font-body text-lg text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                 No shortcuts. No guesswork. Build real understanding with structured learning 
                 that takes you from basics to professional-level trading.
               </p>

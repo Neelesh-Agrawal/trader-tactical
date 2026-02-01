@@ -30,13 +30,13 @@ export const AboutSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <span className="text-sm font-medium text-success uppercase tracking-wider mb-3 block">
+            <span className="font-ui text-sm font-medium text-success uppercase tracking-wider mb-3 block">
               THE APPROACH
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               What This Course Is Really About
             </h2>
-            <p className="font-body text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               No fluff. No shortcuts. Just clear, structured education that builds real understanding from the ground up.
             </p>
           </div>
@@ -49,8 +49,8 @@ export const AboutSection = () => {
                 <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-5">
                   <feature.icon className="h-6 w-6 text-success" />
                 </div>
-                <h3 className="font-ui text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             </AnimatedSection>
           ))}

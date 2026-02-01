@@ -14,10 +14,10 @@ export const CTASection = () => {
       <div className="container mx-auto px-4 relative">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Start Learning Options the <span className="text-success">Right Way</span>
             </h2>
-            <p className="font-body text-lg text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               Build clarity first. Confidence next. Capital last.
             </p>
             
