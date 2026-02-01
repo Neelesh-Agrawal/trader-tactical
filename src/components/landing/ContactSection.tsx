@@ -7,10 +7,10 @@ export const ContactSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-xl mx-auto text-center">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Contact <span className="text-success">Us</span>
             </h2>
-            <p className="font-body text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-8">
               Have questions? We're happy to help.
             </p>
             
@@ -20,7 +20,7 @@ export const ContactSection = () => {
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <Mail className="h-5 w-5 text-success" />
-                <span className="font-ui font-medium text-foreground">support@trademaster.com</span>
+                <span className="font-medium text-foreground">support@trademaster.com</span>
               </a>
               <a 
                 href="https://linkedin.com/company/trademaster"
@@ -29,7 +29,7 @@ export const ContactSection = () => {
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <Linkedin className="h-5 w-5 text-success" />
-                <span className="font-ui font-medium text-foreground">LinkedIn</span>
+                <span className="font-medium text-foreground">LinkedIn</span>
               </a>
             </div>
           </div>

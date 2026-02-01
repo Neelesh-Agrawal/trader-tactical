@@ -44,10 +44,10 @@ export const LevelsSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Your <span className="text-success">Learning Path</span>
             </h2>
-            <p className="font-body text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               Progress through three structured levels, mastering concepts before moving forward.
             </p>
           </div>
@@ -89,12 +89,12 @@ export const LevelsSection = () => {
                   </div>
 
                   {/* Title */}
-                  <h3 className={`font-display text-2xl font-bold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                  <h3 className={`text-2xl font-bold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
                     {level.title}
                   </h3>
 
                   {/* Description */}
-                  <p className={`font-body text-sm leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
+                  <p className={`text-sm leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
                     {level.description}
                   </p>
 

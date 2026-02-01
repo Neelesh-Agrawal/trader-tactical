@@ -34,10 +34,10 @@ export const FAQSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Frequently Asked <span className="text-success">Questions</span>
             </h2>
-            <p className="font-body text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               Common questions from learners just like you.
             </p>
           </div>
@@ -52,7 +52,7 @@ export const FAQSection = () => {
                     <HelpCircle className="h-4 w-4 text-success" />
                   </div>
                   <div>
-                    <h3 className="font-ui font-medium text-foreground mb-2 text-sm md:text-base">
+                    <h3 className="font-medium text-foreground mb-2 text-sm md:text-base">
                       "{faq.question}"
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">

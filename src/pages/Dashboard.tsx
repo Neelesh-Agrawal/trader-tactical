@@ -71,7 +71,7 @@ const Dashboard = () => {
 
         {/* Level Cards Section */}
         <div className="mb-8 sm:mb-10">
-          <h2 className="font-ui text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Your Learning Path</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Your Learning Path</h2>
           {/* Single column on mobile, 3 columns on desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {courseData.map((level, index) => {
@@ -96,7 +96,7 @@ const Dashboard = () => {
 
         {/* Quick Stats Section - 2 columns on mobile, 3 on desktop */}
         <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <h2 className="font-ui text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Quick Stats</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Quick Stats</h2>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Lessons Completed */}
             <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-emerald-500/30 transition-colors touch-manipulation">

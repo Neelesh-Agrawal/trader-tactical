@@ -42,10 +42,10 @@ export const HowItWorksSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
               How <span className="text-success">It Works</span>
             </h2>
-            <p className="font-body text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               A clear, structured learning process designed to build real understanding.
             </p>
           </div>
@@ -54,7 +54,7 @@ export const HowItWorksSection = () => {
         {/* Each Lesson Includes */}
         <div className="max-w-4xl mx-auto mb-16">
           <AnimatedSection direction="up" delay={100}>
-            <h3 className="font-ui text-lg font-semibold text-center mb-8 text-foreground">
+            <h3 className="text-lg font-semibold text-center mb-8 text-foreground">
               Each Lesson Includes
             </h3>
           </AnimatedSection>
@@ -76,7 +76,7 @@ export const HowItWorksSection = () => {
         {/* Learning Flow */}
         <div className="max-w-4xl mx-auto">
           <AnimatedSection direction="up" delay={400}>
-            <h3 className="font-ui text-lg font-semibold text-center mb-8 text-foreground">
+            <h3 className="text-lg font-semibold text-center mb-8 text-foreground">
               Your Learning Journey
             </h3>
           </AnimatedSection>
@@ -95,7 +95,7 @@ export const HowItWorksSection = () => {
                       <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center mx-auto mb-3">
                         <item.icon className="h-5 w-5 text-success" />
                       </div>
-                      <h4 className="font-ui font-semibold mb-2 text-foreground">{item.title}</h4>
+                      <h4 className="font-semibold mb-2 text-foreground">{item.title}</h4>
                       <p className="text-sm text-muted-foreground">{item.description}</p>
                     </div>
                   </div>
