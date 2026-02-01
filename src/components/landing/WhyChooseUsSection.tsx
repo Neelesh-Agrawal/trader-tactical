@@ -1,56 +1,86 @@
-import { CheckCircle, Layers, Zap, Briefcase } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
 
 const reasons = [
   {
-    icon: CheckCircle,
     title: 'No Overcomplication',
-    description: 'Focus only on what truly drives option prices'
+    description: 'Focus only on what truly drives option prices. Cut through the noise.'
   },
   {
-    icon: Layers,
     title: 'Structured Progression',
-    description: 'Advance by mastering concepts, not rushing'
+    description: 'Advance by mastering concepts, not rushing through material.'
   },
   {
-    icon: Zap,
     title: 'Learn-by-Doing',
-    description: 'Practice that turns understanding into skill'
+    description: 'Practice that turns understanding into skill you can actually use.'
   },
   {
-    icon: Briefcase,
     title: 'Career Path',
-    description: 'Built for real trading readiness, not just certificates'
+    description: 'Built for real trading readiness, not just certificates.'
   }
+];
+
+const stats = [
+  { value: '12+', label: 'Modules' },
+  { value: '50+', label: 'Lessons' },
+  { value: '100%', label: 'Practical' }
 ];
 
 export const WhyChooseUsSection = () => {
   return (
-    <section className="py-16 md:py-24 bg-muted/30">
+    <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
-        <AnimatedSection direction="up" delay={0}>
-          <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
-              Why Learners <span className="text-primary">Choose Us</span>
-            </h2>
-            <p className="font-body text-lg text-muted-foreground leading-relaxed">
-              Because trading deserves clarity, not confusion.
-            </p>
-          </div>
-        </AnimatedSection>
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
+          {/* Left Content */}
+          <AnimatedSection direction="left" delay={0}>
+            <div>
+              <span className="text-sm font-medium text-success uppercase tracking-wider mb-3 block">
+                WHY US
+              </span>
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground leading-tight">
+                Because trading deserves{' '}
+                <span className="text-success">clarity, not confusion.</span>
+              </h2>
+              <p className="font-body text-lg text-muted-foreground leading-relaxed mb-8">
+                We believe education should build confidence, not overwhelm. Every lesson is designed to give you understanding you can trust.
+              </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-          {reasons.map((reason, index) => (
-            <AnimatedSection key={reason.title} direction="up" delay={100 + index * 75}>
-              <div className="group tactical-card p-6 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full">
-                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-success/20 transition-colors">
-                  <reason.icon className="h-6 w-6 text-success" />
-                </div>
-                <h3 className="font-ui font-semibold mb-2 text-foreground">{reason.title}</h3>
-                <p className="text-sm text-muted-foreground">{reason.description}</p>
+              {/* Stats */}
+              <div className="flex items-center gap-8">
+                {stats.map((stat, index) => (
+                  <div key={stat.label} className="text-center">
+                    <div className="font-display text-3xl md:text-4xl font-bold text-foreground">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    {index < stats.length - 1 && (
+                      <div className="hidden" />
+                    )}
+                  </div>
+                ))}
               </div>
-            </AnimatedSection>
-          ))}
+            </div>
+          </AnimatedSection>
+
+          {/* Right Cards */}
+          <AnimatedSection direction="right" delay={100}>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {reasons.map((reason, index) => (
+                <div 
+                  key={reason.title} 
+                  className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md"
+                >
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                    </div>
+                    <h3 className="font-ui font-semibold text-foreground">{reason.title}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed pl-11">
+                    {reason.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

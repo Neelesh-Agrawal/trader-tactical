@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Star, Crown, Award, Lock, ArrowRight } from 'lucide-react';
+import { CheckCircle, Lock, ArrowRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
 
@@ -9,8 +9,8 @@ const levels = [
     number: 1,
     title: 'Beginner',
     status: 'active',
-    icon: Star,
-    color: 'primary',
+    modules: 12,
+    duration: '4-6 weeks',
     description: 'Master the fundamentals of derivatives trading in the Indian market. Learn futures, options, terminology, pricing, risk management, and realistic profit expectations—before trading real money.',
     cta: 'Start Now'
   },
@@ -19,8 +19,8 @@ const levels = [
     number: 2,
     title: 'Intermediate',
     status: 'locked',
-    icon: Crown,
-    color: 'warning',
+    modules: 10,
+    duration: '6-8 weeks',
     description: 'Dive deeper into advanced strategies, Greeks analysis, volatility trading, and position management techniques used by professional traders.',
     cta: 'Working on it'
   },
@@ -29,8 +29,8 @@ const levels = [
     number: 3,
     title: 'Advanced',
     status: 'locked',
-    icon: Award,
-    color: 'success',
+    modules: 8,
+    duration: '8-10 weeks',
     description: 'Professional-level techniques including portfolio management, algorithmic strategies, and live market simulations to prepare you for real trading.',
     cta: 'Working on it'
   }
@@ -45,7 +45,7 @@ export const LevelsSection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
-              Your <span className="text-primary">Learning Path</span>
+              Your <span className="text-success">Learning Path</span>
             </h2>
             <p className="font-body text-lg text-muted-foreground leading-relaxed">
               Progress through three structured levels, mastering concepts before moving forward.
@@ -56,45 +56,64 @@ export const LevelsSection = () => {
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {levels.map((level, index) => {
             const isLocked = level.status === 'locked';
-            const colorClass = level.color === 'primary' ? 'text-primary' : level.color === 'warning' ? 'text-warning' : 'text-success';
-            const bgClass = level.color === 'primary' ? 'bg-primary/10' : level.color === 'warning' ? 'bg-warning/10' : 'bg-success/10';
+            const isActive = level.status === 'active';
             
             return (
               <AnimatedSection key={level.id} direction="up" delay={100 + index * 100}>
                 <div 
-                  className={`relative tactical-card p-6 md:p-8 rounded-2xl transition-all duration-300 h-full ${
-                    isLocked ? 'opacity-60' : 'hover:-translate-y-1 hover:shadow-lg'
-                  } ${level.status === 'active' ? 'ring-2 ring-primary/30' : ''}`}
+                  className={`relative bg-card border rounded-2xl p-6 transition-all duration-300 h-full ${
+                    isLocked ? 'opacity-70 border-border' : 'hover:-translate-y-1 hover:shadow-lg border-success/30'
+                  }`}
                 >
-                  {/* Level indicator */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className={`w-12 h-12 rounded-xl ${bgClass} flex items-center justify-center ${isLocked ? 'blur-[1px]' : ''}`}>
-                      <level.icon className={`h-6 w-6 ${colorClass}`} />
+                  {/* Sparkle icon for active */}
+                  {isActive && (
+                    <div className="absolute -top-3 -right-3 w-10 h-10 rounded-xl bg-success flex items-center justify-center rotate-12">
+                      <Sparkles className="h-5 w-5 text-success-foreground" />
                     </div>
-                    {isLocked && (
+                  )}
+
+                  {/* Status badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    {isActive ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 text-success text-xs font-medium border border-success/20">
+                        <CheckCircle className="h-3 w-3" />
+                        Available Now
+                      </div>
+                    ) : (
                       <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
                         <Lock className="h-3 w-3" />
-                        Locked
+                        Coming Soon
                       </div>
                     )}
-                    {level.status === 'active' && (
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                        Active
-                      </div>
-                    )}
+                    <span className="text-sm text-muted-foreground">Level {level.number}</span>
                   </div>
 
-                  <div className="caption text-muted-foreground mb-1">LEVEL {level.number}</div>
-                  <h3 className={`font-ui text-xl font-semibold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                  {/* Title */}
+                  <h3 className={`font-display text-2xl font-bold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
                     {level.title}
                   </h3>
-                  <p className={`font-body text-sm leading-relaxed mb-6 ${isLocked ? 'blur-[2px]' : 'text-muted-foreground'}`}>
+
+                  {/* Description */}
+                  <p className={`font-body text-sm leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
                     {level.description}
                   </p>
 
+                  {/* Stats */}
+                  <div className="flex items-center gap-6 mb-6 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Modules</span>
+                      <p className={`font-semibold ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>{level.modules}</p>
+                    </div>
+                    <div className="w-px h-8 bg-border" />
+                    <div>
+                      <span className="text-muted-foreground">Duration</span>
+                      <p className={`font-semibold ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>{level.duration}</p>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
                   <Button 
-                    className="w-full gap-2" 
+                    className={`w-full gap-2 rounded-full ${isActive ? 'bg-success hover:bg-success/90 text-success-foreground' : ''}`}
                     variant={isLocked ? 'outline' : 'default'}
                     disabled={isLocked}
                     onClick={() => !isLocked && navigate('/register')}

@@ -67,7 +67,7 @@ export const ContinueLearning = () => {
   }, [user, isLessonCompleted]);
 
   if (loading) {
-    return <CardSkeleton variant="hero" className="bg-gradient-to-br from-emerald-50/10 to-blue-50/10" />;
+    return <CardSkeleton variant="hero" className="border-2 border-success/30" />;
   }
 
   if (!lastLesson) {
@@ -75,13 +75,12 @@ export const ContinueLearning = () => {
     return (
       <div className={cn(
         "relative rounded-2xl p-5 sm:p-8 overflow-hidden",
-        "bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-blue-500/10",
-        "border border-emerald-500/20"
+        "bg-card border-2 border-success/30"
       )}>
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-3 sm:mb-4">
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
-            <span className="font-ui text-xs sm:text-sm font-medium text-emerald-600">START YOUR JOURNEY</span>
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
+            <span className="font-ui text-xs sm:text-sm font-medium text-success uppercase tracking-wide">START YOUR JOURNEY</span>
           </div>
           
           <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 text-foreground">
@@ -94,17 +93,13 @@ export const ContinueLearning = () => {
 
           <RippleButton 
             size="lg" 
-            className="gap-2 bg-success hover:bg-success/90 text-success-foreground shadow-lg h-11 sm:h-12 touch-manipulation w-full sm:w-auto"
+            className="gap-2 bg-success hover:bg-success/90 text-success-foreground shadow-lg h-11 sm:h-12 touch-manipulation w-full sm:w-auto rounded-full"
             onClick={() => navigate('/level/beginner')}
           >
             <Play className="h-4 w-4 sm:h-5 sm:w-5" />
             Start Learning
           </RippleButton>
         </div>
-
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
       </div>
     );
   }
@@ -134,9 +129,8 @@ export const ContinueLearning = () => {
     <div 
       className={cn(
         "relative rounded-2xl p-4 sm:p-6 md:p-8 overflow-hidden cursor-pointer group touch-manipulation",
-        "bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-blue-500/10",
-        "border border-emerald-500/20 hover:border-emerald-500/40",
-        "transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10",
+        "bg-card border-2 border-success/30",
+        "transition-all duration-300 hover:shadow-xl hover:shadow-success/10 hover:border-success/50",
         "active:scale-[0.99]"
       )} 
       onClick={handleContinue}
@@ -153,8 +147,8 @@ export const ContinueLearning = () => {
       <div className="relative z-10">
         {/* Welcome Message */}
         <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
-          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
-          <span className="font-ui text-xs sm:text-sm font-medium text-emerald-600 uppercase tracking-wide">Continue Learning</span>
+          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success" />
+          <span className="font-ui text-xs sm:text-sm font-medium text-success uppercase tracking-wide">Continue Learning</span>
         </div>
         
         <h2 className="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-2 text-foreground">
@@ -166,7 +160,7 @@ export const ContinueLearning = () => {
           <span className="text-xl sm:text-2xl shrink-0">{moduleIcon}</span>
           <div className="min-w-0">
             <p className="font-ui text-xs sm:text-sm text-muted-foreground">You were learning:</p>
-            <p className="font-body text-sm sm:text-lg font-medium text-foreground group-hover:text-emerald-600 transition-colors truncate">
+            <p className="font-body text-sm sm:text-lg font-medium text-foreground group-hover:text-success transition-colors truncate">
               {lesson.title}
             </p>
           </div>
@@ -199,7 +193,7 @@ export const ContinueLearning = () => {
           <RippleButton 
             size="lg" 
             className={cn(
-              "gap-2 sm:ml-auto w-full sm:w-auto",
+              "gap-2 sm:ml-auto w-full sm:w-auto rounded-full",
               "bg-success hover:bg-success/90 text-success-foreground",
               "shadow-lg h-11 sm:h-12 touch-manipulation",
               "transition-all duration-300 group-hover:gap-3"
@@ -215,10 +209,6 @@ export const ContinueLearning = () => {
           </RippleButton>
         </div>
       </div>
-
-      {/* Decorative elements - smaller on mobile */}
-      <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-gradient-to-tr from-blue-500/10 to-emerald-500/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4 pointer-events-none" />
     </div>
   );
 };
