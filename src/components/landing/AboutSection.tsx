@@ -1,21 +1,26 @@
-import { Lightbulb, Target, Brain, ArrowRight } from 'lucide-react';
+import { Lightbulb, Layers, Brain, GraduationCap } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
 
 const features = [
   {
     icon: Lightbulb,
-    title: 'Break Complex Concepts into Simple Ideas',
-    description: 'We simplify derivatives trading into digestible lessons that build on each other logically.'
+    title: 'Break Complex Concepts',
+    description: 'Transform intimidating topics into simple, digestible ideas you can truly understand.'
   },
   {
-    icon: Target,
-    title: 'Teach Why Things Work, Not Just What',
-    description: 'Understanding the reasoning behind strategies gives you an edge in any market condition.'
+    icon: Layers,
+    title: "Teach the 'Why'",
+    description: 'Go beyond surface-level knowledge to understand why strategies work.'
   },
   {
     icon: Brain,
-    title: 'Help You Think Like a Trader',
-    description: 'Develop the analytical mindset that separates profitable traders from those who guess.'
+    title: 'Think Like a Trader',
+    description: 'Build the mental framework that separates professionals from guessers.'
+  },
+  {
+    icon: GraduationCap,
+    title: 'Professional Readiness',
+    description: 'Prepare for real trading with structured, practical knowledge.'
   }
 ];
 
@@ -25,39 +30,31 @@ export const AboutSection = () => {
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
+            <span className="text-sm font-medium text-success uppercase tracking-wider mb-3 block">
+              THE APPROACH
+            </span>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
-              What This Course Is <span className="text-primary">Really About</span>
+              What This Course Is Really About
             </h2>
             <p className="font-body text-lg text-muted-foreground leading-relaxed">
-              A calm, structured approach to learning options trading—built on clarity, not hype.
+              No fluff. No shortcuts. Just clear, structured education that builds real understanding from the ground up.
             </p>
           </div>
         </AnimatedSection>
 
-        <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto mb-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <AnimatedSection key={feature.title} direction="up" delay={100 + index * 100}>
-              <div className="group tactical-card p-6 md:p-8 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="h-6 w-6 text-primary" />
+            <AnimatedSection key={feature.title} direction="up" delay={100 + index * 75}>
+              <div className="group bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full">
+                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-5">
+                  <feature.icon className="h-6 w-6 text-success" />
                 </div>
-                <h3 className="font-ui text-lg font-semibold mb-3 text-foreground">{feature.title}</h3>
-                <p className="font-body text-muted-foreground leading-relaxed">{feature.description}</p>
+                <h3 className="font-ui text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             </AnimatedSection>
           ))}
         </div>
-
-        <AnimatedSection direction="up" delay={400}>
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-success/10 text-success border border-success/20">
-              <ArrowRight className="h-4 w-4" />
-              <span className="font-medium text-sm md:text-base">
-                By the end of the Advanced Level, you'll be ready to trade professionally.
-              </span>
-            </div>
-          </div>
-        </AnimatedSection>
       </div>
     </section>
   );

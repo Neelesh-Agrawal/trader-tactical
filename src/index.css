@@ -381,9 +381,9 @@
     @apply border-b border-border;
   }
 
-  /* Reading content area - optimized width for readability */
+  /* Reading content area - optimized width for readability with reduced gaps */
   .reading-container {
-    @apply max-w-full sm:max-w-[680px] mx-auto px-0 sm:px-4 md:px-8 lg:px-16;
+    @apply max-w-full sm:max-w-[780px] mx-auto px-0 sm:px-2 md:px-4;
   }
 
   /* Content depth effect - white content on off-white background */
