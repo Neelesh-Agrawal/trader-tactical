@@ -20,7 +20,6 @@ const levelColors = {
     border: 'border-emerald-500/30 hover:border-emerald-500/50',
     ring: 'text-emerald-500',
     icon: 'bg-emerald-500/20 text-emerald-500',
-    glow: 'hover:shadow-emerald-500/20',
   },
   intermediate: {
     accent: 'blue',
@@ -28,7 +27,6 @@ const levelColors = {
     border: 'border-blue-500/30 hover:border-blue-500/50',
     ring: 'text-blue-500',
     icon: 'bg-blue-500/20 text-blue-500',
-    glow: 'hover:shadow-blue-500/20',
   },
   advanced: {
     accent: 'purple',
@@ -36,7 +34,6 @@ const levelColors = {
     border: 'border-purple-500/30 hover:border-purple-500/50',
     ring: 'text-purple-500',
     icon: 'bg-purple-500/20 text-purple-500',
-    glow: 'hover:shadow-purple-500/20',
   },
 };
 
@@ -107,9 +104,9 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
         "bg-gradient-to-br border",
         colors.bg,
         isUnlocked ? colors.border : "border-muted/30",
-        isUnlocked && `active:scale-[0.98] md:hover:scale-[1.03] md:hover:shadow-xl md:hover:-translate-y-1 ${colors.glow}`,
-        !isUnlocked && "opacity-60 cursor-not-allowed grayscale",
-        isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-primary/50 animate-pulse-glow"
+        isUnlocked && "active:scale-[0.98] md:hover:scale-[1.02] md:hover:-translate-y-0.5",
+        !isUnlocked && "opacity-50 cursor-not-allowed blur-[2px]",
+        isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-success/50"
       )}
     >
       {/* Completed Badge */}
