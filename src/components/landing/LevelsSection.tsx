@@ -62,7 +62,7 @@ export const LevelsSection = () => {
               <AnimatedSection key={level.id} direction="up" delay={100 + index * 100}>
                 <div 
                   className={`relative bg-card border rounded-2xl p-6 transition-all duration-300 h-full ${
-                    isLocked ? 'opacity-70 border-border' : 'hover:-translate-y-1 hover:shadow-lg border-success/30'
+                    isLocked ? 'opacity-60 blur-[2px] border-border' : 'hover:-translate-y-1 border-success/30'
                   }`}
                 >
                   {/* Sparkle icon for active */}

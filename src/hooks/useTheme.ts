@@ -8,13 +8,8 @@ export const useTheme = () => {
     const stored = localStorage.getItem('theme') as Theme | null;
     if (stored) return stored;
     
-    // Check system preference
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
-    }
-    
-    // Default to dark
-    return 'dark';
+    // Default to light mode
+    return 'light';
   });
 
   useEffect(() => {
