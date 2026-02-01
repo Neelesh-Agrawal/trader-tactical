@@ -35,7 +35,7 @@ export const FAQSection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
-              Frequently Asked <span className="text-primary">Questions</span>
+              Frequently Asked <span className="text-success">Questions</span>
             </h2>
             <p className="font-body text-lg text-muted-foreground leading-relaxed">
               Common questions from learners just like you.
@@ -46,10 +46,10 @@ export const FAQSection = () => {
         <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
           {faqs.map((faq, index) => (
             <AnimatedSection key={faq.question} direction="up" delay={100 + index * 50}>
-              <div className="group tactical-card p-5 md:p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-l-4 border-l-primary/30 hover:border-l-primary h-full">
+              <div className="group tactical-card p-5 md:p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-l-4 border-l-success/30 hover:border-l-success h-full">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <HelpCircle className="h-4 w-4 text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                    <HelpCircle className="h-4 w-4 text-success" />
                   </div>
                   <div>
                     <h3 className="font-ui font-medium text-foreground mb-2 text-sm md:text-base">
