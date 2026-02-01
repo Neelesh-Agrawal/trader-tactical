@@ -21,7 +21,7 @@ export const TestimonialsSection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
-              What Learners <span className="text-primary">Are Saying</span>
+              What Learners <span className="text-success">Are Saying</span>
             </h2>
           </div>
         </AnimatedSection>
@@ -30,8 +30,8 @@ export const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <AnimatedSection key={testimonial.author} direction={index === 0 ? 'left' : 'right'} delay={100 + index * 100}>
               <div className="group tactical-card p-6 md:p-8 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-5">
-                  <Quote className="h-5 w-5 text-primary" />
+                <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center mb-5">
+                  <Quote className="h-5 w-5 text-success" />
                 </div>
                 <blockquote className="font-body text-lg text-foreground leading-relaxed mb-6 italic">
                   "{testimonial.quote}"
