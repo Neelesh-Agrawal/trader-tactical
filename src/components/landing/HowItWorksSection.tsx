@@ -1,13 +1,5 @@
-import { Target, BookOpen, AlertTriangle, CheckCircle, HelpCircle, UserPlus, Clock, Zap, TrendingUp } from 'lucide-react';
+import { UserPlus, Clock, Zap, TrendingUp } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
-
-const lessonComponents = [
-  { icon: Target, label: 'Learning Objective', description: 'Clear goals for each lesson' },
-  { icon: BookOpen, label: 'Course Content', description: 'In-depth, structured material' },
-  { icon: AlertTriangle, label: 'Common Mistakes', description: 'What to avoid and why' },
-  { icon: CheckCircle, label: 'Key Takeaways', description: 'Essential points to remember' },
-  { icon: HelpCircle, label: 'Quiz', description: 'Test before moving ahead' }
-];
 
 const learningFlow = [
   { 
@@ -51,31 +43,9 @@ export const HowItWorksSection = () => {
           </div>
         </AnimatedSection>
 
-        {/* Each Lesson Includes */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <AnimatedSection direction="up" delay={100}>
-            <h3 className="text-lg font-semibold text-center mb-8 text-foreground">
-              Each Lesson Includes
-            </h3>
-          </AnimatedSection>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {lessonComponents.map((item, index) => (
-              <AnimatedSection key={item.label} direction="up" delay={150 + index * 50}>
-                <div className="group tactical-card p-4 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 h-full">
-                  <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center mx-auto mb-3 group-hover:bg-success/20 transition-colors">
-                    <item.icon className="h-5 w-5 text-success" />
-                  </div>
-                  <p className="font-ui text-sm font-medium text-foreground mb-1">{item.label}</p>
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-
-        {/* Learning Flow */}
+        {/* Your Learning Journey */}
         <div className="max-w-4xl mx-auto">
-          <AnimatedSection direction="up" delay={400}>
+          <AnimatedSection direction="up" delay={100}>
             <h3 className="text-lg font-semibold text-center mb-8 text-foreground">
               Your Learning Journey
             </h3>
@@ -86,7 +56,7 @@ export const HowItWorksSection = () => {
             
             <div className="grid md:grid-cols-4 gap-6">
               {learningFlow.map((item, index) => (
-                <AnimatedSection key={item.step} direction="up" delay={450 + index * 100}>
+                <AnimatedSection key={item.step} direction="up" delay={150 + index * 100}>
                   <div className="relative group">
                     <div className="tactical-card p-6 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full">
                       <div className="w-12 h-12 rounded-full bg-success text-success-foreground flex items-center justify-center mx-auto mb-4 font-bold text-lg group-hover:scale-110 transition-transform">

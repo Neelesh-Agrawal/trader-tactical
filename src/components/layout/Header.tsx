@@ -101,7 +101,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDark ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />}
+            {isDark ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />}
           </Button>
 
           {user && profile ? (
