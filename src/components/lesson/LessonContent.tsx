@@ -90,24 +90,19 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         </div>
 
         {/* Lesson Title + Progress Ring */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight mb-3">
-              {lesson.title}
-            </h1>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                {readingTime} min read
-              </span>
-              <span className="flex items-center gap-1.5">
-                <BookOpen className="h-3.5 w-3.5" />
-                Lesson content
-              </span>
-            </div>
-          </div>
-          <div className="shrink-0 ml-4">
-            <ProgressRing progress={moduleProgress} size={56} strokeWidth={4} />
+        <div className="mb-4">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight mb-3">
+            {lesson.title}
+          </h1>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              {readingTime} min read
+            </span>
+            <span className="flex items-center gap-1.5">
+              <BookOpen className="h-3.5 w-3.5" />
+              Lesson content
+            </span>
           </div>
         </div>
 
