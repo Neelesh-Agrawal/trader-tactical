@@ -241,9 +241,14 @@ export const QuizInterface = ({
           <div className="flex gap-4 justify-center">
             <Button variant="outline" onClick={() => navigate(returnPath)} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Return
+              Back
             </Button>
-            {!passed && (
+            {passed ? (
+              <Button onClick={() => navigate('/dashboard')} className="gap-2">
+                Continue Learning
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
               <Button onClick={() => window.location.reload()} className="gap-2">
                 <RotateCcw className="h-4 w-4" />
                 Retry (after cooldown)
