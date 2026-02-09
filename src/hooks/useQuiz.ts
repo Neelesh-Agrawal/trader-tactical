@@ -86,6 +86,7 @@ export const useQuiz = ({
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const tabSwitchCountRef = useRef(0);
+  const answersRef = useRef<(number | null)[]>(new Array(shuffledQuestions.length).fill(null));
 
   // Timer countdown
   useEffect(() => {
@@ -164,6 +165,7 @@ export const useQuiz = ({
     setState(prev => {
       const newAnswers = [...prev.answers];
       newAnswers[prev.currentQuestionIndex] = optionIndex;
+      answersRef.current = newAnswers;
       return { ...prev, answers: newAnswers };
     });
   }, [state.isSubmitted, state.isInvalidated]);
@@ -203,10 +205,11 @@ export const useQuiz = ({
 
     const timeTaken = Math.floor((Date.now() - state.startTime) / 1000);
     
-    // Calculate score
+    // Use ref for accurate answer count (avoids stale closure)
+    const latestAnswers = answersRef.current;
     let correctCount = 0;
     state.questions.forEach((q, idx) => {
-      if (state.answers[idx] === q.correctIndex) {
+      if (latestAnswers[idx] === q.correctIndex) {
         correctCount++;
       }
     });
