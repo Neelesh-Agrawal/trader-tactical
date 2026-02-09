@@ -108,17 +108,11 @@ export const ContinueLearning = () => {
       <div className="relative z-10 p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center gap-6">
         {/* Left side - Info */}
         <div className="flex-1 min-w-0">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-4">
-            <Sparkles className="h-3.5 w-3.5 text-white/80" />
-            <span className="text-xs font-medium text-white/90">Continue Your Journey</span>
-          </div>
-
-          {/* Current Level */}
-          <div className="mb-3">
-            <span className="text-xs font-mono uppercase tracking-wider text-white/60">Current Level</span>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">{levelDisplayName}</h2>
-          </div>
+          {/* Welcome Message */}
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
+            Welcome back, {profile?.name?.split(' ')[0] || 'Learner'}!
+          </h2>
+          <p className="text-sm text-white/60 mb-4">Continue your {levelDisplayName} level journey</p>
 
           {/* Module & Lesson */}
           {module && lesson && (
