@@ -11,7 +11,6 @@ import { LessonContent } from '@/components/lesson/LessonContent';
 import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
 import { Menu, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 const Level = () => {
@@ -57,14 +56,14 @@ const Level = () => {
     }
   }, [touchStart, touchEnd, sidebarOpen]);
 
-  // Save last lesson position
+  // Save last lesson position to localStorage (backend doesn't have this field yet)
   useEffect(() => {
     if (user && levelId && currentModuleId && currentLessonId) {
-      supabase.from('profiles').update({
-        last_lesson_level_id: levelId,
-        last_lesson_module_id: currentModuleId,
-        last_lesson_id: currentLessonId
-      }).eq('user_id', user.id);
+      localStorage.setItem('last_lesson', JSON.stringify({
+        levelId,
+        moduleId: currentModuleId,
+        lessonId: currentLessonId
+      }));
     }
   }, [user, levelId, currentModuleId, currentLessonId]);
 

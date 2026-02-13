@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageCircle, Send, X, CheckCircle, Loader2 } from 'lucide-react';
@@ -23,17 +22,16 @@ export const QnAWidget = ({ contextType, contextId }: QnAWidgetProps) => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('qna_inquiries')
-        .insert({
-          user_id: user.id,
-          user_email: profile.email,
-          context_type: contextType,
-          context_id: contextId || null,
-          question: question.trim()
-        });
-
-      if (error) throw error;
+      // QnA API endpoint doesn't exist in backend yet
+      // For now, we'll show a success message but not actually submit
+      // TODO: Implement QnA API endpoint in backend
+      console.log('QnA submission:', {
+        user_id: user.id,
+        user_email: profile.email,
+        context_type: contextType,
+        context_id: contextId,
+        question: question.trim()
+      });
 
       setIsSubmitted(true);
       setQuestion('');

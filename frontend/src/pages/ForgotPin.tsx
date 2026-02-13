@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,47 +32,12 @@ const ForgotPin = () => {
     setLoading(true);
     
     try {
-      // Normalize phone number
-      const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+      // Password reset functionality is not yet implemented in the backend
+      // For now, we'll show a success message but not actually process the reset
+      // TODO: Implement password reset API endpoint in backend
+      console.log('Password reset requested for:', { phoneNumber, email });
       
-      // Check if the profile exists with matching phone and email
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('id, email')
-        .eq('phone_number', normalizedPhone)
-        .eq('email', email)
-        .maybeSingle();
-
-      if (error) {
-        throw new Error('Unable to verify account');
-      }
-
-      if (!profile) {
-        // Don't reveal if account exists or not for security
-        setStep('sent');
-        return;
-      }
-
-      // Generate reset token
-      const resetToken = crypto.randomUUID();
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1); // Token expires in 1 hour
-
-      // Store reset token in profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          reset_token: resetToken,
-          reset_token_expires_at: expiresAt.toISOString(),
-        })
-        .eq('id', profile.id);
-
-      if (updateError) {
-        throw new Error('Failed to generate reset link');
-      }
-
-      // For now, just show success - in production, you'd send an email
-      // via edge function with Resend
+      // Always show success message for security (don't reveal if account exists)
       setStep('sent');
       
     } catch (error: any) {

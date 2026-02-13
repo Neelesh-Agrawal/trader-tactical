@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { Header } from '@/components/layout/Header';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -37,8 +37,8 @@ const Profile = () => {
   const startEditing = () => {
     setFormData({
       name: profile.name,
-      phone_number: profile.phone_number,
-      date_of_birth: profile.date_of_birth
+      phone_number: profile.phone_number || '',
+      date_of_birth: profile.date_of_birth || ''
     });
     setIsEditing(true);
   };
@@ -46,16 +46,21 @@ const Profile = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: formData.name,
-          phone_number: formData.phone_number,
-          date_of_birth: formData.date_of_birth
-        })
-        .eq('user_id', user.id);
+      // Split name into first_name and last_name
+      const nameParts = formData.name.split(' ').filter(Boolean);
+      const first_name = nameParts[0] || formData.name;
+      const last_name = nameParts.slice(1).join(' ');
 
-      if (error) throw error;
+      await apiFetch('/api/auth/me/update/', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          first_name,
+          last_name,
+          phone: formData.phone_number,
+          // Backend doesn't have date_of_birth field, so we'll skip it
+          // age can be calculated if needed
+        }),
+      });
 
       await refreshProfile();
       setIsEditing(false);
@@ -179,11 +184,13 @@ const Profile = () => {
                     />
                   ) : (
                     <p className="py-2 px-3 bg-muted rounded-md">
-                      {new Date(profile.date_of_birth).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {profile.date_of_birth 
+                        ? new Date(profile.date_of_birth).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'Not set'}
                     </p>
                   )}
                 </div>

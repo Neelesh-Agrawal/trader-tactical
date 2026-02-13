@@ -116,17 +116,30 @@ const Register = () => {
     // Normalize phone number with country code
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
-    // Use pin+phone as password
-    const password = pin + normalizedPhone;
+    // Calculate age from date of birth
+    const birthDate = new Date(formData.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
     
-    const { error } = await signUp(formData.email, password, {
+    // Map gender to sex (backend expects 'M', 'F', or 'N')
+    const sexMap: Record<string, string> = {
+      'male': 'M',
+      'female': 'F',
+      'other': 'N',
+      'prefer-not-to-say': 'N',
+    };
+    
+    const { error } = await signUp({
       name: formData.name,
-      phone_number: normalizedPhone,
       email: formData.email,
-      date_of_birth: formData.dateOfBirth,
-      pin: pin,
-      gender: formData.gender,
-      occupation: formData.occupation,
+      phone_number: normalizedPhone,
+      password: pin, // Using PIN as password for now
+      sex: sexMap[formData.gender] || 'N',
+      age: age,
     });
     
     setLoading(false);
@@ -349,7 +362,7 @@ const Register = () => {
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  You'll use this PIN along with your phone number to log in
+                  You'll use this PIN along with your email to log in
                 </p>
 
                 <div className="flex gap-3">

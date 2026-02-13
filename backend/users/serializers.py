@@ -76,6 +76,58 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = 'email'
 
 
+class PhoneTokenObtainPairSerializer(serializers.Serializer):
+    phone = serializers.CharField(required=True)
+    pin = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        phone = attrs.get('phone')
+        pin = attrs.get('pin')
+
+        if not phone or not pin:
+            raise serializers.ValidationError("Phone and PIN are required")
+
+        # Normalize phone number - PhoneNumberField stores in E.164 format
+        # We'll try to parse it the same way PhoneNumberField does
+        try:
+            from phonenumber_field.phonenumber import PhoneNumber
+            
+            # Create PhoneNumber object from string (handles normalization)
+            phone_number = PhoneNumber.from_string(phone, region=None)
+            
+            # Look up user by phone (PhoneNumberField handles format matching)
+            try:
+                user = User.objects.get(phone=phone_number)
+            except User.DoesNotExist:
+                # Try with string representation as fallback
+                try:
+                    user = User.objects.get(phone=str(phone_number))
+                except User.DoesNotExist:
+                    raise serializers.ValidationError("Invalid phone number or PIN")
+                    
+        except Exception:
+            # Fallback: try direct lookup with normalized string
+            normalized_phone = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+            try:
+                user = User.objects.get(phone=normalized_phone)
+            except User.DoesNotExist:
+                raise serializers.ValidationError("Invalid phone number or PIN")
+
+        # Verify PIN (which is stored as password)
+        if not user.check_password(pin):
+            raise serializers.ValidationError("Invalid phone number or PIN")
+
+        # Generate JWT tokens
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        
+        attrs['user'] = user
+        attrs['refresh'] = str(refresh)
+        attrs['access'] = str(refresh.access_token)
+        
+        return attrs
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

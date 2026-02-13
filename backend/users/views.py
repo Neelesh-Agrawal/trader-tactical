@@ -8,6 +8,7 @@ from .models import User
 from .serializers import (
     RegisterSerializer,
     EmailTokenObtainPairSerializer,
+    PhoneTokenObtainPairSerializer,
     UserProfileSerializer,
     UserUpdateSerializer,
     ChangePasswordSerializer,
@@ -49,5 +50,18 @@ class ChangePasswordView(APIView):
             {"detail": "Password updated successfully"},
             status=status.HTTP_200_OK
         )
+
+
+class PhoneTokenObtainPairView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = PhoneTokenObtainPairSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        return Response({
+            'access': serializer.validated_data['access'],
+            'refresh': serializer.validated_data['refresh'],
+        })
 
 

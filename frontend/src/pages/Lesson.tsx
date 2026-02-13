@@ -11,7 +11,6 @@ import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 const Lesson = () => {
   const { levelId, moduleId, lessonId } = useParams();
@@ -20,14 +19,14 @@ const Lesson = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Save last lesson position
+  // Save last lesson position to localStorage (backend doesn't have this field yet)
   useEffect(() => {
     if (user && levelId && moduleId && lessonId) {
-      supabase.from('profiles').update({
-        last_lesson_level_id: levelId,
-        last_lesson_module_id: moduleId,
-        last_lesson_id: lessonId
-      }).eq('user_id', user.id);
+      localStorage.setItem('last_lesson', JSON.stringify({
+        levelId,
+        moduleId,
+        lessonId
+      }));
     }
   }, [user, levelId, moduleId, lessonId]);
 

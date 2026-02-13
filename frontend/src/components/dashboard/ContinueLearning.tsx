@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { supabase } from '@/integrations/supabase/client';
 import { getLessonById, getModuleById, getLevelById, courseData } from '@/data/courseData';
 import { AnimatedProgress } from '@/components/ui/animated-progress';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
@@ -23,41 +22,59 @@ export const ContinueLearning = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLastLesson = async () => {
+    const fetchLastLesson = () => {
       if (!user) {
         setLoading(false);
         return;
       }
 
-      const { data } = await supabase
-        .from('profiles')
-        .select('last_lesson_level_id, last_lesson_module_id, last_lesson_id')
-        .eq('user_id', user.id)
-        .single();
+      // First, check localStorage for saved last lesson position
+      try {
+        const saved = localStorage.getItem('last_lesson');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.levelId && parsed.moduleId && parsed.lessonId) {
+            setLastLesson(parsed);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        // Ignore localStorage errors
+      }
 
-      if (data?.last_lesson_id) {
-        setLastLesson({
-          levelId: data.last_lesson_level_id,
-          moduleId: data.last_lesson_module_id,
-          lessonId: data.last_lesson_id
-        });
-      } else {
-        for (const level of courseData) {
-          for (const module of level.modules) {
-            for (const lesson of module.lessons) {
-              if (!isLessonCompleted(level.id, module.id, lesson.id)) {
-                setLastLesson({
-                  levelId: level.id,
-                  moduleId: module.id,
-                  lessonId: lesson.id
-                });
-                setLoading(false);
-                return;
-              }
+      // If no saved position, derive from progress
+      // Find the first incomplete lesson across all levels
+      for (const level of courseData) {
+        for (const module of level.modules) {
+          for (const lesson of module.lessons) {
+            if (!isLessonCompleted(level.id, module.id, lesson.id)) {
+              setLastLesson({
+                levelId: level.id,
+                moduleId: module.id,
+                lessonId: lesson.id
+              });
+              setLoading(false);
+              return;
             }
           }
         }
       }
+      
+      // If all lessons are completed, set to the last lesson of the last level
+      const lastLevel = courseData[courseData.length - 1];
+      if (lastLevel && lastLevel.modules.length > 0) {
+        const lastModule = lastLevel.modules[lastLevel.modules.length - 1];
+        if (lastModule && lastModule.lessons.length > 0) {
+          const lastLessonItem = lastModule.lessons[lastModule.lessons.length - 1];
+          setLastLesson({
+            levelId: lastLevel.id,
+            moduleId: lastModule.id,
+            lessonId: lastLessonItem.id
+          });
+        }
+      }
+      
       setLoading(false);
     };
 

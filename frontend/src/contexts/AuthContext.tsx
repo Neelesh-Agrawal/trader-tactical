@@ -1,25 +1,29 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import { apiFetch, AuthTokens, getAuthTokens, setAuthTokens } from '@/lib/api';
 
 interface Profile {
-  id: string;
-  user_id: string;
+  id: number;
   name: string;
-  phone_number: string;
   email: string;
-  date_of_birth: string;
-  current_level: string;
+  phone_number?: string;
+  date_of_birth?: string | null;
+  current_level?: string;
 }
 
 interface SignUpData {
   name: string;
-  phone_number: string;
   email: string;
-  date_of_birth: string;
-  pin: string;
-  gender?: string;
-  occupation?: string;
+  phone_number: string;
+  password: string;
+  state?: string;
+  sex?: string;
+  age?: number;
 }
 
 interface Streak {
@@ -29,13 +33,13 @@ interface Streak {
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: { id: number; email: string } | null;
   profile: Profile | null;
   streak: Streak | null;
   loading: boolean;
-  signUp: (email: string, password: string, profileData: SignUpData) => Promise<{ error: Error | null }>;
-  signIn: (phoneNumber: string, pin: string) => Promise<{ error: Error | null }>;
+  signUp: (data: SignUpData) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithPhone: (phoneNumber: string, pin: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateStreak: () => Promise<number>;
   refreshProfile: () => Promise<void>;
@@ -44,124 +48,111 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<{ id: number; email: string } | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-    
-    if (!error && data) {
-      setProfile(data as Profile);
+  const fetchProfile = async () => {
+    try {
+      const data = await apiFetch<{
+        id: number;
+        email: string;
+        username: string;
+        first_name: string;
+        last_name: string;
+        phone?: string;
+        state?: string;
+        sex?: string;
+        age?: number;
+      }>('/api/auth/me/');
+
+      const name =
+        [data.first_name, data.last_name].filter(Boolean).join(' ') ||
+        data.email;
+
+      setUser({ id: data.id, email: data.email });
+      setProfile({
+        id: data.id,
+        name,
+        email: data.email,
+        phone_number: data.phone,
+        // These fields are not present on the Django user; keep optional/defaulted
+        date_of_birth: null,
+        current_level: 'beginner',
+      });
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+      setUser(null);
+      setProfile(null);
     }
   };
 
-  const fetchStreak = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('user_streaks')
-      .select('current_streak, longest_streak, last_activity_date')
-      .eq('user_id', userId)
-      .single();
-    
-    if (!error && data) {
-      setStreak(data as Streak);
-    }
+  const fetchStreak = async () => {
+    // No streak API exists in the Django backend yet; keep as stub for now
+    setStreak(null);
   };
 
   const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user.id);
-      await fetchStreak(user.id);
-    }
+    if (!getAuthTokens()) return;
+    await fetchProfile();
+    await fetchStreak();
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          // Defer fetching to avoid race conditions
-          setTimeout(() => {
-            fetchProfile(currentSession.user.id);
-            fetchStreak(currentSession.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-          setStreak(null);
-        }
-        
+    const bootstrap = async () => {
+      const tokens = getAuthTokens();
+      if (!tokens) {
         setLoading(false);
+        return;
       }
-    );
 
-    // Then get initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-      
-      if (initialSession?.user) {
-        fetchProfile(initialSession.user.id);
-        fetchStreak(initialSession.user.id);
-      }
-      
+      await refreshProfile();
       setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    void bootstrap();
   }, []);
 
-  const hashPin = async (pin: string): Promise<string> => {
-    // Simple hash for demo - in production use proper bcrypt on server
-    const encoder = new TextEncoder();
-    const data = encoder.encode(pin + 'trademaster_salt');
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  };
-
   const signUp = async (
-    email: string,
-    password: string,
-    profileData: SignUpData
+    data: SignUpData
   ): Promise<{ error: Error | null }> => {
     try {
-      const pinHash = await hashPin(profileData.pin);
+      if (!data.name || typeof data.name !== 'string') {
+        throw new Error('Name is required');
+      }
+      
+      const nameParts = data.name.split(' ').filter(Boolean);
+      const first_name = nameParts[0] || data.name;
+      const last_name = nameParts.slice(1).join(' ');
 
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin
-        }
+      await apiFetch('/api/auth/register/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({
+          email: data.email,
+          username: data.email,
+          password: data.password,
+          first_name,
+          last_name,
+          phone: data.phone_number,
+          state: data.state,
+          sex: data.sex,
+          age: data.age,
+        }),
       });
 
-      if (signUpError) throw signUpError;
-      if (!data.user) throw new Error('No user returned');
+      const tokens = await apiFetch<AuthTokens>('/api/auth/login/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: data.user.id,
-          name: profileData.name,
-          phone_number: profileData.phone_number,
-          email: profileData.email,
-          date_of_birth: profileData.date_of_birth,
-          pin_hash: pinHash,
-          current_level: 'beginner',
-          gender: profileData.gender || null,
-          occupation: profileData.occupation || null,
-        });
-
-      if (profileError) throw profileError;
+      setAuthTokens(tokens);
+      await refreshProfile();
 
       return { error: null };
     } catch (error) {
@@ -169,42 +160,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const signIn = async (phoneNumber: string, pin: string): Promise<{ error: Error | null }> => {
+  const signIn = async (
+    email: string,
+    password: string
+  ): Promise<{ error: Error | null }> => {
     try {
-      // Normalize phone number (remove spaces, dashes)
-      const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
-      
-      // Use secure database function to get login credentials
-      const { data: credentials, error: lookupError } = await supabase
-        .rpc('get_login_credentials', { p_phone_number: normalizedPhone });
-
-      if (lookupError) {
-        console.error('Credentials lookup error:', lookupError);
-        throw new Error('Unable to verify credentials');
-      }
-      
-      if (!credentials || credentials.length === 0) {
-        throw new Error('Phone number not found. Please check and try again.');
-      }
-
-      const profileData = credentials[0];
-
-      // Verify PIN
-      const hashedPin = await hashPin(pin);
-      if (hashedPin !== profileData.pin_hash) {
-        throw new Error('Invalid PIN. Please try again.');
-      }
-
-      // Sign in with email (we use phone+pin as password, matching registration)
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: profileData.email,
-        password: pin + normalizedPhone
+      const tokens = await apiFetch<AuthTokens>('/api/auth/login/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInError) {
-        console.error('Auth sign in error:', signInError);
-        throw new Error('Authentication failed. Please try again.');
-      }
+      setAuthTokens(tokens);
+      await refreshProfile();
+
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  };
+
+  const signInWithPhone = async (
+    phoneNumber: string,
+    pin: string
+  ): Promise<{ error: Error | null }> => {
+    try {
+      // Normalize phone number (remove spaces, dashes, etc.)
+      const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+
+      const tokens = await apiFetch<AuthTokens>('/api/auth/phone-login/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ phone: normalizedPhone, pin }),
+      });
+
+      setAuthTokens(tokens);
+      await refreshProfile();
 
       return { error: null };
     } catch (error) {
@@ -213,25 +204,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setAuthTokens(null);
     setUser(null);
-    setSession(null);
     setProfile(null);
     setStreak(null);
   };
 
   const updateStreak = async (): Promise<number> => {
-    if (!user) return 0;
-    
-    const { data, error } = await supabase.rpc('update_daily_streak', {
-      p_user_id: user.id
-    });
-
-    if (!error && data !== null) {
-      await fetchStreak(user.id);
-      return data as number;
-    }
-    
     return streak?.current_streak ?? 0;
   };
 
@@ -239,12 +218,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     <AuthContext.Provider
       value={{
         user,
-        session,
         profile,
         streak,
         loading,
         signUp,
         signIn,
+        signInWithPhone,
         signOut,
         updateStreak,
         refreshProfile
