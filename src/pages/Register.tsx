@@ -32,6 +32,7 @@ const OCCUPATION_OPTIONS = [
 
 const Register = () => {
   const [step, setStep] = useState<Step>('details');
+  const [countryCode, setCountryCode] = useState('+91');
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -112,8 +113,8 @@ const Register = () => {
 
     setLoading(true);
     
-    // Normalize phone number
-    const normalizedPhone = formData.phoneNumber.replace(/[\s\-\(\)]/g, '');
+    // Normalize phone number with country code
+    const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
     // Use pin+phone as password
     const password = pin + normalizedPhone;
@@ -206,15 +207,34 @@ const Register = () => {
                   <label htmlFor="phone" className="mono text-xs text-muted-foreground mb-2 block">
                     PHONE NUMBER
                   </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Enter phone number"
-                    value={formData.phoneNumber}
-                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    required
-                    autoComplete="tel"
-                  />
+                  <div className="flex gap-2">
+                    <Select value={countryCode} onValueChange={setCountryCode}>
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                        <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                        <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                        <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                        <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                        <SelectItem value="+65">🇸🇬 +65</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={formData.phoneNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setFormData({ ...formData, phoneNumber: value });
+                      }}
+                      required
+                      autoComplete="tel"
+                      className="flex-1"
+                    />
+                  </div>
                 </div>
 
                 <div>

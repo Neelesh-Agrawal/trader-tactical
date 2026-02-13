@@ -4,6 +4,7 @@ import { useEnrollment } from '@/hooks/useEnrollment';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Lock, CheckCircle, Star, Crown, Award, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getLevelColorScheme } from '@/design-system';
 import type { Level } from '@/data/courseData';
 
 interface LevelCardProps {
@@ -11,31 +12,6 @@ interface LevelCardProps {
   levelIndex: number;
   isCurrent: boolean;
 }
-
-// Color schemes for each level
-const levelColors = {
-  beginner: {
-    accent: 'emerald',
-    bg: 'from-emerald-500/10 to-emerald-500/5',
-    border: 'border-emerald-500/30 hover:border-emerald-500/50',
-    ring: 'text-emerald-500',
-    icon: 'bg-emerald-500/20 text-emerald-500',
-  },
-  intermediate: {
-    accent: 'blue',
-    bg: 'from-blue-500/10 to-blue-500/5',
-    border: 'border-blue-500/30 hover:border-blue-500/50',
-    ring: 'text-blue-500',
-    icon: 'bg-blue-500/20 text-blue-500',
-  },
-  advanced: {
-    accent: 'purple',
-    bg: 'from-purple-500/10 to-purple-500/5',
-    border: 'border-purple-500/30 hover:border-purple-500/50',
-    ring: 'text-purple-500',
-    icon: 'bg-purple-500/20 text-purple-500',
-  },
-};
 
 export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
   const navigate = useNavigate();
@@ -47,8 +23,8 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
   const enrollment = getEnrollment(level.id);
   const remainingDays = enrollment ? getRemainingDays(level.id) : null;
 
-  // Get color scheme
-  const colors = levelColors[level.id as keyof typeof levelColors] || levelColors.beginner;
+  // Get color scheme from design system
+  const colorScheme = getLevelColorScheme(level.id as 'beginner' | 'intermediate' | 'advanced');
 
   // Calculate progress
   const getLevelProgress = () => {
@@ -99,12 +75,17 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
   return (
     <div
       onClick={handleClick}
+      style={{
+        background: isUnlocked 
+          ? `linear-gradient(to bottom right, ${colorScheme.light}, ${colorScheme.lighter})`
+          : undefined,
+        borderColor: isUnlocked ? colorScheme.border : undefined,
+      }}
       className={cn(
         "group relative rounded-xl p-4 sm:p-6 transition-all duration-300 cursor-pointer touch-manipulation",
         "bg-gradient-to-br border",
-        colors.bg,
-        isUnlocked ? colors.border : "border-muted/30",
-        isUnlocked && "active:scale-[0.98] md:hover:scale-[1.02] md:hover:-translate-y-0.5",
+        !isUnlocked && "border-muted/30 bg-muted/5",
+        isUnlocked && "hover:border-opacity-75 active:scale-[0.98] md:hover:scale-[1.02] md:hover:-translate-y-0.5",
         !isUnlocked && "opacity-50 cursor-not-allowed blur-[2px]",
         isCurrent && !isComplete && "ring-2 ring-offset-2 ring-offset-background ring-success/50"
       )}
@@ -133,7 +114,8 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
               progress={progress} 
               size={64} 
               strokeWidth={5}
-              className={colors.ring}
+              className="text-[color:var(--ring-color)]"
+              style={{ '--ring-color': colorScheme.primary } as React.CSSProperties}
             />
           ) : (
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted/30 flex items-center justify-center">
@@ -144,10 +126,13 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
           {/* Icon in center of ring */}
           {isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className={cn(
-                "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12",
-                colors.icon
-              )}>
+              <div 
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12"
+                style={{ 
+                  backgroundColor: colorScheme.light,
+                  color: colorScheme.icon,
+                }}
+              >
                 <LevelIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
             </div>
@@ -165,7 +150,7 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
         {/* Progress or Status */}
         {isUnlocked ? (
           <>
-            <p className="font-mono text-xl sm:text-2xl font-bold mb-0.5 sm:mb-1" style={{ color: `var(--${colors.accent}-500, currentColor)` }}>
+            <p className="font-mono text-xl sm:text-2xl font-bold mb-0.5 sm:mb-1" style={{ color: colorScheme.primary }}>
               {progress}%
             </p>
             <p className="font-ui text-xs sm:text-sm text-muted-foreground">

@@ -99,9 +99,9 @@ const Dashboard = () => {
           <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Quick Stats</h2>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Lessons Completed */}
-            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-emerald-500/30 transition-colors touch-manipulation">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-success/30 transition-colors touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
+                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
               </div>
               <div className="min-w-0">
                 <p className="font-mono text-xl sm:text-2xl font-bold text-foreground">{completedLessons}</p>
@@ -110,9 +110,9 @@ const Dashboard = () => {
             </div>
 
             {/* Current Streak */}
-            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-orange-500/30 transition-colors touch-manipulation">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
-                <Flame className="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" />
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-warning/30 transition-colors touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+                <Flame className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
               </div>
               <div className="min-w-0">
                 <p className="font-mono text-xl sm:text-2xl font-bold text-foreground">{streak?.current_streak || 0}</p>
@@ -121,9 +121,9 @@ const Dashboard = () => {
             </div>
 
             {/* Next Milestone - Full width on mobile when 3rd item */}
-            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-blue-500/30 transition-colors col-span-2 lg:col-span-1 touch-manipulation">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+            <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors col-span-2 lg:col-span-1 touch-manipulation">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-ui text-xs sm:text-sm font-medium text-foreground">Next Milestone</p>

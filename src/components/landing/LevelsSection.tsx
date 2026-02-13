@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Lock, ArrowRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
+import { getLevelColorScheme, typography } from '@/design-system';
 
 const levels = [
   {
-    id: 'beginner',
+    id: 'beginner' as const,
     number: 1,
     title: 'Beginner',
     status: 'active',
@@ -15,7 +16,7 @@ const levels = [
     cta: 'Start Now'
   },
   {
-    id: 'intermediate',
+    id: 'intermediate' as const,
     number: 2,
     title: 'Intermediate',
     status: 'locked',
@@ -25,7 +26,7 @@ const levels = [
     cta: 'Working on it'
   },
   {
-    id: 'advanced',
+    id: 'advanced' as const,
     number: 3,
     title: 'Advanced',
     status: 'locked',
@@ -40,14 +41,14 @@ export const LevelsSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section id="levels" className="py-16 md:py-24">
+    <section id="levels" className="py-12 md:py-16">
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
-          <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+          <div className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
+            <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
               Your <span className="text-success">Learning Path</span>
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className={`${typography.body.lg} font-body text-muted-foreground leading-relaxed`}>
               Progress through three structured levels, mastering concepts before moving forward.
             </p>
           </div>
@@ -57,52 +58,67 @@ export const LevelsSection = () => {
           {levels.map((level, index) => {
             const isLocked = level.status === 'locked';
             const isActive = level.status === 'active';
+            const colorScheme = getLevelColorScheme(level.id);
             
             return (
               <AnimatedSection key={level.id} direction="up" delay={100 + index * 100}>
                 <div 
-                  className={`relative bg-card border rounded-2xl p-6 transition-all duration-300 h-full ${
-                    isLocked ? 'opacity-60 blur-[2px] border-border' : 'hover:-translate-y-1 border-success/30'
+                  className={`relative bg-card border rounded-xl p-5 sm:p-6 transition-all duration-300 h-full ${
+                    isLocked ? 'opacity-60 blur-[2px] border-border' : 'hover:-translate-y-1'
                   }`}
+                  style={{
+                    borderColor: !isLocked ? colorScheme.border : undefined
+                  }}
                 >
                   {/* Sparkle icon for active */}
                   {isActive && (
-                    <div className="absolute -top-3 -right-3 w-10 h-10 rounded-xl bg-success flex items-center justify-center rotate-12">
-                      <Sparkles className="h-5 w-5 text-success-foreground" />
+                    <div 
+                      className="absolute -top-3 -right-3 w-10 h-10 rounded-xl flex items-center justify-center rotate-12"
+                      style={{ backgroundColor: colorScheme.primary }}
+                    >
+                      <Sparkles className="h-5 w-5 text-white" />
                     </div>
                   )}
 
                   {/* Status badge */}
                   <div className="flex items-center justify-between mb-4">
                     {isActive ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 text-success text-xs font-medium border border-success/20">
+                      <div 
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-ui font-medium"
+                        style={{
+                          backgroundColor: colorScheme.light,
+                          color: colorScheme.text,
+                          borderWidth: '1px',
+                          borderColor: colorScheme.border
+                        }}
+                      >
                         <CheckCircle className="h-3 w-3" />
                         Available Now
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-ui font-medium">
                         <Lock className="h-3 w-3" />
                         Coming Soon
                       </div>
                     )}
-                    <span className="text-sm text-muted-foreground">Level {level.number}</span>
+                    <span className={`${typography.ui.sm} font-ui text-muted-foreground`}>Level {level.number}</span>
                   </div>
 
                   {/* Title */}
-                  <h3 className={`text-2xl font-bold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                  <h3 className={`${typography.heading.h3} font-display font-bold mb-3 ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>
                     {level.title}
                   </h3>
 
                   {/* Description */}
-                  <p className={`text-sm leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
+                  <p className={`${typography.body.sm} font-body leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
                     {level.description}
                   </p>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-6 mb-6 text-sm">
+                  <div className={`flex items-center gap-6 mb-6 ${typography.body.sm} font-ui`}>
                     <div>
                       <span className="text-muted-foreground">Modules</span>
-                      <p className={`font-semibold ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>{level.modules}</p>
+                      <p className={`font-semibold font-mono ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>{level.modules}</p>
                     </div>
                     <div className="w-px h-8 bg-border" />
                     <div>
@@ -113,7 +129,11 @@ export const LevelsSection = () => {
 
                   {/* CTA */}
                   <Button 
-                    className={`w-full gap-2 rounded-full ${isActive ? 'bg-success hover:bg-success/90 text-success-foreground' : ''}`}
+                    className="w-full gap-2 rounded-full font-ui"
+                    style={isActive && !isLocked ? {
+                      backgroundColor: colorScheme.primary,
+                      color: 'white'
+                    } : undefined}
                     variant={isLocked ? 'outline' : 'default'}
                     disabled={isLocked}
                     onClick={() => !isLocked && navigate('/register')}

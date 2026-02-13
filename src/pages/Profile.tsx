@@ -214,11 +214,6 @@ const Profile = () => {
                 <span className="text-sm">Current Level</span>
                 <span className="text-xl font-bold text-primary capitalize">{profile.current_level}</span>
               </div>
-
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <span className="text-sm">Current Level</span>
-                <span className="text-sm font-medium capitalize">{profile.current_level}</span>
-              </div>
             </CardContent>
           </Card>
         </div>

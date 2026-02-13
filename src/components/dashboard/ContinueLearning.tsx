@@ -100,7 +100,7 @@ export const ContinueLearning = () => {
     <div 
       className={cn(
         "relative rounded-2xl overflow-hidden cursor-pointer group touch-manipulation",
-        "bg-gradient-to-r from-[hsl(210,60%,20%)] via-[hsl(200,50%,25%)] to-[hsl(175,45%,35%)]",
+        "bg-gradient-to-r from-[#1a1a2e] via-[#16213e] to-[#0f3460]",
         "transition-all duration-300 hover:shadow-2xl active:scale-[0.99]"
       )} 
       onClick={handleContinue}
@@ -134,9 +134,9 @@ export const ContinueLearning = () => {
               <span className="text-xs text-white/60">Level Progress</span>
               <span className="text-xs font-mono font-medium text-white/80">{levelProgress}%</span>
             </div>
-            <div className="h-2 rounded-full bg-white/20 overflow-hidden">
+            <div className="h-2 rounded-full bg-white/20 overflow-hidden relative">
               <div 
-                className="h-full rounded-full bg-white/80 transition-all duration-700"
+                className="absolute inset-y-0 left-0 rounded-full bg-white/80 transition-all duration-700"
                 style={{ width: `${levelProgress}%` }}
               />
             </div>
@@ -158,7 +158,7 @@ export const ContinueLearning = () => {
             }}
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3 rounded-xl",
-              "bg-white text-[hsl(210,60%,20%)] font-semibold text-sm",
+              "bg-white text-primary font-semibold text-sm",
               "hover:bg-white/95 transition-all duration-200",
               "shadow-lg hover:shadow-xl",
               "w-full sm:w-auto justify-center"

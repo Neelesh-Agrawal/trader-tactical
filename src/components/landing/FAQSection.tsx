@@ -1,5 +1,6 @@
 import { HelpCircle } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
+import { typography } from '@/design-system';
 
 const faqs = [
   {
@@ -30,32 +31,32 @@ const faqs = [
 
 export const FAQSection = () => {
   return (
-    <section id="faqs" className="py-16 md:py-24">
+    <section id="faqs" className="py-12 md:py-16 bg-muted/30">
       <div className="container mx-auto px-4">
         <AnimatedSection direction="up" delay={0}>
-          <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+          <div className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
+            <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
               Frequently Asked <span className="text-success">Questions</span>
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className={`${typography.body.lg} font-body text-muted-foreground leading-relaxed`}>
               Common questions from learners just like you.
             </p>
           </div>
         </AnimatedSection>
 
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 max-w-5xl mx-auto">
           {faqs.map((faq, index) => (
             <AnimatedSection key={faq.question} direction="up" delay={100 + index * 50}>
-              <div className="group tactical-card p-5 md:p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-l-4 border-l-success/30 hover:border-l-success h-full">
+              <div className="group tactical-card p-4 md:p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-l-4 border-l-success/30 hover:border-l-success h-full">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center shrink-0 mt-0.5">
                     <HelpCircle className="h-4 w-4 text-success" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-foreground mb-2 text-sm md:text-base">
-                      "{faq.question}"
+                    <h3 className={`${typography.body.md} font-ui font-medium text-foreground mb-2`}>
+                      {faq.question}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className={`${typography.body.sm} font-body text-muted-foreground leading-relaxed`}>
                       {faq.answer}
                     </p>
                   </div>

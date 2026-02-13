@@ -61,9 +61,9 @@ export const CompletionModal = ({
   };
 
   const Icon = type === 'level' ? Award : type === 'module' ? Star : Trophy;
-  const iconBg = type === 'level' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                  type === 'module' ? 'bg-gradient-to-br from-primary to-blue-600' :
-                  'bg-gradient-to-br from-success to-emerald-600';
+  const iconBg = type === 'level' ? 'bg-gradient-to-br from-warning to-warning/80' :
+                  type === 'module' ? 'bg-gradient-to-br from-primary to-primary/80' :
+                  'bg-gradient-to-br from-success to-success/80';
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

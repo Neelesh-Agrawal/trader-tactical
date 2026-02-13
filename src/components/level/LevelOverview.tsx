@@ -75,7 +75,7 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
       {/* Level Header */}
       <div className="text-center pb-6 sm:pb-8 border-b border-border">
         <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2 capitalize text-foreground">{level.id} Level</h1>
-        <p className="font-body text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2" style={{ lineHeight: '1.75' }}>{level.description}</p>
+        <p className="font-body text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2 leading-relaxed">{level.description}</p>
         
         {enrollment && remainingDays !== null && remainingDays > 0 && (
           <div className="inline-flex items-center gap-2 mt-4 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-warning/10 border border-warning/20 text-warning text-sm">

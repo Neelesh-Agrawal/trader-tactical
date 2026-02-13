@@ -46,7 +46,6 @@ export const LessonIntel = ({ content }: LessonIntelProps) => {
         <AnimatedSection key={index} delay={index * 50}>
           <p 
             className={`font-body text-foreground/90 leading-relaxed mb-4 sm:mb-6 ${isFirstParagraph ? 'text-base sm:text-lg' : 'text-base'}`}
-            style={{ lineHeight: '1.75' }}
           >
             {renderFormattedText(paragraph)}
           </p>

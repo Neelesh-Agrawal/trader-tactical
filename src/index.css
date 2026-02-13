@@ -7,7 +7,8 @@
    Color palette: Deep Navy, Growth Green, Active Yellow
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
+/* Medium.com inspired fonts - Charter for body text, system fonts for UI */
+@import url('https://fonts.googleapis.com/css2?family=Charter:ital,wght@0,400;0,700;1,400&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 
 @layer base {
   :root {
@@ -60,6 +61,11 @@
     --hex-active: 38 92% 50%;
     --hex-locked: 210 40% 85%;
     --hex-border: 217 91% 50%;
+    
+    /* Level Colors */
+    --level-beginner: 160 84% 39%;
+    --level-intermediate: 217 91% 50%;
+    --level-advanced: 270 70% 55%;
 
     /* Gradients */
     --gradient-tactical: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
@@ -130,6 +136,11 @@
     --hex-active: 38 92% 50%;
     --hex-locked: 222 30% 20%;
     --hex-border: 217 91% 60%;
+    
+    /* Level Colors */
+    --level-beginner: 160 84% 39%;
+    --level-intermediate: 217 91% 60%;
+    --level-advanced: 270 70% 55%;
 
     /* Gradients */
     --gradient-tactical: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(222 47% 12%) 100%);
@@ -176,16 +187,16 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Lora', Georgia, serif;
+    font-family: 'Charter', 'Georgia', serif;
     /* Prevent text size adjustment on orientation change in iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
-  /* Premium Typography System
-     All Headers: Libre Baskerville (display font)
-     Body/Paragraphs: Lora (reading font)
-     UI elements/labels: Work Sans
+  /* Medium.com inspired Typography System
+     Headers: Libre Baskerville (serif for emphasis)
+     Body/Paragraphs: Charter (Medium.com's primary font for readability)
+     UI elements/labels: System fonts (SF Pro, Segoe UI, etc.)
      Data: JetBrains Mono
   */
   
@@ -216,9 +227,9 @@
     @apply font-medium;
   }
 
-  /* Default paragraph styling */
+  /* Default paragraph styling - Charter for Medium.com readability */
   p {
-    font-family: 'Lora', Georgia, serif;
+    font-family: 'Charter', 'Georgia', serif;
     line-height: 1.7;
   }
 
@@ -228,9 +239,9 @@
     @apply text-lg md:text-xl font-medium;
   }
 
-  /* Body text - Lora for optimal reading experience */
+  /* Body text - Charter for Medium.com style readability */
   .prose-body {
-    font-family: 'Lora', Georgia, serif;
+    font-family: 'Charter', 'Georgia', serif;
     @apply text-lg;
     line-height: 1.75;
     letter-spacing: -0.003em;
@@ -239,15 +250,15 @@
 
   /* Enhanced paragraph styling for content-heavy pages */
   .reading-content p {
-    font-family: 'Lora', Georgia, serif;
+    font-family: 'Charter', 'Georgia', serif;
     @apply text-lg leading-relaxed mb-6;
     line-height: 1.75;
     color: hsl(var(--foreground) / 0.9);
   }
 
-  /* UI Text - Work Sans for interface elements */
+  /* UI Text - System fonts for interface elements (like Medium.com) */
   .ui-text {
-    font-family: 'Work Sans', system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     @apply text-sm md:text-base font-medium;
   }
 

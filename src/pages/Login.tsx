@@ -6,11 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PinInput } from '@/components/ui/pin-input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import authImage from '@/assets/auth-trading.jpg';
 const REMEMBER_ME_KEY = 'trademaster_remember_phone';
 
 const Login = () => {
+  const [countryCode, setCountryCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [pin, setPin] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,7 +25,18 @@ const Login = () => {
   useEffect(() => {
     const savedPhone = localStorage.getItem(REMEMBER_ME_KEY);
     if (savedPhone) {
-      setPhoneNumber(savedPhone);
+      // Extract country code if present
+      if (savedPhone.startsWith('+')) {
+        const codeMatch = savedPhone.match(/^(\+\d{1,3})/);
+        if (codeMatch) {
+          setCountryCode(codeMatch[1]);
+          setPhoneNumber(savedPhone.replace(codeMatch[1], ''));
+        } else {
+          setPhoneNumber(savedPhone);
+        }
+      } else {
+        setPhoneNumber(savedPhone);
+      }
       setRememberMe(true);
     }
   }, []);
@@ -37,14 +50,15 @@ const Login = () => {
     }
 
     // Handle remember me
+    const fullPhoneNumber = countryCode + phoneNumber.replace(/\D/g, '');
     if (rememberMe) {
-      localStorage.setItem(REMEMBER_ME_KEY, phoneNumber);
+      localStorage.setItem(REMEMBER_ME_KEY, fullPhoneNumber);
     } else {
       localStorage.removeItem(REMEMBER_ME_KEY);
     }
 
     setLoading(true);
-    const { error } = await signIn(phoneNumber, pin);
+    const { error } = await signIn(fullPhoneNumber, pin);
     setLoading(false);
 
     if (error) {
@@ -86,15 +100,34 @@ const Login = () => {
                   <label htmlFor="phone" className="mono text-xs text-muted-foreground mb-2 block">
                     PHONE NUMBER
                   </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    required
-                    autoComplete="tel"
-                  />
+                  <div className="flex gap-2">
+                    <Select value={countryCode} onValueChange={setCountryCode}>
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                        <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                        <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                        <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                        <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                        <SelectItem value="+65">🇸🇬 +65</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setPhoneNumber(value);
+                      }}
+                      required
+                      autoComplete="tel"
+                      className="flex-1"
+                    />
+                  </div>
                 </div>
                 
                 <div>
@@ -104,7 +137,7 @@ const Login = () => {
                   <PinInput
                     value={pin}
                     onChange={setPin}
-                    autoFocus={!!phoneNumber}
+                    autoFocus={false}
                   />
                 </div>
 

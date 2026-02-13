@@ -24,12 +24,12 @@ export default {
     extend: {
       fontFamily: {
         display: ["Libre Baskerville", "Georgia", "serif"],
-        body: ["Lora", "Georgia", "serif"],
-        ui: ["Work Sans", "system-ui", "sans-serif"],
+        body: ["Charter", "Georgia", "serif"],
+        ui: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
         // Legacy aliases for compatibility
         serif: ["Libre Baskerville", "Georgia", "serif"],
-        sans: ["Work Sans", "system-ui", "sans-serif"],
+        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -92,6 +92,18 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        // Level-specific colors for consistent theming
+        level: {
+          beginner: "hsl(var(--success))",
+          intermediate: "hsl(var(--primary))",
+          advanced: "hsl(270, 70%, 55%)",
+        },
+        // Stats colors for dashboard
+        stats: {
+          lessons: "hsl(var(--success))",
+          streak: "hsl(var(--warning))",
+          milestone: "hsl(var(--primary))",
         },
       },
       borderRadius: {
