@@ -5,7 +5,7 @@ import { ProgressRing } from '@/components/ui/progress-ring';
 import { Lock, CheckCircle, Star, Crown, Award, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLevelColorScheme } from '@/design-system';
-import type { Level } from '@/data/courseData';
+import type { Level } from '@/hooks/useCourses';
 
 interface LevelCardProps {
   level: Level;

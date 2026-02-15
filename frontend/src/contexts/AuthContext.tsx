@@ -21,7 +21,7 @@ interface SignUpData {
   email: string;
   phone_number: string;
   password: string;
-  state?: string;
+  occupation?: string;
   sex?: string;
   age?: number;
 }
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         first_name: string;
         last_name: string;
         phone?: string;
-        state?: string;
+        occupation?: string;
         sex?: string;
         age?: number;
       }>('/api/auth/me/');
@@ -89,8 +89,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const fetchStreak = async () => {
-    // No streak API exists in the Django backend yet; keep as stub for now
-    setStreak(null);
+    try {
+      const data = await apiFetch<{
+        current_streak: number;
+        longest_streak: number;
+        last_activity_date: string | null;
+      }>('/api/progress/streak/');
+      
+      setStreak({
+        current_streak: data.current_streak,
+        longest_streak: data.longest_streak,
+        last_activity_date: data.last_activity_date,
+      });
+    } catch (error) {
+      console.error('Failed to fetch streak:', error);
+      setStreak(null);
+    }
   };
 
   const refreshProfile = async () => {
@@ -136,7 +150,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           first_name,
           last_name,
           phone: data.phone_number,
-          state: data.state,
+          occupation: data.occupation,
           sex: data.sex,
           age: data.age,
         }),
@@ -211,7 +225,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateStreak = async (): Promise<number> => {
-    return streak?.current_streak ?? 0;
+    try {
+      const data = await apiFetch<{
+        current_streak: number;
+        longest_streak: number;
+        last_activity_date: string | null;
+      }>('/api/progress/streak/update/', {
+        method: 'POST',
+      });
+      
+      const currentStreak = data.current_streak;
+      
+      setStreak({
+        current_streak: data.current_streak,
+        longest_streak: data.longest_streak,
+        last_activity_date: data.last_activity_date,
+      });
+      
+      return currentStreak;
+    } catch (error) {
+      console.error('Failed to update streak:', error);
+      return streak?.current_streak ?? 0;
+    }
   };
 
   return (

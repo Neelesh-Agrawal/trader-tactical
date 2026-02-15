@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { courseData } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { useProgress } from '@/hooks/useProgress';
 import { Header } from '@/components/layout/Header';
 import { DashboardSkeleton } from '@/components/layout/LoadingSkeleton';
@@ -11,9 +11,12 @@ import { Flame, Target, TrendingUp, BookOpen } from 'lucide-react';
 
 const Dashboard = () => {
   const { user, profile, streak, loading: authLoading } = useAuth();
+  const { levels, loading: coursesLoading } = useCourses();
   const { isLevelCompleted, isLessonCompleted, lessonProgress, loading: progressLoading } = useProgress();
 
-  if (authLoading || progressLoading) {
+  const loading = authLoading || coursesLoading || progressLoading;
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header showStreak />
@@ -27,10 +30,10 @@ const Dashboard = () => {
   }
 
   const getCurrentLevel = () => {
-    for (const level of courseData) {
+    for (const level of levels) {
       if (!isLevelCompleted(level.id)) return level;
     }
-    return courseData[courseData.length - 1];
+    return levels[levels.length - 1];
   };
 
   const currentLevel = getCurrentLevel();
@@ -38,7 +41,7 @@ const Dashboard = () => {
 
   // Calculate next milestone
   const getNextMilestone = () => {
-    for (const level of courseData) {
+    for (const level of levels) {
       for (const module of level.modules) {
         let completedInModule = 0;
         let totalInModule = module.lessons.length;
@@ -74,7 +77,7 @@ const Dashboard = () => {
           <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">Your Learning Path</h2>
           {/* Single column on mobile, 3 columns on desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {courseData.map((level, index) => {
+            {levels.map((level, index) => {
               const isCurrent = currentLevel.id === level.id && !isLevelCompleted(level.id);
               
               return (

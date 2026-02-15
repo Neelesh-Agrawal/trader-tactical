@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProgress } from '@/hooks/useProgress';
-import { courseData, getLevelById } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { ChevronDown, ChevronRight, CheckCircle, Lock, Play, BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ interface CourseSidebarProps {
 export const CourseSidebar = ({ levelId, currentModuleId, currentLessonId }: CourseSidebarProps) => {
   const navigate = useNavigate();
   const { isLessonCompleted, isModuleUnlocked, isModuleCompleted } = useProgress();
+  const { getLevelById } = useCourses();
   const [expandedModules, setExpandedModules] = useState<string[]>([currentModuleId || '']);
 
   const level = getLevelById(levelId);

@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { getModuleById, getLevelById } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle, Lock, Play, Trophy } from 'lucide-react';
 
@@ -9,9 +9,12 @@ const Module = () => {
   const { levelId, moduleId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const { isLessonCompleted, isModuleCompleted, isLevelUnlocked, loading: progressLoading } = useProgress();
+  const { levels, loading: coursesLoading, getLevelById, getModuleById } = useCourses();
   const navigate = useNavigate();
 
-  if (authLoading || progressLoading) {
+  const loading = authLoading || progressLoading || coursesLoading;
+
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="mono text-muted-foreground">LOADING MODULE...</div>

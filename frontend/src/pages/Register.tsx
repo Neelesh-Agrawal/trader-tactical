@@ -22,11 +22,12 @@ const GENDER_OPTIONS = [
 
 const OCCUPATION_OPTIONS = [
   { value: 'student', label: 'Student' },
-  { value: 'employed', label: 'Employed' },
-  { value: 'self-employed', label: 'Self-Employed' },
-  { value: 'business-owner', label: 'Business Owner' },
-  { value: 'freelancer', label: 'Freelancer' },
-  { value: 'retired', label: 'Retired' },
+  { value: 'trader', label: 'Full-time Trader' },
+  { value: 'professional', label: 'Finance Professional' },
+  { value: 'entrepreneur', label: 'Entrepreneur' },
+  { value: 'employee', label: 'Salaried Employee' },
+  { value: 'business', label: 'Business Owner' },
+  { value: 'investor', label: 'Investor' },
   { value: 'other', label: 'Other' },
 ];
 
@@ -138,6 +139,7 @@ const Register = () => {
       email: formData.email,
       phone_number: normalizedPhone,
       password: pin, // Using PIN as password for now
+      occupation: formData.occupation,
       sex: sexMap[formData.gender] || 'N',
       age: age,
     });

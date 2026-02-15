@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { getLessonById, getModuleById, getLevelById, courseData } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { AnimatedProgress } from '@/components/ui/animated-progress';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { ArrowRight, BookOpen, Play, Sparkles } from 'lucide-react';
@@ -17,6 +17,7 @@ interface LastLessonData {
 export const ContinueLearning = () => {
   const { user, profile } = useAuth();
   const { isLessonCompleted } = useProgress();
+  const { levels, getLevelById, getModuleById, getLessonById } = useCourses();
   const navigate = useNavigate();
   const [lastLesson, setLastLesson] = useState<LastLessonData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export const ContinueLearning = () => {
 
       // If no saved position, derive from progress
       // Find the first incomplete lesson across all levels
-      for (const level of courseData) {
+      for (const level of levels) {
         for (const module of level.modules) {
           for (const lesson of module.lessons) {
             if (!isLessonCompleted(level.id, module.id, lesson.id)) {
@@ -62,7 +63,7 @@ export const ContinueLearning = () => {
       }
       
       // If all lessons are completed, set to the last lesson of the last level
-      const lastLevel = courseData[courseData.length - 1];
+      const lastLevel = levels[levels.length - 1];
       if (lastLevel && lastLevel.modules.length > 0) {
         const lastModule = lastLevel.modules[lastLevel.modules.length - 1];
         if (lastModule && lastModule.lessons.length > 0) {
@@ -79,7 +80,7 @@ export const ContinueLearning = () => {
     };
 
     fetchLastLesson();
-  }, [user, isLessonCompleted]);
+  }, [user, isLessonCompleted, levels]);
 
   if (loading) {
     return <CardSkeleton variant="hero" />;

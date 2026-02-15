@@ -55,6 +55,27 @@ interface BackendProgressResponse {
   unlocked_levels: number;
 }
 
+const getLevelIdInt = (levelId: string): number => {
+  const levelMap: Record<string, number> = { 'beginner': 1, 'intermediate': 2, 'advanced': 3 };
+  return levelMap[levelId] || parseInt(levelId, 10);
+};
+
+const getModuleIdInt = (moduleId: string): number => {
+  if (moduleId.includes('-')) {
+    const parts = moduleId.split('-');
+    return parseInt(parts[parts.length - 1], 10);
+  }
+  return parseInt(moduleId, 10);
+};
+
+const getLessonIdInt = (lessonId: string): number => {
+  if (lessonId.includes('-')) {
+    const parts = lessonId.split('-');
+    return parseInt(parts[parts.length - 1], 10);
+  }
+  return parseInt(lessonId, 10);
+};
+
 export const useProgress = () => {
   const { user } = useAuth();
   const [lessonProgress, setLessonProgress] = useState<LessonProgress[]>([]);
@@ -110,58 +131,40 @@ export const useProgress = () => {
   }, [user]);
 
   const isLessonCompleted = (levelId: string, moduleId: string, lessonId: string): boolean => {
-    // Note: Backend uses integer IDs, frontend uses string IDs from courseData
-    // For now, we'll need to map string IDs to integers or fetch course structure
-    // This is a simplified check - in production, you'd want to map IDs properly
-    // For now, checking by lesson_id as integer (if lessonId can be parsed as int)
-    const lessonIdInt = parseInt(lessonId, 10);
-    if (!isNaN(lessonIdInt)) {
-      return lessonProgress.some(
-        p => p.lesson_id === lessonIdInt && p.completed
-      );
-    }
-    // Fallback: if lessonId is a string (like from courseData), we can't match yet
-    // This will need proper ID mapping when course structure is fetched from backend
-    return false;
+    const lessonIdInt = getLessonIdInt(lessonId);
+    return lessonProgress.some(
+      p => p.lesson_id === lessonIdInt && p.completed
+    );
   };
 
   const isModuleUnlocked = (levelId: string, moduleId: string): boolean => {
+    const moduleIdInt = getModuleIdInt(moduleId);
+    const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
+    if (progress) return progress.unlocked;
+    
     // First module is always unlocked
-    const moduleIdInt = parseInt(moduleId, 10);
-    if (!isNaN(moduleIdInt)) {
-      const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
-      return progress?.unlocked ?? false;
-    }
-    // Fallback for string IDs
-    return moduleId.includes('derivatives-basics');
+    return moduleId.includes('1') || moduleId.includes('derivatives-basics');
   };
 
   const isModuleCompleted = (levelId: string, moduleId: string): boolean => {
-    const moduleIdInt = parseInt(moduleId, 10);
-    if (!isNaN(moduleIdInt)) {
-      const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
-      return progress?.completed ?? false;
-    }
-    return false;
+    const moduleIdInt = getModuleIdInt(moduleId);
+    const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
+    return progress?.completed ?? false;
   };
 
   const isLevelUnlocked = (levelId: string): boolean => {
-    if (levelId === 'beginner') return true;
-    const levelIdInt = parseInt(levelId, 10);
-    if (!isNaN(levelIdInt)) {
-      const progress = levelProgress.find(p => p.level_id === levelIdInt);
-      return progress?.unlocked ?? false;
-    }
-    return false;
+    const levelIdInt = getLevelIdInt(levelId);
+    const progress = levelProgress.find(p => p.level_id === levelIdInt);
+    if (progress) return progress.unlocked;
+    
+    // Beginner is always unlocked
+    return levelId === 'beginner';
   };
 
   const isLevelCompleted = (levelId: string): boolean => {
-    const levelIdInt = parseInt(levelId, 10);
-    if (!isNaN(levelIdInt)) {
-      const progress = levelProgress.find(p => p.level_id === levelIdInt);
-      return progress?.completed ?? false;
-    }
-    return false;
+    const levelIdInt = getLevelIdInt(levelId);
+    const progress = levelProgress.find(p => p.level_id === levelIdInt);
+    return progress?.completed ?? false;
   };
 
   const getModuleLessonsCompleted = (levelId: string, moduleId: string, totalLessons: number): number => {
@@ -188,11 +191,7 @@ export const useProgress = () => {
   const markLessonComplete = async (levelId: string, moduleId: string, lessonId: string) => {
     if (!user) return;
 
-    const lessonIdInt = parseInt(lessonId, 10);
-    if (isNaN(lessonIdInt)) {
-      console.error('Cannot mark lesson complete: lessonId must be an integer');
-      return;
-    }
+    const lessonIdInt = getLessonIdInt(lessonId);
 
     try {
       await apiFetch(`/api/progress/lessons/${lessonIdInt}/`, {
@@ -210,11 +209,7 @@ export const useProgress = () => {
   const markModuleComplete = async (levelId: string, moduleId: string) => {
     if (!user) return;
 
-    const moduleIdInt = parseInt(moduleId, 10);
-    if (isNaN(moduleIdInt)) {
-      console.error('Cannot mark module complete: moduleId must be an integer');
-      return;
-    }
+    const moduleIdInt = getModuleIdInt(moduleId);
 
     try {
       await apiFetch(`/api/progress/modules/${moduleIdInt}/`, {
@@ -233,11 +228,7 @@ export const useProgress = () => {
   const unlockNextModule = async (levelId: string, nextModuleId: string) => {
     if (!user) return;
 
-    const moduleIdInt = parseInt(nextModuleId, 10);
-    if (isNaN(moduleIdInt)) {
-      console.error('Cannot unlock module: moduleId must be an integer');
-      return;
-    }
+    const moduleIdInt = getModuleIdInt(nextModuleId);
 
     try {
       await apiFetch(`/api/progress/modules/${moduleIdInt}/`, {
@@ -255,11 +246,7 @@ export const useProgress = () => {
   const markLevelComplete = async (levelId: string) => {
     if (!user) return;
 
-    const levelIdInt = parseInt(levelId, 10);
-    if (isNaN(levelIdInt)) {
-      console.error('Cannot mark level complete: levelId must be an integer');
-      return;
-    }
+    const levelIdInt = getLevelIdInt(levelId);
 
     try {
       await apiFetch(`/api/progress/levels/${levelIdInt}/`, {
@@ -278,11 +265,7 @@ export const useProgress = () => {
   const unlockNextLevel = async (nextLevelId: string) => {
     if (!user) return;
 
-    const levelIdInt = parseInt(nextLevelId, 10);
-    if (isNaN(levelIdInt)) {
-      console.error('Cannot unlock level: levelId must be an integer');
-      return;
-    }
+    const levelIdInt = getLevelIdInt(nextLevelId);
 
     try {
       await apiFetch(`/api/progress/levels/${levelIdInt}/`, {

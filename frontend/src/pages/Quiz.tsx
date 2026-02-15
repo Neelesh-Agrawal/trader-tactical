@@ -1,7 +1,7 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { getLessonById, getModuleById, getLevelById } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { QuizInterface } from '@/components/quiz/QuizInterface';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock, AlertTriangle, Shield } from 'lucide-react';
@@ -11,12 +11,53 @@ const Quiz = () => {
   const { quizType, levelId, moduleId, lessonId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const { getCooldownRemaining, loading: progressLoading } = useProgress();
+  const { fetchQuiz, loading: coursesLoading } = useCourses();
   const navigate = useNavigate();
   const [accepted, setAccepted] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [quizData, setQuizData] = useState<{
+    questions: any[];
+    quizInfo: { id: number; passPercentage: number; timeLimit: number; cooldown: number };
+  } | null>(null);
+  const [loadingQuiz, setLoadingQuiz] = useState(true);
+  const [quizError, setQuizError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (quizType && levelId) {
+    const loadQuiz = async () => {
+      if (!quizType || !levelId) {
+        setLoadingQuiz(false);
+        return;
+      }
+
+      setLoadingQuiz(true);
+      setQuizError(null);
+
+      try {
+        const data = await fetchQuiz(
+          quizType as 'lesson' | 'module' | 'level',
+          levelId,
+          moduleId,
+          lessonId
+        );
+
+        if (data) {
+          setQuizData(data);
+        } else {
+          setQuizError('Quiz not found');
+        }
+      } catch (err) {
+        console.error('Failed to load quiz:', err);
+        setQuizError('Failed to load quiz');
+      } finally {
+        setLoadingQuiz(false);
+      }
+    };
+
+    loadQuiz();
+  }, [quizType, levelId, moduleId, lessonId, fetchQuiz]);
+
+  useEffect(() => {
+    if (quizType && levelId && quizData?.quizInfo) {
       const remaining = getCooldownRemaining(quizType, levelId, moduleId);
       setCooldown(remaining);
 
@@ -27,9 +68,9 @@ const Quiz = () => {
         return () => clearInterval(interval);
       }
     }
-  }, [quizType, levelId, moduleId, getCooldownRemaining]);
+  }, [quizType, levelId, moduleId, quizData?.quizInfo, getCooldownRemaining]);
 
-  if (authLoading || progressLoading) {
+  if (authLoading || progressLoading || coursesLoading || loadingQuiz) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="mono text-muted-foreground">PREPARING ASSESSMENT...</div>
@@ -45,36 +86,30 @@ const Quiz = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // Get questions based on quiz type
-  let questions: any[] = [];
+  if (quizError || !quizData) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const questions = quizData.questions;
+  const quizInfo = quizData.quizInfo;
   let returnPath = '/dashboard';
   let quizTitle = '';
 
   if (quizType === 'lesson' && moduleId && lessonId) {
-    const lesson = getLessonById(levelId, moduleId, lessonId);
-    if (!lesson) return <Navigate to="/dashboard" replace />;
-    questions = lesson.quiz;
     returnPath = `/lesson/${levelId}/${moduleId}/${lessonId}`;
-    quizTitle = `Lesson Quiz: ${lesson.title}`;
+    quizTitle = 'Lesson Quiz';
   } else if (quizType === 'module' && moduleId) {
-    const module = getModuleById(levelId, moduleId);
-    if (!module) return <Navigate to="/dashboard" replace />;
-    questions = module.finalQuiz;
     returnPath = `/module/${levelId}/${moduleId}`;
-    quizTitle = `Module Final: ${module.title}`;
+    quizTitle = 'Module Final';
   } else if (quizType === 'level') {
-    const level = getLevelById(levelId);
-    if (!level) return <Navigate to="/dashboard" replace />;
-    questions = level.finalAssessment;
     returnPath = '/dashboard';
-    quizTitle = `Level Assessment: ${level.title}`;
+    quizTitle = 'Level Assessment';
   }
 
   if (questions.length === 0) {
     return <Navigate to={returnPath} replace />;
   }
 
-  // Cooldown check
   if (cooldown > 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -96,7 +131,6 @@ const Quiz = () => {
     );
   }
 
-  // Pre-quiz warning screen
   if (!accepted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -125,7 +159,7 @@ const Quiz = () => {
               <div>
                 <p className="font-medium">Time Limit</p>
                 <p className="text-sm text-muted-foreground">
-                  {quizType === 'lesson' ? '45' : '60'} seconds per question. Timer auto-advances on timeout.
+                  {quizInfo.timeLimit} seconds per question. Timer auto-advances on timeout.
                 </p>
               </div>
             </div>
@@ -133,7 +167,7 @@ const Quiz = () => {
             <div className="flex items-start gap-3 p-4 bg-muted/20 rounded-lg">
               <Shield className="h-5 w-5 text-success shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium">Passing Score: 80%</p>
+                <p className="font-medium">Passing Score: {quizInfo.passPercentage}%</p>
                 <p className="text-sm text-muted-foreground">
                   Questions and options are randomized each attempt.
                 </p>
@@ -163,6 +197,9 @@ const Quiz = () => {
       moduleId={moduleId}
       lessonId={lessonId}
       returnPath={returnPath}
+      quizId={quizInfo.id}
+      passPercentage={quizInfo.passPercentage}
+      timePerQuestion={quizInfo.timeLimit}
     />
   );
 };

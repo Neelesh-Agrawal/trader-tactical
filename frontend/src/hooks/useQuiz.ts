@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Question } from '@/data/courseData';
+import { Question } from '@/hooks/useCourses';
 import { useProgress } from '@/hooks/useProgress';
+import { apiFetch } from '@/lib/api';
 
 interface QuizState {
   questions: Question[];
@@ -24,6 +25,7 @@ interface UseQuizOptions {
   timePerQuestion?: number; // seconds
   passingScore?: number; // percentage
   cooldownMinutes?: number;
+  quizId?: number;
 }
 
 // Fisher-Yates shuffle
@@ -61,7 +63,8 @@ export const useQuiz = ({
   lessonId,
   timePerQuestion = 45,
   passingScore = 80,
-  cooldownMinutes = 2
+  cooldownMinutes = 2,
+  quizId
 }: UseQuizOptions) => {
   const { recordQuizAttempt, setCooldown, markLessonComplete, markModuleComplete, unlockNextModule, markLevelComplete, unlockNextLevel } = useProgress();
   
@@ -224,6 +227,27 @@ export const useQuiz = ({
       passed
     }));
 
+    // Submit to backend API if quizId is available
+    if (quizId) {
+      try {
+        // Format answers as { question_id: option_index }
+        const formattedAnswers: Record<string, number> = {};
+        state.questions.forEach((q, qIdx) => {
+          const answerIndex = latestAnswers[qIdx];
+          if (answerIndex !== null && q.options[answerIndex]) {
+            formattedAnswers[q.id] = parseInt(q.options[answerIndex].id, 10);
+          }
+        });
+
+        await apiFetch(`/api/quizzes/${quizId}/submit/`, {
+          method: 'POST',
+          body: JSON.stringify({ answers: formattedAnswers }),
+        });
+      } catch (err) {
+        console.error('Failed to submit quiz to backend:', err);
+      }
+    }
+
     // Record attempt
     await recordQuizAttempt(
       quizType,
@@ -259,7 +283,7 @@ export const useQuiz = ({
       const cooldownMins = quizType === 'level' ? 3 : 2;
       await setCooldown(quizType, levelId, moduleId, cooldownMins);
     }
-  }, [state, passingScore, quizType, levelId, moduleId, lessonId, recordQuizAttempt, setCooldown, markLessonComplete, markModuleComplete, markLevelComplete, unlockNextLevel]);
+  }, [state, passingScore, quizType, levelId, moduleId, lessonId, quizId, recordQuizAttempt, setCooldown, markLessonComplete, markModuleComplete, markLevelComplete, unlockNextLevel]);
 
   const currentQuestion = state.questions[state.currentQuestionIndex];
   const currentAnswer = state.answers[state.currentQuestionIndex];

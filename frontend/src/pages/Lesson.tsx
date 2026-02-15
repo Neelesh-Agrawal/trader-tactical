@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { getLessonById, getModuleById } from '@/data/courseData';
+import { useCourses, Lesson } from '@/hooks/useCourses';
 import { CourseSidebar } from '@/components/course/CourseSidebar';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Header } from '@/components/layout/Header';
@@ -16,8 +16,31 @@ const Lesson = () => {
   const { levelId, moduleId, lessonId } = useParams();
   const { user, loading: authLoading, updateStreak } = useAuth();
   const { isLessonCompleted, loading: progressLoading } = useProgress();
+  const { getModuleById, getLessonById, fetchLessonDetail, trackLessonActivity, loading: coursesLoading } = useCourses();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [lessonDetail, setLessonDetail] = useState<Lesson | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(true);
+
+  const loading = authLoading || progressLoading || coursesLoading;
+
+  useEffect(() => {
+    const loadLessonDetail = async () => {
+      if (!lessonId) return;
+      
+      setLoadingDetail(true);
+      const detail = await fetchLessonDetail(lessonId);
+      setLessonDetail(detail);
+      setLoadingDetail(false);
+      
+      // Track lesson activity for streak
+      if (user && detail) {
+        trackLessonActivity(lessonId);
+      }
+    };
+    
+    loadLessonDetail();
+  }, [lessonId, fetchLessonDetail, user, trackLessonActivity]);
 
   // Save last lesson position to localStorage (backend doesn't have this field yet)
   useEffect(() => {
@@ -30,7 +53,7 @@ const Lesson = () => {
     }
   }, [user, levelId, moduleId, lessonId]);
 
-  if (authLoading || progressLoading) {
+  if (loading || loadingDetail) {
     return <LessonSkeleton />;
   }
 
@@ -39,7 +62,16 @@ const Lesson = () => {
 
   const module = getModuleById(levelId, moduleId);
   const lesson = getLessonById(levelId, moduleId, lessonId);
-  if (!module || !lesson) return <Navigate to="/dashboard" replace />;
+  
+  // Merge basic lesson info with detailed content
+  const fullLesson = lesson ? {
+    ...lesson,
+    ...lessonDetail,
+    keyTakeaways: lessonDetail?.takeaways?.map(t => t.text) || lesson.keyTakeaways || [],
+    faqs: lessonDetail?.faqs || lesson.faqs || [],
+  } : null;
+  
+  if (!module || !fullLesson) return <Navigate to="/dashboard" replace />;
 
   const lessonIndex = module.lessons.findIndex(l => l.id === lessonId);
   const nextLesson = module.lessons[lessonIndex + 1];
@@ -58,7 +90,7 @@ const Lesson = () => {
     }
   };
 
-  const contentParagraphs = lesson.content.split('\n\n').filter(p => p.trim());
+  const contentParagraphs = fullLesson.content.split('\n\n').filter(p => p.trim());
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,7 +118,7 @@ const Lesson = () => {
         <main className="flex-1 min-w-0 py-8 px-4 lg:px-8 max-w-4xl mx-auto">
           <Breadcrumb items={[
             { label: module.title, href: `/module/${levelId}/${moduleId}` },
-            { label: lesson.title }
+            { label: fullLesson.title }
           ]} />
 
           {/* Lesson Header */}
@@ -95,7 +127,7 @@ const Lesson = () => {
               <Target className="h-4 w-4" />
               LESSON {lessonIndex + 1} OF {module.lessons.length}
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{lesson.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{fullLesson.title}</h1>
             {isCompleted && (
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/20 text-success text-sm">
                 <CheckCircle className="h-4 w-4" />
@@ -110,7 +142,7 @@ const Lesson = () => {
               <Target className="h-5 w-5 text-primary" />
               <span className="subheader">Mission Briefing</span>
             </div>
-            <p className="prose-body text-muted-foreground">{lesson.objective}</p>
+            <p className="prose-body text-muted-foreground">{fullLesson.objective}</p>
           </div>
 
           {/* Intel Section */}
@@ -131,30 +163,32 @@ const Lesson = () => {
           </div>
 
           {/* Key Takeaways */}
-          <div className="tactical-card p-6 mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="h-5 w-5 text-warning" />
-              <span className="subheader">Key Signals</span>
+          {fullLesson.keyTakeaways.length > 0 && (
+            <div className="tactical-card p-6 mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Lightbulb className="h-5 w-5 text-warning" />
+                <span className="subheader">Key Signals</span>
+              </div>
+              <div className="space-y-3">
+                {fullLesson.keyTakeaways.map((takeaway, index) => (
+                  <div key={index} className="signal-item">
+                    <CheckCircle className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                    <p className="text-sm">{takeaway}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-3">
-              {lesson.keyTakeaways.map((takeaway, index) => (
-                <div key={index} className="signal-item">
-                  <CheckCircle className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                  <p className="text-sm">{takeaway}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* FAQs */}
-          {lesson.faqs.length > 0 && (
+          {fullLesson.faqs && fullLesson.faqs.length > 0 && (
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <HelpCircle className="h-5 w-5 text-primary" />
                 <span className="subheader">Recon (FAQs)</span>
               </div>
               <Accordion type="single" collapsible>
-                {lesson.faqs.map((faq, index) => (
+                {fullLesson.faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`faq-${index}`}>
                     <AccordionTrigger className="text-left hover:text-primary">{faq.question}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>

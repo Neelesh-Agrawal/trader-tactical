@@ -4,6 +4,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from .models import User
 from django.contrib.auth.password_validation import validate_password
+from courses.models import Enrollment, Course
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -11,69 +13,81 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
-            'username',
-            'password',
-            'first_name',
-            'last_name',
-            'phone',
-            'state',
-            'sex',
-            'age',
+            "email",
+            "username",
+            "password",
+            "first_name",
+            "last_name",
+            "phone",
+            "occupation",
+            "sex",
+            "age",
         )
         extra_kwargs = {
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-            'phone': {'required': True},
+            "first_name": {"required": True},
+            "last_name": {"required": True},
+            "phone": {"required": True},
         }
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            phone=validated_data['phone'],
-            state=validated_data.get('state'),
-            sex=validated_data.get('sex', 'N'),
-            age=validated_data.get('age'),
+            email=validated_data["email"],
+            username=validated_data["username"],
+            password=validated_data["password"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            phone=validated_data["phone"],
+            occupation=validated_data.get("occupation"),
+            sex=validated_data.get("sex", "N"),
+            age=validated_data.get("age"),
         )
+
+        # Auto-enroll user in course ID 1
+        try:
+            course = Course.objects.get(id=1)
+            Enrollment.objects.get_or_create(
+                user=user, course=course, defaults={"is_active": True}
+            )
+        except Course.DoesNotExist:
+            pass
+        except Exception as e:
+            print(f"Auto-enrollment error: {e}")
+
         return user
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name',
-            'last_name',
-            'phone',
-            'state',
-            'sex',
-            'age',
+            "first_name",
+            "last_name",
+            "phone",
+            "occupation",
+            "sex",
+            "age",
         ]
+
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(
-        required=True,
-        validators=[validate_password]
-    )
+    new_password = serializers.CharField(required=True, validators=[validate_password])
 
     def validate_old_password(self, value):
-        user = self.context['request'].user
+        user = self.context["request"].user
         if not user.check_password(value):
             raise serializers.ValidationError("Old password is incorrect")
         return value
 
     def save(self, **kwargs):
-        user = self.context['request'].user
-        user.set_password(self.validated_data['new_password'])
+        user = self.context["request"].user
+        user.set_password(self.validated_data["new_password"])
         user.save()
         return user
 
+
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = 'email'
+    username_field = "email"
 
 
 class PhoneTokenObtainPairSerializer(serializers.Serializer):
@@ -81,8 +95,8 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
     pin = serializers.CharField(required=True, write_only=True)
 
     def validate(self, attrs):
-        phone = attrs.get('phone')
-        pin = attrs.get('pin')
+        phone = attrs.get("phone")
+        pin = attrs.get("pin")
 
         if not phone or not pin:
             raise serializers.ValidationError("Phone and PIN are required")
@@ -91,10 +105,10 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
         # We'll try to parse it the same way PhoneNumberField does
         try:
             from phonenumber_field.phonenumber import PhoneNumber
-            
+
             # Create PhoneNumber object from string (handles normalization)
             phone_number = PhoneNumber.from_string(phone, region=None)
-            
+
             # Look up user by phone (PhoneNumberField handles format matching)
             try:
                 user = User.objects.get(phone=phone_number)
@@ -104,10 +118,15 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
                     user = User.objects.get(phone=str(phone_number))
                 except User.DoesNotExist:
                     raise serializers.ValidationError("Invalid phone number or PIN")
-                    
+
         except Exception:
             # Fallback: try direct lookup with normalized string
-            normalized_phone = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+            normalized_phone = (
+                phone.replace(" ", "")
+                .replace("-", "")
+                .replace("(", "")
+                .replace(")", "")
+            )
             try:
                 user = User.objects.get(phone=normalized_phone)
             except User.DoesNotExist:
@@ -119,12 +138,13 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
 
         # Generate JWT tokens
         from rest_framework_simplejwt.tokens import RefreshToken
+
         refresh = RefreshToken.for_user(user)
-        
-        attrs['user'] = user
-        attrs['refresh'] = str(refresh)
-        attrs['access'] = str(refresh.access_token)
-        
+
+        attrs["user"] = user
+        attrs["refresh"] = str(refresh)
+        attrs["access"] = str(refresh.access_token)
+
         return attrs
 
 
@@ -132,16 +152,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'phone',
-            'state',
-            'sex',
-            'age',
-            'is_staff',
-            'is_active',
+            "id",
+            "email",
+            "username",
+            "first_name",
+            "last_name",
+            "phone",
+            "occupation",
+            "sex",
+            "age",
+            "is_staff",
+            "is_active",
         ]
         read_only_fields = fields
