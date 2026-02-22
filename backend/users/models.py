@@ -31,10 +31,27 @@ class User(AbstractUser):
         max_length=20, choices=OCCUPATION_CHOICES, null=True, blank=True
     )
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, default="N")
-    age = models.PositiveIntegerField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    phone_verified = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = ["username"]
     USERNAME_FIELD = "email"
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class PhoneVerification(models.Model):
+    phone = PhoneNumberField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    verified = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["phone", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.phone} - {'verified' if self.verified else 'pending'}"

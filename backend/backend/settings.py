@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lnsa5m4$00rh)ij(dn69)v_7963z5d=-^v)x2zxyy$!e8p4i52'
+SECRET_KEY = "django-insecure-lnsa5m4$00rh)ij(dn69)v_7963z5d=-^v)x2zxyy$!e8p4i52"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,54 +32,52 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'nested_admin',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'rest_framework',
-    'phonenumbers',
-    'django_ckeditor_5',
-    'corsheaders',
-
-    'users',
-    'courses',
-    'progress',
-    'quiz',
+    "nested_admin",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "phonenumbers",
+    "django_ckeditor_5",
+    "corsheaders",
+    "users",
+    "courses",
+    "progress",
+    "quiz",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = "backend.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = "backend.wsgi.application"
 
 
 # Database
@@ -106,16 +104,16 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -123,9 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -135,22 +133,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 PASSWORD_HASHERS = [
@@ -161,38 +157,85 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
 CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': {
-            'toolbar_panel_id': 'toolbar',
-            'toolbar_width': '100%',
-            'items': [
-                'undo', 'redo', '|',
-                'heading', '|',
-                'bold', 'italic', 'underline', 'strikethrough', '|',
-                'alignment', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-                'link', 'imageUpload', 'mediaEmbed', 'fileUpload', '|',
-                'bulletedList', 'numberedList', 'todoList', '|',
-                'blockQuote', 'insertTable', 'codeBlock', 'code', '|',
-                'findAndReplace', 'highlight', 'removeFormat'
+    "default": {
+        "toolbar": {
+            "toolbar_panel_id": "toolbar",
+            "toolbar_width": "100%",
+            "items": [
+                "undo",
+                "redo",
+                "|",
+                "heading",
+                "|",
+                "bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "|",
+                "alignment",
+                "fontFamily",
+                "fontColor",
+                "fontBackgroundColor",
+                "|",
+                "link",
+                "imageUpload",
+                "mediaEmbed",
+                "fileUpload",
+                "|",
+                "bulletedList",
+                "numberedList",
+                "todoList",
+                "|",
+                "blockQuote",
+                "insertTable",
+                "codeBlock",
+                "code",
+                "|",
+                "findAndReplace",
+                "highlight",
+                "removeFormat",
             ],
-            'shouldNotGroupWhenFull': True
+            "shouldNotGroupWhenFull": True,
         },
-        'language': 'en', # set any language you want
-        'image': {
-            'toolbar': [
-                'imageTextAlternative', 'imageStyle:full', 'imageStyle:side'
-            ]
+        "language": "en",  # set any language you want
+        "image": {
+            "toolbar": ["imageTextAlternative", "imageStyle:full", "imageStyle:side"]
         },
-        'table': {
-            'contentToolbar': ['tableColumn', 'tableRow', 'mergeTableCells']
-        },
-        'placeholder': 'Enter Your Text...',
+        "table": {"contentToolbar": ["tableColumn", "tableRow", "mergeTableCells"]},
+        "placeholder": "Enter Your Text...",
     }
 }
+
+# ============================================================================
+# Email Configuration (Gmail SMTP)
+# ============================================================================
+# TODO: Replace with your Gmail credentials
+# For Gmail, use an App Password (not your regular password)
+# Get it from: https://myaccount.google.com/apppasswords
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "your-email@gmail.com"  # TODO: Add your Gmail address
+EMAIL_HOST_PASSWORD = "your-app-password"  # TODO: Add your Gmail App Password
+DEFAULT_FROM_EMAIL = "noreply@trademaster.com"
+
+# Feedback recipient email
+# TODO: Add the email address that should receive feedback submissions
+FEEDBACK_RECIPIENT = "feedback@trademaster.com"  # TODO: Add feedback recipient
+
+# ============================================================================
+# Twilio Configuration (SMS OTP)
+# ============================================================================
+# TODO: Replace with your Twilio credentials
+# Get them from: https://console.twilio.com
+TWILIO_ACCOUNT_SID = "your_account_sid"  # TODO: Add your Twilio Account SID
+TWILIO_AUTH_TOKEN = "your_auth_token"  # TODO: Add your Twilio Auth Token
+TWILIO_PHONE_NUMBER = "+1234567890"  # TODO: Add your Twilio phone number

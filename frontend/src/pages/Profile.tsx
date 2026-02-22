@@ -11,6 +11,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { User, Mail, Phone, Calendar, Award, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+const calculateAge = (birthDate: Date | string | null): number | null => {
+  if (!birthDate) return null;
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 const Profile = () => {
   const { user, profile, streak, loading, refreshProfile } = useAuth();
   const navigate = useNavigate();
@@ -57,8 +69,7 @@ const Profile = () => {
           first_name,
           last_name,
           phone: formData.phone_number,
-          // Backend doesn't have date_of_birth field, so we'll skip it
-          // age can be calculated if needed
+          birth_date: formData.date_of_birth || null,
         }),
       });
 
@@ -183,15 +194,22 @@ const Profile = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
                     />
                   ) : (
-                    <p className="py-2 px-3 bg-muted rounded-md">
-                      {profile.date_of_birth 
-                        ? new Date(profile.date_of_birth).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })
-                        : 'Not set'}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="py-2 px-3 bg-muted rounded-md">
+                        {profile.date_of_birth 
+                          ? new Date(profile.date_of_birth).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })
+                          : 'Not set'}
+                      </p>
+                      {profile.date_of_birth && (
+                        <p className="text-sm text-muted-foreground px-3">
+                          Age: {calculateAge(profile.date_of_birth)} years old
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

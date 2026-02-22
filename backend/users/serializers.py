@@ -21,7 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "phone",
             "occupation",
             "sex",
-            "age",
+            "birth_date",
         )
         extra_kwargs = {
             "first_name": {"required": True},
@@ -39,7 +39,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data["phone"],
             occupation=validated_data.get("occupation"),
             sex=validated_data.get("sex", "N"),
-            age=validated_data.get("age"),
+            birth_date=validated_data.get("birth_date"),
+            phone_verified=True,  # User verified phone via OTP before registration
         )
 
         # Auto-enroll user in course ID 1
@@ -65,7 +66,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             "phone",
             "occupation",
             "sex",
-            "age",
+            "birth_date",
         ]
 
 
@@ -158,9 +159,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "phone",
+            "phone_verified",
             "occupation",
             "sex",
-            "age",
+            "birth_date",
             "is_staff",
             "is_active",
         ]

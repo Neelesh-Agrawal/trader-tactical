@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PinInput } from '@/components/ui/pin-input';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Check, Shield } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import authImage from '@/assets/auth-trading.jpg';
 
-type Step = 'details' | 'pin';
+type Step = 'details' | 'otp' | 'pin';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Male' },
@@ -47,6 +48,13 @@ const Register = () => {
   const [pinError, setPinError] = useState('');
   const [loading, setLoading] = useState(false);
   
+  // OTP state
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -58,6 +66,10 @@ const Register = () => {
     }
     if (!formData.phoneNumber.trim()) {
       toast({ title: 'Required', description: 'Please enter your phone number', variant: 'destructive' });
+      return false;
+    }
+    if (formData.phoneNumber.length < 10) {
+      toast({ title: 'Invalid', description: 'Please enter a valid phone number', variant: 'destructive' });
       return false;
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
@@ -79,9 +91,77 @@ const Register = () => {
     return true;
   };
 
-  const handleNextStep = () => {
-    if (validateDetailsStep()) {
+  const sendOtp = async () => {
+    const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
+    
+    setOtpLoading(true);
+    setOtpError('');
+    
+    try {
+      const response = await apiFetch<{ message: string; otp?: string }>('/api/auth/send-otp/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ phone: normalizedPhone }),
+      });
+      
+      setOtpSent(true);
+      setResendTimer(60);
+      
+      // Start countdown timer
+      const timer = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      toast({ title: 'OTP Sent', description: response.message || 'Verification code sent to your phone' });
+      
+      // In development mode, OTP is returned in response
+      if (response.otp) {
+        console.log('Dev mode OTP:', response.otp);
+      }
+    } catch (error: any) {
+      setOtpError(error.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const verifyOtp = async () => {
+    if (otp.length !== 6) {
+      setOtpError('Please enter the 6-digit code');
+      return;
+    }
+    
+    const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
+    
+    setOtpLoading(true);
+    setOtpError('');
+    
+    try {
+      await apiFetch('/api/auth/verify-otp/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ phone: normalizedPhone, otp }),
+      });
+      
+      // OTP verified, move to PIN step
       setStep('pin');
+    } catch (error: any) {
+      setOtpError(error.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleNextStep = async () => {
+    if (validateDetailsStep()) {
+      await sendOtp();
+      setStep('otp');
     }
   };
 
@@ -117,15 +197,6 @@ const Register = () => {
     // Normalize phone number with country code
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
-    // Calculate age from date of birth
-    const birthDate = new Date(formData.dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
     // Map gender to sex (backend expects 'M', 'F', or 'N')
     const sexMap: Record<string, string> = {
       'male': 'M',
@@ -141,7 +212,7 @@ const Register = () => {
       password: pin, // Using PIN as password for now
       occupation: formData.occupation,
       sex: sexMap[formData.gender] || 'N',
-      age: age,
+      birth_date: formData.dateOfBirth,
     });
     
     setLoading(false);
@@ -177,10 +248,10 @@ const Register = () => {
             <CardHeader className="text-center">
               <div className="caption text-primary mb-2">RECRUITMENT</div>
               <CardTitle className="text-2xl">
-                {step === 'details' ? 'Begin Your Journey' : 'Secure Your Account'}
+                {step === 'details' ? 'Begin Your Journey' : step === 'otp' ? 'Verify Your Phone' : 'Secure Your Account'}
               </CardTitle>
               <CardDescription>
-                {step === 'details' ? 'Create your trading profile' : 'Create a 4-digit PIN for quick login'}
+                {step === 'details' ? 'Create your trading profile' : step === 'otp' ? 'Enter the code sent to your phone' : 'Create a 4-digit PIN for quick login'}
               </CardDescription>
             
             {/* Step Indicator */}
@@ -189,14 +260,21 @@ const Register = () => {
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
                 step === 'details' ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary"
               )}>
-                {step === 'pin' ? <Check className="h-4 w-4" /> : '1'}
+                {step !== 'details' ? <Check className="h-4 w-4" /> : '1'}
+              </div>
+              <div className="w-8 h-0.5 bg-border" />
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
+                step === 'otp' ? "bg-primary text-primary-foreground" : step === 'pin' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+              )}>
+                {step === 'pin' ? <Check className="h-4 w-4" /> : '2'}
               </div>
               <div className="w-8 h-0.5 bg-border" />
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
                 step === 'pin' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
               )}>
-                2
+                3
               </div>
             </div>
           </CardHeader>
@@ -330,6 +408,85 @@ const Register = () => {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </form>
+            ) : step === 'otp' ? (
+              <div className="space-y-6">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MessageSquare className="h-8 w-8 text-primary" />
+                  </div>
+                </div>
+                
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    We've sent a verification code to
+                  </p>
+                  <p className="font-medium">
+                    {countryCode} {formData.phoneNumber}
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="mono text-xs text-muted-foreground text-center block">
+                    ENTER VERIFICATION CODE
+                  </label>
+                  <Input
+                    type="tel"
+                    placeholder="123456"
+                    value={otp}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setOtp(value);
+                      setOtpError('');
+                    }}
+                    className="text-center text-2xl tracking-widest"
+                    autoFocus
+                  />
+                  {otpError && (
+                    <p className="text-destructive text-sm text-center">{otpError}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => {
+                      setOtpSent(false);
+                      setStep('details');
+                    }}
+                    className="flex-1 gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button 
+                    type="button"
+                    onClick={verifyOtp}
+                    disabled={otpLoading || otp.length !== 6}
+                    className="flex-1"
+                  >
+                    {otpLoading ? 'Verifying...' : 'Verify'}
+                  </Button>
+                </div>
+
+                <div className="text-center">
+                  {resendTimer > 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Resend code in {resendTimer}s
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={sendOtp}
+                      disabled={otpLoading}
+                      className="text-sm"
+                    >
+                      Didn't receive the code? Resend
+                    </Button>
+                  )}
+                </div>
+              </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div className="flex justify-center mb-4">
@@ -371,7 +528,7 @@ const Register = () => {
                   <Button 
                     type="button" 
                     variant="outline" 
-                    onClick={() => setStep('details')}
+                    onClick={() => setStep('otp')}
                     className="flex-1 gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />

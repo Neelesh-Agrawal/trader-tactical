@@ -23,7 +23,7 @@ interface SignUpData {
   password: string;
   occupation?: string;
   sex?: string;
-  age?: number;
+  birth_date?: string;
 }
 
 interface Streak {
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         phone?: string;
         occupation?: string;
         sex?: string;
-        age?: number;
+        birth_date?: string;
       }>('/api/auth/me/');
 
       const name =
@@ -77,8 +77,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name,
         email: data.email,
         phone_number: data.phone,
-        // These fields are not present on the Django user; keep optional/defaulted
-        date_of_birth: null,
+        date_of_birth: data.birth_date ? new Date(data.birth_date) : null,
         current_level: 'beginner',
       });
     } catch (error) {
@@ -152,7 +151,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           phone: data.phone_number,
           occupation: data.occupation,
           sex: data.sex,
-          age: data.age,
+          birth_date: data.birth_date,
         }),
       });
 
