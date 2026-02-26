@@ -22,12 +22,15 @@ const GENDER_OPTIONS = [
 
 const OCCUPATION_OPTIONS = [
   { value: 'student', label: 'Student' },
-  { value: 'employed', label: 'Employed' },
+  { value: 'Working Professionals', label: 'Working Professionals' },
   { value: 'self-employed', label: 'Self-Employed' },
   { value: 'business-owner', label: 'Business Owner' },
-  { value: 'freelancer', label: 'Freelancer' },
-  { value: 'retired', label: 'Retired' },
-  { value: 'other', label: 'Other' },
+  { value: 'Active Trader', label: 'Active Trader' },
+  { value: 'Sub-Broker/Franchise Partner', label: 'Sub-Broker/Franchise Partner' },
+  { value: 'Dealer/RM', label: 'Dealer/RM' },
+  { value: 'Homemaker', label: 'Homemaker' },
+  { value: 'Retired', label: 'Retired' },
+  { value: 'Others', label: 'Others' },
 ];
 
 const Register = () => {
