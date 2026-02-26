@@ -8,11 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PinInput } from '@/components/ui/pin-input';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import authImage from '@/assets/auth-trading.jpg';
 
-type Step = 'details' | 'otp' | 'pin';
+type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Male' },
@@ -48,12 +48,19 @@ const Register = () => {
   const [pinError, setPinError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // OTP state
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpError, setOtpError] = useState('');
-  const [otpLoading, setOtpLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
+  // Phone OTP state
+  const [phoneOtp, setPhoneOtp] = useState('');
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneOtpError, setPhoneOtpError] = useState('');
+  const [phoneOtpLoading, setPhoneOtpLoading] = useState(false);
+  const [phoneResendTimer, setPhoneResendTimer] = useState(0);
+  
+  // Email OTP state
+  const [emailOtp, setEmailOtp] = useState('');
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailOtpError, setEmailOtpError] = useState('');
+  const [emailOtpLoading, setEmailOtpLoading] = useState(false);
+  const [emailResendTimer, setEmailResendTimer] = useState(0);
   
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -91,11 +98,11 @@ const Register = () => {
     return true;
   };
 
-  const sendOtp = async () => {
+  const sendPhoneOtp = async () => {
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
-    setOtpLoading(true);
-    setOtpError('');
+    setPhoneOtpLoading(true);
+    setPhoneOtpError('');
     
     try {
       const response = await apiFetch<{ message: string; otp?: string }>('/api/auth/send-otp/', {
@@ -104,12 +111,11 @@ const Register = () => {
         body: JSON.stringify({ phone: normalizedPhone }),
       });
       
-      setOtpSent(true);
-      setResendTimer(60);
+      setPhoneOtpSent(true);
+      setPhoneResendTimer(60);
       
-      // Start countdown timer
       const timer = setInterval(() => {
-        setResendTimer((prev) => {
+        setPhoneResendTimer((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             return 0;
@@ -118,51 +124,120 @@ const Register = () => {
         });
       }, 1000);
       
-      toast({ title: 'OTP Sent', description: response.message || 'Verification code sent to your phone' });
+      toast({ title: 'OTP Sent', description: 'Verification code sent to your phone' });
       
-      // In development mode, OTP is returned in response
       if (response.otp) {
-        console.log('Dev mode OTP:', response.otp);
+        console.log('Dev mode phone OTP:', response.otp);
       }
     } catch (error: any) {
-      setOtpError(error.message || 'Failed to send OTP. Please try again.');
+      setPhoneOtpError(error.message || 'Failed to send OTP. Please try again.');
     } finally {
-      setOtpLoading(false);
+      setPhoneOtpLoading(false);
     }
   };
 
-  const verifyOtp = async () => {
-    if (otp.length !== 6) {
-      setOtpError('Please enter the 6-digit code');
+  const verifyPhoneOtp = async () => {
+    if (phoneOtp.length !== 6) {
+      setPhoneOtpError('Please enter the 6-digit code');
       return;
     }
     
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
-    setOtpLoading(true);
-    setOtpError('');
+    setPhoneOtpLoading(true);
+    setPhoneOtpError('');
     
     try {
       await apiFetch('/api/auth/verify-otp/', {
         method: 'POST',
         auth: false,
-        body: JSON.stringify({ phone: normalizedPhone, otp }),
+        body: JSON.stringify({ phone: normalizedPhone, otp: phoneOtp }),
       });
       
-      // OTP verified, move to PIN step
-      setStep('pin');
+      // Phone verified, move to email step
+      setStep('email-otp');
+      sendEmailOtp();
     } catch (error: any) {
-      setOtpError(error.message || 'Invalid OTP. Please try again.');
+      setPhoneOtpError(error.message || 'Invalid OTP. Please try again.');
     } finally {
-      setOtpLoading(false);
+      setPhoneOtpLoading(false);
     }
   };
 
-  const handleNextStep = async () => {
-    if (validateDetailsStep()) {
-      await sendOtp();
-      setStep('otp');
+  const sendEmailOtp = async () => {
+    setEmailOtpLoading(true);
+    setEmailOtpError('');
+    
+    try {
+      const response = await apiFetch<{ message: string; otp?: string }>('/api/auth/send-email-otp/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ email: formData.email.toLowerCase() }),
+      });
+      
+      setEmailOtpSent(true);
+      setEmailResendTimer(60);
+      
+      const timer = setInterval(() => {
+        setEmailResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      toast({ title: 'OTP Sent', description: 'Verification code sent to your email' });
+      
+      if (response.otp) {
+        console.log('Dev mode email OTP:', response.otp);
+      }
+    } catch (error: any) {
+      setEmailOtpError(error.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setEmailOtpLoading(false);
     }
+  };
+
+  const verifyEmailOtp = async () => {
+    if (emailOtp.length !== 6) {
+      setEmailOtpError('Please enter the 6-digit code');
+      return;
+    }
+    
+    setEmailOtpLoading(true);
+    setEmailOtpError('');
+    
+    try {
+      await apiFetch('/api/auth/verify-email-otp/', {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({ email: formData.email.toLowerCase(), otp: emailOtp }),
+      });
+      
+      // Email verified, move to PIN step
+      setStep('pin');
+    } catch (error: any) {
+      setEmailOtpError(error.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setEmailOtpLoading(false);
+    }
+  };
+
+  const handleNextStep = () => {
+    if (!validateDetailsStep()) {
+      return;
+    }
+    
+    // Set loading and step immediately
+    setLoading(true);
+    setStep('phone-otp');
+    
+    // Then send OTP
+    sendPhoneOtp().finally(() => {
+      setLoading(false);
+    });
   };
 
   const handlePinChange = (value: string) => {
@@ -194,10 +269,8 @@ const Register = () => {
 
     setLoading(true);
     
-    // Normalize phone number with country code
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
     
-    // Map gender to sex (backend expects 'M', 'F', or 'N')
     const sexMap: Record<string, string> = {
       'male': 'M',
       'female': 'F',
@@ -209,7 +282,7 @@ const Register = () => {
       name: formData.name,
       email: formData.email,
       phone_number: normalizedPhone,
-      password: pin, // Using PIN as password for now
+      password: pin,
       occupation: formData.occupation,
       sex: sexMap[formData.gender] || 'N',
       birth_date: formData.dateOfBirth,
@@ -220,8 +293,37 @@ const Register = () => {
     if (error) {
       toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
     } else {
+      // Clear last lesson from localStorage for new users
+      localStorage.removeItem('last_lesson');
       toast({ title: 'Welcome, Trader!', description: 'Your account has been created' });
       navigate('/dashboard');
+    }
+  };
+
+  const getStepNumber = () => {
+    switch (step) {
+      case 'details': return 1;
+      case 'phone-otp': return 2;
+      case 'email-otp': return 3;
+      case 'pin': return 4;
+    }
+  };
+
+  const getStepTitle = () => {
+    switch (step) {
+      case 'details': return 'Begin Your Journey';
+      case 'phone-otp': return 'Verify Your Phone';
+      case 'email-otp': return 'Verify Your Email';
+      case 'pin': return 'Secure Your Account';
+    }
+  };
+
+  const getStepDescription = () => {
+    switch (step) {
+      case 'details': return 'Create your trading profile';
+      case 'phone-otp': return 'Enter the code sent to your phone';
+      case 'email-otp': return 'Enter the code sent to your email';
+      case 'pin': return 'Create a 4-digit PIN for quick login';
     }
   };
 
@@ -248,33 +350,42 @@ const Register = () => {
             <CardHeader className="text-center">
               <div className="caption text-primary mb-2">RECRUITMENT</div>
               <CardTitle className="text-2xl">
-                {step === 'details' ? 'Begin Your Journey' : step === 'otp' ? 'Verify Your Phone' : 'Secure Your Account'}
+                {getStepTitle()}
               </CardTitle>
               <CardDescription>
-                {step === 'details' ? 'Create your trading profile' : step === 'otp' ? 'Enter the code sent to your phone' : 'Create a 4-digit PIN for quick login'}
+                {getStepDescription()}
               </CardDescription>
             
             {/* Step Indicator */}
             <div className="flex items-center justify-center gap-2 mt-4">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step === 'details' ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary"
+                step !== 'details' ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary"
               )}>
                 {step !== 'details' ? <Check className="h-4 w-4" /> : '1'}
               </div>
               <div className="w-8 h-0.5 bg-border" />
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step === 'otp' ? "bg-primary text-primary-foreground" : step === 'pin' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                step === 'phone-otp' ? "bg-primary text-primary-foreground" : 
+                (step === 'email-otp' || step === 'pin') ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
               )}>
-                {step === 'pin' ? <Check className="h-4 w-4" /> : '2'}
+                {(step === 'email-otp' || step === 'pin') ? <Check className="h-4 w-4" /> : '2'}
+              </div>
+              <div className="w-8 h-0.5 bg-border" />
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
+                step === 'email-otp' ? "bg-primary text-primary-foreground" : 
+                step === 'pin' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+              )}>
+                {step === 'pin' ? <Check className="h-4 w-4" /> : '3'}
               </div>
               <div className="w-8 h-0.5 bg-border" />
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
                 step === 'pin' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
               )}>
-                3
+                4
               </div>
             </div>
           </CardHeader>
@@ -403,12 +514,12 @@ const Register = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full gap-2">
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
+                <Button type="submit" className="w-full gap-2" disabled={loading}>
+                  {loading ? 'Please wait...' : 'Continue'}
+                  {!loading && <ArrowRight className="h-4 w-4" />}
                 </Button>
               </form>
-            ) : step === 'otp' ? (
+            ) : step === 'phone-otp' ? (
               <div className="space-y-6">
                 <div className="flex justify-center mb-4">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -432,17 +543,17 @@ const Register = () => {
                   <Input
                     type="tel"
                     placeholder="123456"
-                    value={otp}
+                    value={phoneOtp}
                     onChange={(e) => {
                       const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                      setOtp(value);
-                      setOtpError('');
+                      setPhoneOtp(value);
+                      setPhoneOtpError('');
                     }}
                     className="text-center text-2xl tracking-widest"
                     autoFocus
                   />
-                  {otpError && (
-                    <p className="text-destructive text-sm text-center">{otpError}</p>
+                  {phoneOtpError && (
+                    <p className="text-destructive text-sm text-center">{phoneOtpError}</p>
                   )}
                 </div>
 
@@ -451,7 +562,7 @@ const Register = () => {
                     type="button" 
                     variant="outline" 
                     onClick={() => {
-                      setOtpSent(false);
+                      setPhoneOtpSent(false);
                       setStep('details');
                     }}
                     className="flex-1 gap-2"
@@ -461,25 +572,104 @@ const Register = () => {
                   </Button>
                   <Button 
                     type="button"
-                    onClick={verifyOtp}
-                    disabled={otpLoading || otp.length !== 6}
+                    onClick={verifyPhoneOtp}
+                    disabled={phoneOtpLoading || phoneOtp.length !== 6}
                     className="flex-1"
                   >
-                    {otpLoading ? 'Verifying...' : 'Verify'}
+                    {phoneOtpLoading ? 'Verifying...' : 'Verify'}
                   </Button>
                 </div>
 
                 <div className="text-center">
-                  {resendTimer > 0 ? (
+                  {phoneResendTimer > 0 ? (
                     <p className="text-sm text-muted-foreground">
-                      Resend code in {resendTimer}s
+                      Resend code in {phoneResendTimer}s
                     </p>
                   ) : (
                     <Button
                       type="button"
                       variant="link"
-                      onClick={sendOtp}
-                      disabled={otpLoading}
+                      onClick={sendPhoneOtp}
+                      disabled={phoneOtpLoading}
+                      className="text-sm"
+                    >
+                      Didn't receive the code? Resend
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ) : step === 'email-otp' ? (
+              <div className="space-y-6">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Mail className="h-8 w-8 text-primary" />
+                  </div>
+                </div>
+                
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    We've sent a verification code to
+                  </p>
+                  <p className="font-medium">
+                    {formData.email}
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="mono text-xs text-muted-foreground text-center block">
+                    ENTER VERIFICATION CODE
+                  </label>
+                  <Input
+                    type="tel"
+                    placeholder="123456"
+                    value={emailOtp}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setEmailOtp(value);
+                      setEmailOtpError('');
+                    }}
+                    className="text-center text-2xl tracking-widest"
+                    autoFocus
+                  />
+                  {emailOtpError && (
+                    <p className="text-destructive text-sm text-center">{emailOtpError}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => {
+                      setEmailOtpSent(false);
+                      setStep('phone-otp');
+                    }}
+                    className="flex-1 gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button 
+                    type="button"
+                    onClick={verifyEmailOtp}
+                    disabled={emailOtpLoading || emailOtp.length !== 6}
+                    className="flex-1"
+                  >
+                    {emailOtpLoading ? 'Verifying...' : 'Verify'}
+                  </Button>
+                </div>
+
+                <div className="text-center">
+                  {emailResendTimer > 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Resend code in {emailResendTimer}s
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={sendEmailOtp}
+                      disabled={emailOtpLoading}
                       className="text-sm"
                     >
                       Didn't receive the code? Resend
@@ -528,7 +718,7 @@ const Register = () => {
                   <Button 
                     type="button" 
                     variant="outline" 
-                    onClick={() => setStep('otp')}
+                    onClick={() => setStep('email-otp')}
                     className="flex-1 gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />

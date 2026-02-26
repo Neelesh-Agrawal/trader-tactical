@@ -12,6 +12,8 @@ interface Profile {
   name: string;
   email: string;
   phone_number?: string;
+  phone_verified?: boolean;
+  email_verified?: boolean;
   date_of_birth?: string | null;
   current_level?: string;
 }
@@ -62,6 +64,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         first_name: string;
         last_name: string;
         phone?: string;
+        phone_verified?: boolean;
+        email_verified?: boolean;
         occupation?: string;
         sex?: string;
         birth_date?: string;
@@ -77,6 +81,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name,
         email: data.email,
         phone_number: data.phone,
+        phone_verified: data.phone_verified,
+        email_verified: data.email_verified,
         date_of_birth: data.birth_date ? new Date(data.birth_date) : null,
         current_level: 'beginner',
       });

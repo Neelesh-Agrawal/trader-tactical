@@ -41,6 +41,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             sex=validated_data.get("sex", "N"),
             birth_date=validated_data.get("birth_date"),
             phone_verified=True,  # User verified phone via OTP before registration
+            email_verified=True,  # User verified email via OTP before registration
         )
 
         # Auto-enroll user in course ID 1
@@ -160,6 +161,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "phone",
             "phone_verified",
+            "email_verified",
             "occupation",
             "sex",
             "birth_date",

@@ -33,6 +33,7 @@ class User(AbstractUser):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, default="N")
     birth_date = models.DateField(null=True, blank=True)
     phone_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = ["username"]
     USERNAME_FIELD = "email"
@@ -55,3 +56,19 @@ class PhoneVerification(models.Model):
 
     def __str__(self):
         return f"{self.phone} - {'verified' if self.verified else 'pending'}"
+
+
+class EmailVerification(models.Model):
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    verified = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["email", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.email} - {'verified' if self.verified else 'pending'}"

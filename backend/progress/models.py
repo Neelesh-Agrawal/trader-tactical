@@ -10,8 +10,8 @@ User = settings.AUTH_USER_MODEL
 
 class UserStreak(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="streak")
-    current_streak = models.PositiveIntegerField(default=0)
-    longest_streak = models.PositiveIntegerField(default=0)
+    current_streak = models.PositiveIntegerField(default=1)
+    longest_streak = models.PositiveIntegerField(default=1)
     last_activity_date = models.DateField(null=True, blank=True)
 
     class Meta:
@@ -29,9 +29,8 @@ class UserStreak(models.Model):
         today = date.today()
 
         if self.last_activity_date is None:
-            # First activity ever
-            self.current_streak = 1
-            self.longest_streak = 1
+            # First activity ever - streak already initialized to 1
+            pass
         elif self.last_activity_date == today:
             # Already recorded activity today, no change
             pass

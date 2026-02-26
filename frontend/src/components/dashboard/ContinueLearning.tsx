@@ -29,23 +29,32 @@ export const ContinueLearning = () => {
         return;
       }
 
-      // First, check localStorage for saved last lesson position
-      try {
-        const saved = localStorage.getItem('last_lesson');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.levelId && parsed.moduleId && parsed.lessonId) {
-            setLastLesson(parsed);
-            setLoading(false);
-            return;
+      // Check if user has any progress
+      const hasProgress = levels.some(level => 
+        level.modules.some(module => 
+          module.lessons.some(lesson => isLessonCompleted(level.id, module.id, lesson.id))
+        )
+      );
+
+      // Only use localStorage if user has some progress
+      if (hasProgress) {
+        try {
+          const saved = localStorage.getItem('last_lesson');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.levelId && parsed.moduleId && parsed.lessonId) {
+              setLastLesson(parsed);
+              setLoading(false);
+              return;
+            }
           }
+        } catch (e) {
+          // Ignore localStorage errors
         }
-      } catch (e) {
-        // Ignore localStorage errors
       }
 
-      // If no saved position, derive from progress
       // Find the first incomplete lesson across all levels
+      // For new users, this will be Module 1, Lesson 1
       for (const level of levels) {
         for (const module of level.modules) {
           for (const lesson of module.lessons) {

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, PhoneVerification
+from .models import User, PhoneVerification, EmailVerification
 
 
 @admin.register(User)
@@ -14,12 +14,20 @@ class CustomUserAdmin(UserAdmin):
         "last_name",
         "phone",
         "phone_verified",
+        "email_verified",
         "occupation",
         "is_staff",
         "is_active",
     )
 
-    list_filter = ("is_staff", "is_active", "sex", "occupation", "phone_verified")
+    list_filter = (
+        "is_staff",
+        "is_active",
+        "sex",
+        "occupation",
+        "phone_verified",
+        "email_verified",
+    )
     ordering = ("email",)
     search_fields = ("email", "username", "phone")
 
@@ -42,6 +50,7 @@ class CustomUserAdmin(UserAdmin):
                     "last_name",
                     "phone",
                     "phone_verified",
+                    "email_verified",
                     "occupation",
                     "sex",
                     "birth_date",
@@ -101,4 +110,12 @@ class PhoneVerificationAdmin(admin.ModelAdmin):
     list_display = ("phone", "otp", "created_at", "expires_at", "verified")
     list_filter = ("verified", "created_at")
     search_fields = ("phone",)
+    readonly_fields = ("otp", "created_at", "expires_at")
+
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ("email", "otp", "created_at", "expires_at", "verified")
+    list_filter = ("verified", "created_at")
+    search_fields = ("email",)
     readonly_fields = ("otp", "created_at", "expires_at")

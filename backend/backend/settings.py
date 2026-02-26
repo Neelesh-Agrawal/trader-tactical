@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-lnsa5m4$00rh)ij(dn69)v_7963z5d=-^v)x2zxyy$!e8p4i52"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-lnsa5m4$00rh)ij(dn69)v_7963z5d=-^v)x2zxyy$!e8p4i52"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -216,25 +222,21 @@ CKEDITOR_5_CONFIGS = {
 # ============================================================================
 # Email Configuration (Gmail SMTP)
 # ============================================================================
-# TODO: Replace with your Gmail credentials
-# For Gmail, use an App Password (not your regular password)
-# Get it from: https://myaccount.google.com/apppasswords
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "your-email@gmail.com"  # TODO: Add your Gmail address
-EMAIL_HOST_PASSWORD = "your-app-password"  # TODO: Add your Gmail App Password
-DEFAULT_FROM_EMAIL = "noreply@trademaster.com"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@trademaster.com")
 
 # Feedback recipient email
-# TODO: Add the email address that should receive feedback submissions
-FEEDBACK_RECIPIENT = "feedback@trademaster.com"  # TODO: Add feedback recipient
+FEEDBACK_RECIPIENT = os.getenv(
+    "FEEDBACK_RECIPIENT", os.getenv("DEFAULT_FROM_EMAIL", "")
+)
 
 # ============================================================================
 # Moplet Configuration (SMS OTP)
 # ============================================================================
-# TODO: Replace with your Moplet credentials
-# Get them from: https://moplet.com
-MOPLET_API_KEY = "your_api_key"  # TODO: Add your Moplet API Key
-MOPLET_SENDER_ID = "MOPLET"  # TODO: Add your Moplet Sender ID
+MOPLET_API_KEY = os.getenv("MOPLET_API_KEY", "")
+MOPLET_SENDER_ID = os.getenv("MOPLET_SENDER_ID", "MOPLET")
