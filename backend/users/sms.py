@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 def send_sms(phone_number: str, message: str) -> bool:
     """
-    Send SMS using Twilio.
+    Send SMS using Moplet.
 
     Args:
         phone_number: Recipient's phone number (E.164 format)
@@ -15,32 +15,29 @@ def send_sms(phone_number: str, message: str) -> bool:
     Returns:
         True if sent successfully, False otherwise
     """
-    # TODO: Add Twilio credentials to settings
-    # Configure these in settings.py:
-    # TWILIO_ACCOUNT_SID = 'your_account_sid'
-    # TWILIO_AUTH_TOKEN = 'your_auth_token'
-    # TWILIO_PHONE_NUMBER = '+1234567890'
+    api_key = getattr(settings, "MOPLET_API_KEY", None)
+    sender_id = getattr(settings, "MOPLET_SENDER_ID", None)
 
-    account_sid = getattr(settings, "TWILIO_ACCOUNT_SID", None)
-    auth_token = getattr(settings, "TWILIO_AUTH_TOKEN", None)
-    twilio_number = getattr(settings, "TWILIO_PHONE_NUMBER", None)
-
-    if not all([account_sid, auth_token, twilio_number]):
-        logger.warning("Twilio credentials not configured. SMS not sent.")
-        # For development, log the message instead
+    if not all([api_key, sender_id]):
+        logger.warning("Moplet credentials not configured. SMS not sent.")
         logger.info(f"[DEV MODE] SMS to {phone_number}: {message}")
         return False
 
     try:
-        from twilio.rest import Client
+        import requests
 
-        client = Client(account_sid, auth_token)
+        url = "https://api.moplet.com/send"
+        payload = {
+            "api_key": api_key,
+            "sender_id": sender_id,
+            "to": phone_number,
+            "message": message,
+        }
 
-        twilio_message = client.messages.create(
-            body=message, from_=twilio_number, to=phone_number
-        )
+        response = requests.post(url, json=payload, timeout=30)
+        response.raise_for_status()
 
-        logger.info(f"SMS sent successfully: {twilio_message.sid}")
+        logger.info(f"SMS sent successfully via Moplet")
         return True
 
     except Exception as e:

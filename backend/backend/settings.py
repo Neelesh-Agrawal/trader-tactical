@@ -232,10 +232,9 @@ DEFAULT_FROM_EMAIL = "noreply@trademaster.com"
 FEEDBACK_RECIPIENT = "feedback@trademaster.com"  # TODO: Add feedback recipient
 
 # ============================================================================
-# Twilio Configuration (SMS OTP)
+# Moplet Configuration (SMS OTP)
 # ============================================================================
-# TODO: Replace with your Twilio credentials
-# Get them from: https://console.twilio.com
-TWILIO_ACCOUNT_SID = "your_account_sid"  # TODO: Add your Twilio Account SID
-TWILIO_AUTH_TOKEN = "your_auth_token"  # TODO: Add your Twilio Auth Token
-TWILIO_PHONE_NUMBER = "+1234567890"  # TODO: Add your Twilio phone number
+# TODO: Replace with your Moplet credentials
+# Get them from: https://moplet.com
+MOPLET_API_KEY = "your_api_key"  # TODO: Add your Moplet API Key
+MOPLET_SENDER_ID = "MOPLET"  # TODO: Add your Moplet Sender ID
