@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageCircle, Send, X, CheckCircle, Loader2 } from 'lucide-react';
@@ -23,17 +23,17 @@ export const QnAWidget = ({ contextType, contextId }: QnAWidgetProps) => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('qna_inquiries')
-        .insert({
+      await apiFetch('/api/auth/qna/submit/', {
+        method: 'POST',
+        auth: true,
+        body: JSON.stringify({
           user_id: user.id,
           user_email: profile.email,
           context_type: contextType,
-          context_id: contextId || null,
+          context_id: contextId,
           question: question.trim()
-        });
-
-      if (error) throw error;
+        })
+      });
 
       setIsSubmitted(true);
       setQuestion('');

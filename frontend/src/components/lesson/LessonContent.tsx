@@ -15,7 +15,7 @@ import {
   ChevronLeft, Clock, BookOpen, Badge
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Lesson, Module } from '@/data/courseData';
+import type { Lesson, Module } from '@/hooks/useCourses';
 
 interface LessonContentProps {
   lesson: Lesson;
@@ -30,6 +30,10 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
   const { updateStreak } = useAuth();
   const { isLessonCompleted } = useProgress();
   const quizRef = useRef<HTMLDivElement>(null);
+
+  // Ensure keyTakeaways and faqs are always arrays
+  const keyTakeaways = lesson.keyTakeaways || [];
+  const faqs = lesson.faqs || [];
 
   const isCompleted = isLessonCompleted(levelId, module.id, lesson.id);
   const nextLesson = module.lessons[lessonIndex + 1];
@@ -107,16 +111,16 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         </div>
 
         {/* What You'll Learn */}
-        <LessonObjectives objective={lesson.objective} keyTakeaways={lesson.keyTakeaways} />
+        <LessonObjectives objective={lesson.objective} keyTakeaways={keyTakeaways} />
 
         {/* Main Content */}
         <LessonIntelV2 content={lesson.content} />
 
         {/* Key Takeaways */}
-        <LessonKeyTakeaways takeaways={lesson.keyTakeaways} lessonId={lesson.id} />
+        <LessonKeyTakeaways takeaways={keyTakeaways} lessonId={lesson.id} />
 
         {/* FAQs */}
-        <LessonFAQs faqs={lesson.faqs} />
+        <LessonFAQs faqs={faqs} />
 
         {/* Action Buttons */}
         <div ref={quizRef}>

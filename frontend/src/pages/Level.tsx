@@ -3,7 +3,7 @@ import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
-import { getLevelById, getModuleById, getLessonById } from '@/data/courseData';
+import { useCourses, Lesson } from '@/hooks/useCourses';
 import { Header } from '@/components/layout/Header';
 import { LevelSidebar } from '@/components/level/LevelSidebar';
 import { LevelOverview } from '@/components/level/LevelOverview';
@@ -11,7 +11,6 @@ import { LessonContent } from '@/components/lesson/LessonContent';
 import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
 import { Menu, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 const Level = () => {
@@ -19,13 +18,41 @@ const Level = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { loading: progressLoading } = useProgress();
+  const { levels, loading: coursesLoading, getLevelById, getModuleById, getLessonById, fetchLessonDetail } = useCourses();
   const { progress: scrollProgress, isScrolling } = useScrollProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [lessonDetail, setLessonDetail] = useState<Lesson | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const loading = authLoading || progressLoading || coursesLoading || loadingDetail;
 
   const currentModuleId = searchParams.get('module') || undefined;
   const currentLessonId = searchParams.get('lesson') || undefined;
+
+  // Fetch lesson detail when lesson changes
+  useEffect(() => {
+    let cancelled = false;
+    
+    const loadLessonDetail = async () => {
+      if (!currentLessonId) {
+        if (!cancelled) setLessonDetail(null);
+        return;
+      }
+      
+      if (!cancelled) setLoadingDetail(true);
+      const detail = await fetchLessonDetail(currentLessonId);
+      if (!cancelled) {
+        setLessonDetail(detail);
+        setLoadingDetail(false);
+      }
+    };
+    
+    loadLessonDetail();
+    
+    return () => { cancelled = true; };
+  }, [currentLessonId]);
 
   // Minimum swipe distance for gesture detection
   const minSwipeDistance = 50;
@@ -57,14 +84,14 @@ const Level = () => {
     }
   }, [touchStart, touchEnd, sidebarOpen]);
 
-  // Save last lesson position
+  // Save last lesson position to localStorage (backend doesn't have this field yet)
   useEffect(() => {
     if (user && levelId && currentModuleId && currentLessonId) {
-      supabase.from('profiles').update({
-        last_lesson_level_id: levelId,
-        last_lesson_module_id: currentModuleId,
-        last_lesson_id: currentLessonId
-      }).eq('user_id', user.id);
+      localStorage.setItem('last_lesson', JSON.stringify({
+        levelId,
+        moduleId: currentModuleId,
+        lessonId: currentLessonId
+      }));
     }
   }, [user, levelId, currentModuleId, currentLessonId]);
 
@@ -79,7 +106,7 @@ const Level = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen]);
 
-  if (authLoading || progressLoading) {
+  if (loading) {
     return <LessonSkeleton />;
   }
 
@@ -90,9 +117,18 @@ const Level = () => {
   if (!level) return <Navigate to="/dashboard" replace />;
 
   const currentModule = currentModuleId ? getModuleById(levelId, currentModuleId) : undefined;
-  const currentLesson = currentModuleId && currentLessonId 
+  const basicLesson = currentModuleId && currentLessonId 
     ? getLessonById(levelId, currentModuleId, currentLessonId) 
     : undefined;
+  
+  // Merge basic lesson with detailed content from API
+  const currentLesson = basicLesson ? {
+    ...basicLesson,
+    ...lessonDetail,
+    objective: lessonDetail?.objective || basicLesson.objective || '',
+    keyTakeaways: lessonDetail?.takeaways?.map(t => t.text) || [],
+    faqs: lessonDetail?.faqs || [],
+  } : undefined;
 
   const handleLessonSelect = (moduleId: string, lessonId: string) => {
     setSearchParams({ module: moduleId, lesson: lessonId });

@@ -7,7 +7,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle, Clock, BookOpen, Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Level } from '@/data/courseData';
+import type { Level } from '@/hooks/useCourses';
 
 interface LevelOverviewProps {
   level: Level;

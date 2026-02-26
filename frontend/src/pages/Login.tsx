@@ -17,7 +17,7 @@ const Login = () => {
   const [pin, setPin] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signInWithPhone } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -58,7 +58,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await signIn(fullPhoneNumber, pin);
+    const { error } = await signInWithPhone(fullPhoneNumber, pin);
     setLoading(false);
 
     if (error) {
@@ -167,7 +167,7 @@ const Login = () => {
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={loading || pin.length !== 4}
+                  disabled={loading || pin.length !== 4 || !phoneNumber.trim()}
                 >
                   {loading ? 'Authenticating...' : 'Login'}
                 </Button>

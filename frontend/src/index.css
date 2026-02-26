@@ -376,6 +376,99 @@
     @apply italic;
   }
 
+  /* CKEditor content dark mode support */
+  .ck-content {
+    @apply text-foreground/90;
+  }
+
+  .ck-content h1,
+  .ck-content h2,
+  .ck-content h3,
+  .ck-content h4,
+  .ck-content h5,
+  .ck-content h6 {
+    @apply text-foreground font-bold mt-8 mb-4;
+  }
+
+  .ck-content h2 {
+    @apply text-2xl;
+  }
+
+  .ck-content h3 {
+    @apply text-xl;
+  }
+
+  .ck-content h4 {
+    @apply text-lg;
+  }
+
+  .ck-content p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .ck-content ul,
+  .ck-content ol {
+    @apply mb-4 pl-6;
+  }
+
+  .ck-content li {
+    @apply mb-2;
+  }
+
+  .ck-content ul {
+    @apply list-disc;
+  }
+
+  .ck-content ol {
+    @apply list-decimal;
+  }
+
+  .ck-content strong {
+    @apply font-bold text-foreground;
+  }
+
+  .ck-content em {
+    @apply italic;
+  }
+
+  .ck-content a {
+    @apply text-primary underline;
+  }
+
+  .ck-content table {
+    @apply w-full mb-4 border-collapse;
+  }
+
+  .ck-content td,
+  .ck-content th {
+    @apply border border-border p-2;
+  }
+
+  .ck-content th {
+    @apply bg-muted font-bold;
+  }
+
+  .ck-content hr {
+    @apply my-6 border-border;
+  }
+
+  .ck-content blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4;
+  }
+
+  /* Dark mode specific overrides for inline styles from CKEditor */
+  .dark .ck-content [style*="color"] {
+    color: inherit !important;
+  }
+
+  .dark .ck-content [style*="background-color"] {
+    background-color: transparent !important;
+  }
+
+  .dark .ck-content span[style*="color"] {
+    color: inherit !important;
+  }
+
   /* Mission briefing card */
   .mission-briefing {
     @apply tactical-card p-6 border-l-4 border-l-primary;

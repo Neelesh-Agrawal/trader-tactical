@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Question } from '@/data/courseData';
+import { Question } from '@/hooks/useCourses';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Button } from '@/components/ui/button';
 import { AnimatedProgress } from '@/components/ui/animated-progress';
@@ -17,6 +17,9 @@ interface QuizInterfaceProps {
   lessonId?: string;
   onComplete?: () => void;
   returnPath: string;
+  quizId?: number;
+  passPercentage?: number;
+  timePerQuestion?: number;
 }
 
 export const QuizInterface = ({
@@ -26,7 +29,10 @@ export const QuizInterface = ({
   moduleId,
   lessonId,
   onComplete,
-  returnPath
+  returnPath,
+  quizId,
+  passPercentage = 80,
+  timePerQuestion = 45
 }: QuizInterfaceProps) => {
   const navigate = useNavigate();
   const { fire } = useConfetti();
@@ -64,9 +70,10 @@ export const QuizInterface = ({
     levelId,
     moduleId,
     lessonId,
-    timePerQuestion: quizType === 'lesson' ? 45 : 60,
-    passingScore: 80,
-    cooldownMinutes: quizType === 'level' ? 0 : 2
+    timePerQuestion: quizType === 'lesson' ? 45 : (timePerQuestion || 60),
+    passingScore: passPercentage,
+    cooldownMinutes: quizType === 'level' ? 0 : 2,
+    quizId
   });
 
   const { count: scoreCount } = useCountUp({
@@ -228,7 +235,7 @@ export const QuizInterface = ({
                       <p className="text-sm font-medium mb-1">{q.question}</p>
                       {!isCorrectAnswer && (
                         <p className="text-xs text-muted-foreground">
-                          Correct: {q.options[q.correctIndex]}
+                          Correct: {q.options[q.correctIndex]?.text}
                         </p>
                       )}
                     </div>
@@ -352,7 +359,7 @@ export const QuizInterface = ({
                       <Circle className="h-4 w-4" />
                     )}
                   </div>
-                  <span className="flex-1">{option}</span>
+                  <span className="flex-1">{option.text}</span>
                 </div>
               </button>
             );

@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface LessonProgress {
-  lesson_id: string;
+  lesson_id: number; // Backend uses integer IDs
   completed: boolean;
   completed_at: string | null;
 }
 
 interface ModuleProgress {
-  module_id: string;
+  module_id: number; // Backend uses integer IDs
   completed: boolean;
   unlocked: boolean;
 }
 
 interface LevelProgress {
-  level_id: string;
+  level_id: number; // Backend uses integer IDs
   unlocked: boolean;
   completed: boolean;
 }
@@ -26,6 +26,55 @@ interface QuizCooldown {
   module_id: string | null;
   cooldown_until: string;
 }
+
+interface BackendProgressResponse {
+  lesson_progress: Array<{
+    id: number;
+    lesson_id: number;
+    completed: boolean;
+    completed_at: string | null;
+  }>;
+  module_progress: Array<{
+    id: number;
+    module_id: number;
+    unlocked: boolean;
+    completed: boolean;
+    completed_at: string | null;
+  }>;
+  level_progress: Array<{
+    id: number;
+    level_id: number;
+    unlocked: boolean;
+    completed: boolean;
+    completed_at: string | null;
+  }>;
+  completed_lessons: number;
+  completed_modules: number;
+  completed_levels: number;
+  unlocked_modules: number;
+  unlocked_levels: number;
+}
+
+const getLevelIdInt = (levelId: string): number => {
+  const levelMap: Record<string, number> = { 'beginner': 1, 'intermediate': 2, 'advanced': 3 };
+  return levelMap[levelId] || parseInt(levelId, 10);
+};
+
+const getModuleIdInt = (moduleId: string): number => {
+  if (moduleId.includes('-')) {
+    const parts = moduleId.split('-');
+    return parseInt(parts[parts.length - 1], 10);
+  }
+  return parseInt(moduleId, 10);
+};
+
+const getLessonIdInt = (lessonId: string): number => {
+  if (lessonId.includes('-')) {
+    const parts = lessonId.split('-');
+    return parseInt(parts[parts.length - 1], 10);
+  }
+  return parseInt(lessonId, 10);
+};
 
 export const useProgress = () => {
   const { user } = useAuth();
@@ -40,19 +89,41 @@ export const useProgress = () => {
 
     setLoading(true);
 
-    const [lessonsRes, modulesRes, levelsRes, cooldownsRes] = await Promise.all([
-      supabase.from('lesson_progress').select('*').eq('user_id', user.id),
-      supabase.from('module_progress').select('*').eq('user_id', user.id),
-      supabase.from('level_progress').select('*').eq('user_id', user.id),
-      supabase.from('quiz_cooldowns').select('*').eq('user_id', user.id)
-    ]);
-
-    if (!lessonsRes.error) setLessonProgress(lessonsRes.data as LessonProgress[]);
-    if (!modulesRes.error) setModuleProgress(modulesRes.data as ModuleProgress[]);
-    if (!levelsRes.error) setLevelProgress(levelsRes.data as LevelProgress[]);
-    if (!cooldownsRes.error) setCooldowns(cooldownsRes.data as QuizCooldown[]);
-
-    setLoading(false);
+    try {
+      const data = await apiFetch<BackendProgressResponse>('/api/progress/user/');
+      
+      setLessonProgress(
+        data.lesson_progress.map((lp) => ({
+          lesson_id: lp.lesson_id,
+          completed: lp.completed,
+          completed_at: lp.completed_at,
+        }))
+      );
+      
+      setModuleProgress(
+        data.module_progress.map((mp) => ({
+          module_id: mp.module_id,
+          completed: mp.completed,
+          unlocked: mp.unlocked,
+        }))
+      );
+      
+      setLevelProgress(
+        data.level_progress.map((lp) => ({
+          level_id: lp.level_id,
+          unlocked: lp.unlocked,
+          completed: lp.completed,
+        }))
+      );
+      
+      // Quiz cooldowns are not yet implemented in backend, keep empty for now
+      setCooldowns([]);
+    } catch (error) {
+      console.error('Failed to fetch progress:', error);
+      // Keep existing state on error
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -60,30 +131,39 @@ export const useProgress = () => {
   }, [user]);
 
   const isLessonCompleted = (levelId: string, moduleId: string, lessonId: string): boolean => {
+    const lessonIdInt = getLessonIdInt(lessonId);
     return lessonProgress.some(
-      p => p.lesson_id === lessonId && p.completed
+      p => p.lesson_id === lessonIdInt && p.completed
     );
   };
 
   const isModuleUnlocked = (levelId: string, moduleId: string): boolean => {
+    const moduleIdInt = getModuleIdInt(moduleId);
+    const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
+    if (progress) return progress.unlocked;
+    
     // First module is always unlocked
-    const progress = moduleProgress.find(p => p.module_id === moduleId);
-    return progress?.unlocked ?? moduleId.includes('derivatives-basics');
+    return moduleId.includes('1') || moduleId.includes('derivatives-basics');
   };
 
   const isModuleCompleted = (levelId: string, moduleId: string): boolean => {
-    const progress = moduleProgress.find(p => p.module_id === moduleId);
+    const moduleIdInt = getModuleIdInt(moduleId);
+    const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
     return progress?.completed ?? false;
   };
 
   const isLevelUnlocked = (levelId: string): boolean => {
-    if (levelId === 'beginner') return true;
-    const progress = levelProgress.find(p => p.level_id === levelId);
-    return progress?.unlocked ?? false;
+    const levelIdInt = getLevelIdInt(levelId);
+    const progress = levelProgress.find(p => p.level_id === levelIdInt);
+    if (progress) return progress.unlocked;
+    
+    // Beginner is always unlocked
+    return levelId === 'beginner';
   };
 
   const isLevelCompleted = (levelId: string): boolean => {
-    const progress = levelProgress.find(p => p.level_id === levelId);
+    const levelIdInt = getLevelIdInt(levelId);
+    const progress = levelProgress.find(p => p.level_id === levelIdInt);
     return progress?.completed ?? false;
   };
 
@@ -111,112 +191,99 @@ export const useProgress = () => {
   const markLessonComplete = async (levelId: string, moduleId: string, lessonId: string) => {
     if (!user) return;
 
-    const { error } = await supabase
-      .from('lesson_progress')
-      .upsert({
-        user_id: user.id,
-        level_id: levelId,
-        module_id: moduleId,
-        lesson_id: lessonId,
-        completed: true,
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,level_id,module_id,lesson_id'
-      });
+    const lessonIdInt = getLessonIdInt(lessonId);
 
-    if (!error) {
+    try {
+      await apiFetch(`/api/progress/lessons/${lessonIdInt}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          completed: true,
+        }),
+      });
       await fetchProgress();
+    } catch (error) {
+      console.error('Failed to mark lesson complete:', error);
     }
   };
 
   const markModuleComplete = async (levelId: string, moduleId: string) => {
     if (!user) return;
 
-    await supabase
-      .from('module_progress')
-      .upsert({
-        user_id: user.id,
-        level_id: levelId,
-        module_id: moduleId,
-        completed: true,
-        unlocked: true,
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,level_id,module_id'
-      });
+    const moduleIdInt = getModuleIdInt(moduleId);
 
-    await fetchProgress();
+    try {
+      await apiFetch(`/api/progress/modules/${moduleIdInt}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          completed: true,
+          unlocked: true,
+        }),
+      });
+      await fetchProgress();
+    } catch (error) {
+      console.error('Failed to mark module complete:', error);
+    }
   };
 
   const unlockNextModule = async (levelId: string, nextModuleId: string) => {
     if (!user) return;
 
-    await supabase
-      .from('module_progress')
-      .upsert({
-        user_id: user.id,
-        level_id: levelId,
-        module_id: nextModuleId,
-        unlocked: true
-      }, {
-        onConflict: 'user_id,level_id,module_id'
-      });
+    const moduleIdInt = getModuleIdInt(nextModuleId);
 
-    await fetchProgress();
+    try {
+      await apiFetch(`/api/progress/modules/${moduleIdInt}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          unlocked: true,
+        }),
+      });
+      await fetchProgress();
+    } catch (error) {
+      console.error('Failed to unlock module:', error);
+    }
   };
 
   const markLevelComplete = async (levelId: string) => {
     if (!user) return;
 
-    await supabase
-      .from('level_progress')
-      .upsert({
-        user_id: user.id,
-        level_id: levelId,
-        completed: true,
-        unlocked: true,
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,level_id'
-      });
+    const levelIdInt = getLevelIdInt(levelId);
 
-    await fetchProgress();
+    try {
+      await apiFetch(`/api/progress/levels/${levelIdInt}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          completed: true,
+          unlocked: true,
+        }),
+      });
+      await fetchProgress();
+    } catch (error) {
+      console.error('Failed to mark level complete:', error);
+    }
   };
 
   const unlockNextLevel = async (nextLevelId: string) => {
     if (!user) return;
 
-    await supabase
-      .from('level_progress')
-      .upsert({
-        user_id: user.id,
-        level_id: nextLevelId,
-        unlocked: true
-      }, {
-        onConflict: 'user_id,level_id'
-      });
+    const levelIdInt = getLevelIdInt(nextLevelId);
 
-    await fetchProgress();
+    try {
+      await apiFetch(`/api/progress/levels/${levelIdInt}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          unlocked: true,
+        }),
+      });
+      await fetchProgress();
+    } catch (error) {
+      console.error('Failed to unlock level:', error);
+    }
   };
 
   const setCooldown = async (quizType: string, levelId: string, moduleId?: string, durationMinutes: number = 2) => {
-    if (!user) return;
-
-    const cooldownUntil = new Date(Date.now() + durationMinutes * 60 * 1000);
-
-    await supabase
-      .from('quiz_cooldowns')
-      .upsert({
-        user_id: user.id,
-        quiz_type: quizType,
-        level_id: levelId,
-        module_id: moduleId || null,
-        cooldown_until: cooldownUntil.toISOString()
-      }, {
-        onConflict: 'user_id,quiz_type,level_id,module_id'
-      });
-
-    await fetchProgress();
+    // Quiz cooldowns are not yet implemented in the backend API
+    // This is a stub for now
+    console.warn('Quiz cooldowns not yet implemented in backend');
   };
 
   const recordQuizAttempt = async (
@@ -233,21 +300,9 @@ export const useProgress = () => {
   ) => {
     if (!user) return;
 
-    await supabase
-      .from('quiz_attempts')
-      .insert({
-        user_id: user.id,
-        quiz_type: quizType,
-        level_id: levelId,
-        module_id: moduleId || null,
-        lesson_id: lessonId || null,
-        score,
-        total_questions: totalQuestions,
-        passed,
-        invalidated,
-        invalidation_reason: invalidationReason || null,
-        time_taken_seconds: timeTaken || null
-      });
+    // Quiz attempts are recorded when submitting via /api/quizzes/{id}/submit/
+    // This function is kept for compatibility but the actual recording happens in quiz submission
+    console.warn('Quiz attempts should be recorded via quiz submission endpoint');
   };
 
   return {

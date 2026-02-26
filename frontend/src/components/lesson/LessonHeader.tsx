@@ -1,5 +1,5 @@
 import { Clock, Target, CheckCircle } from 'lucide-react';
-import type { Lesson, Module } from '@/data/courseData';
+import type { Lesson, Module } from '@/hooks/useCourses';
 
 interface LessonHeaderProps {
   lesson: Lesson;
