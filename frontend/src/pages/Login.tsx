@@ -169,7 +169,7 @@ const Login = () => {
                   className="w-full" 
                   disabled={loading || pin.length !== 4 || !phoneNumber.trim()}
                 >
-                  {loading ? 'Authenticating...' : 'Enter Command Center'}
+                  {loading ? 'Authenticating...' : 'Login'}
                 </Button>
               </form>
 
