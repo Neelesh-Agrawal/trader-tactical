@@ -1,5 +1,5 @@
 /**
- * TradeMaster Design System
+ * Easy Option Learning Design System
  * Centralized design tokens for consistent styling across the trading platform
  * 
  * This file defines all design tokens used throughout the application.

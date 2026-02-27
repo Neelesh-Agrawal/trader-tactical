@@ -17,14 +17,14 @@ export const ContactSection = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="mailto:support@trademaster.com"
+                href="mailto:care@easyoptionlearning.com"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
               >
                 <Mail className="h-5 w-5 text-success" />
-                <span className={`${typography.body.md} font-ui font-medium text-foreground`}>support@trademaster.com</span>
+                <span className={`${typography.body.md} font-ui font-medium text-foreground`}>care@easyoptionlearning.com</span>
               </a>
               <a 
-                href="https://linkedin.com/company/trademaster"
+                href="https://linkedin.com/company/easyoptionlearning"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"

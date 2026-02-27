@@ -1,4 +1,4 @@
-// TradeMaster Course Content Data
+// Easy Option Learning Course Content Data
 // Structure: Levels > Modules > Lessons
 
 export interface Question {

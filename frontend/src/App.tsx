@@ -18,6 +18,11 @@ import Quiz from "./pages/Quiz";
 import Profile from "./pages/Profile";
 import LevelFinal from "./pages/LevelFinal";
 import NotFound from "./pages/NotFound";
+import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
+import RiskDisclosure from "./pages/RiskDisclosure";
+import Disclaimer from "./pages/Disclaimer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +56,11 @@ const App = () => (
               <Route path="/quiz/:quizType/:levelId" element={<Quiz />} />
               <Route path="/quiz/:quizType/:levelId/:moduleId" element={<Quiz />} />
               <Route path="/quiz/:quizType/:levelId/:moduleId/:lessonId" element={<Quiz />} />
+              <Route path="/terms" element={<TermsConditions />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/refund" element={<RefundPolicy />} />
+              <Route path="/risk" element={<RiskDisclosure />} />
+              <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
