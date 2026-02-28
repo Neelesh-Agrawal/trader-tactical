@@ -12,7 +12,14 @@ const levels = [
     status: 'active',
     modules: 12,
     duration: '4-6 weeks',
-    description: 'Master the fundamentals of derivatives trading in the Indian market. Learn futures, options, terminology, pricing, risk management, and realistic profit expectations—before trading real money.',
+    points: [
+      'Build Conceptual Clarity – Understand the core concepts behind options trading.',
+      'Learn Key Terminology – Master the essential words and phrases used in the market.',
+      'Identify Risks and Rewards – Recognize potential gains and pitfalls before placing trades.',
+      'Gain Basic Execution Skills – Practice safe beginner-level trades and apply your learning.',
+      'Read Option Chains Confidently – Analyze and interpret option data like a pro.',
+      'Avoid Common Pitfalls – Learn strategies to prevent mistakes that beginners often make.'
+    ],
     cta: 'Start Now'
   },
   {
@@ -22,7 +29,14 @@ const levels = [
     status: 'locked',
     modules: 10,
     duration: '6-8 weeks',
-    description: 'Dive deeper into advanced strategies, Greeks analysis, volatility trading, and position management techniques used by professional traders.',
+    points: [
+      'Master Option Strategies – Learn single-leg and multi-leg strategies used in real markets.',
+      'Analyse Market Context – Understand volatility, probabilities, and trends to make informed decisions.',
+      'Evaluate Risk vs Reward – Assess each trade\'s potential outcomes before committing capital.',
+      'Apply Practical Case Studies – Practice with real-life examples to strengthen decision-making.',
+      'Build Structured Trading Processes – Develop repeatable frameworks for consistent trading.',
+      'Trade with Confidence – Move beyond guessing to disciplined, process-driven execution.'
+    ],
     cta: 'Working on it'
   },
   {
@@ -32,7 +46,14 @@ const levels = [
     status: 'locked',
     modules: 8,
     duration: '8-10 weeks',
-    description: 'Professional-level techniques including portfolio management, algorithmic strategies, and live market simulations to prepare you for real trading.',
+    points: [
+      'Learn Advanced Strategies – Master spreads, hedging techniques, and volatility-based trades.',
+      'Manage Risk Effectively – Apply position sizing and capital protection strategies for sustainable trading.',
+      'Analyse Complex Market Scenarios – Evaluate multiple factors and market conditions before making decisions.',
+      'Simulate Real Trades – Practice advanced trades in a safe, hands-on environment.',
+      'Develop Process-Driven Execution – Build a repeatable framework for disciplined and consistent trading.',
+      'Trade with Long-Term Focus – Make decisions that prioritise capital preservation and sustainable growth.'
+    ],
     cta: 'Working on it'
   }
 ];
@@ -64,7 +85,7 @@ export const LevelsSection = () => {
               <AnimatedSection key={level.id} direction="up" delay={100 + index * 100}>
                 <div 
                   className={`relative bg-card border rounded-xl p-5 sm:p-6 transition-all duration-300 h-full ${
-                    isLocked ? 'opacity-60 blur-[2px] border-border' : 'hover:-translate-y-1'
+                    isLocked ? 'opacity-75 border-border' : 'hover:-translate-y-1'
                   }`}
                   style={{
                     borderColor: !isLocked ? colorScheme.border : undefined
@@ -110,9 +131,11 @@ export const LevelsSection = () => {
                   </h3>
 
                   {/* Description */}
-                  <p className={`${typography.body.sm} font-body leading-relaxed mb-6 ${isLocked ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
-                    {level.description}
-                  </p>
+                  <ul className={`${typography.body.sm} font-body leading-relaxed mb-6 space-y-2 list-disc pl-4 ${isLocked ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
+                    {level.points.map((point, i) => (
+                      <li key={i}>{point}</li>
+                    ))}
+                  </ul>
 
                   {/* Stats */}
                   <div className={`flex items-center gap-6 mb-6 ${typography.body.sm} font-ui`}>

@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Flame, TrendingUp, Moon, Sun, User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
+import { Flame, Moon, Sun, User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   showAuth?: boolean;
@@ -60,12 +60,14 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
         <Link 
           to={user ? '/dashboard' : '/'} 
           className="flex items-center gap-2 hover-scale touch-manipulation"
-          aria-label="TradeMaster - Go to home"
+          aria-label="Easy Option Learning - Go to home"
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" aria-hidden="true" />
-          </div>
-          <span className="font-display text-lg sm:text-xl font-bold hidden xs:inline">TradeMaster</span>
+          <img 
+            src="/logo.png" 
+            alt="Easy Option Learning" 
+            className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+          />
+          <span className="font-display text-lg sm:text-xl font-bold hidden xs:inline">Easy Option Learning</span>
         </Link>
 
         {/* Desktop Nav Links */}

@@ -143,7 +143,7 @@ export const ContactSection = () => {
                 </DrawerContent>
               </Drawer>
               <a 
-                href="https://linkedin.com/company/trademaster"
+                href="https://linkedin.com/company/easyoptionlearning"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
