@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronRight, CheckCircle, Lock, BookOpen, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import type { Level } from '@/data/courseData';
+import type { Level } from '@/hooks/useCourses';
 
 interface LevelSidebarProps {
   level: Level;

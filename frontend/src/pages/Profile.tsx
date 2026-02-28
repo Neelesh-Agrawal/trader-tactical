@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { Header } from '@/components/layout/Header';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,18 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Mail, Phone, Calendar, Award, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+const calculateAge = (birthDate: Date | string | null): number | null => {
+  if (!birthDate) return null;
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 const Profile = () => {
   const { user, profile, streak, loading, refreshProfile } = useAuth();
@@ -37,8 +49,8 @@ const Profile = () => {
   const startEditing = () => {
     setFormData({
       name: profile.name,
-      phone_number: profile.phone_number,
-      date_of_birth: profile.date_of_birth
+      phone_number: profile.phone_number || '',
+      date_of_birth: profile.date_of_birth || ''
     });
     setIsEditing(true);
   };
@@ -46,16 +58,20 @@ const Profile = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: formData.name,
-          phone_number: formData.phone_number,
-          date_of_birth: formData.date_of_birth
-        })
-        .eq('user_id', user.id);
+      // Split name into first_name and last_name
+      const nameParts = formData.name.split(' ').filter(Boolean);
+      const first_name = nameParts[0] || formData.name;
+      const last_name = nameParts.slice(1).join(' ');
 
-      if (error) throw error;
+      await apiFetch('/api/auth/me/update/', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          first_name,
+          last_name,
+          phone: formData.phone_number,
+          birth_date: formData.date_of_birth || null,
+        }),
+      });
 
       await refreshProfile();
       setIsEditing(false);
@@ -178,13 +194,22 @@ const Profile = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
                     />
                   ) : (
-                    <p className="py-2 px-3 bg-muted rounded-md">
-                      {new Date(profile.date_of_birth).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="py-2 px-3 bg-muted rounded-md">
+                        {profile.date_of_birth 
+                          ? new Date(profile.date_of_birth).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })
+                          : 'Not set'}
+                      </p>
+                      {profile.date_of_birth && (
+                        <p className="text-sm text-muted-foreground px-3">
+                          Age: {calculateAge(profile.date_of_birth)} years old
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

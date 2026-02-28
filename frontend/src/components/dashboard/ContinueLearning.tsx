@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { supabase } from '@/integrations/supabase/client';
-import { getLessonById, getModuleById, getLevelById, courseData } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { AnimatedProgress } from '@/components/ui/animated-progress';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { ArrowRight, BookOpen, Play, Sparkles } from 'lucide-react';
@@ -18,51 +17,79 @@ interface LastLessonData {
 export const ContinueLearning = () => {
   const { user, profile } = useAuth();
   const { isLessonCompleted } = useProgress();
+  const { levels, getLevelById, getModuleById, getLessonById } = useCourses();
   const navigate = useNavigate();
   const [lastLesson, setLastLesson] = useState<LastLessonData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLastLesson = async () => {
+    const fetchLastLesson = () => {
       if (!user) {
         setLoading(false);
         return;
       }
 
-      const { data } = await supabase
-        .from('profiles')
-        .select('last_lesson_level_id, last_lesson_module_id, last_lesson_id')
-        .eq('user_id', user.id)
-        .single();
+      // Check if user has any progress
+      const hasProgress = levels.some(level => 
+        level.modules.some(module => 
+          module.lessons.some(lesson => isLessonCompleted(level.id, module.id, lesson.id))
+        )
+      );
 
-      if (data?.last_lesson_id) {
-        setLastLesson({
-          levelId: data.last_lesson_level_id,
-          moduleId: data.last_lesson_module_id,
-          lessonId: data.last_lesson_id
-        });
-      } else {
-        for (const level of courseData) {
-          for (const module of level.modules) {
-            for (const lesson of module.lessons) {
-              if (!isLessonCompleted(level.id, module.id, lesson.id)) {
-                setLastLesson({
-                  levelId: level.id,
-                  moduleId: module.id,
-                  lessonId: lesson.id
-                });
-                setLoading(false);
-                return;
-              }
+      // Only use localStorage if user has some progress
+      if (hasProgress) {
+        try {
+          const saved = localStorage.getItem('last_lesson');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.levelId && parsed.moduleId && parsed.lessonId) {
+              setLastLesson(parsed);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (e) {
+          // Ignore localStorage errors
+        }
+      }
+
+      // Find the first incomplete lesson across all levels
+      // For new users, this will be Module 1, Lesson 1
+      for (const level of levels) {
+        for (const module of level.modules) {
+          for (const lesson of module.lessons) {
+            if (!isLessonCompleted(level.id, module.id, lesson.id)) {
+              setLastLesson({
+                levelId: level.id,
+                moduleId: module.id,
+                lessonId: lesson.id
+              });
+              setLoading(false);
+              return;
             }
           }
         }
       }
+      
+      // If all lessons are completed, set to the last lesson of the last level
+      const lastLevel = levels[levels.length - 1];
+      if (lastLevel && lastLevel.modules.length > 0) {
+        const lastModule = lastLevel.modules[lastLevel.modules.length - 1];
+        if (lastModule && lastModule.lessons.length > 0) {
+          const lastLessonItem = lastModule.lessons[lastModule.lessons.length - 1];
+          setLastLesson({
+            levelId: lastLevel.id,
+            moduleId: lastModule.id,
+            lessonId: lastLessonItem.id
+          });
+        }
+      }
+      
       setLoading(false);
     };
 
     fetchLastLesson();
-  }, [user, isLessonCompleted]);
+  }, [user, isLessonCompleted, levels]);
 
   if (loading) {
     return <CardSkeleton variant="hero" />;

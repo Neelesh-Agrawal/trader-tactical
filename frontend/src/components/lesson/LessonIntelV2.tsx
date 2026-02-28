@@ -6,6 +6,28 @@ interface LessonIntelV2Props {
 }
 
 export const LessonIntelV2 = ({ content }: LessonIntelV2Props) => {
+  // Check if content contains HTML tags
+  const isHtml = content.includes('<') && content.includes('>');
+
+  if (!content) {
+    return (
+      <div className="tactical-card p-6 text-center text-muted-foreground">
+        <p>No content available for this lesson.</p>
+      </div>
+    );
+  }
+
+  // Render HTML content directly from CKEditor
+  if (isHtml) {
+    return (
+      <div 
+        className="lesson-content ck-content"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  }
+
+  // Original plain text rendering
   const paragraphs = content.split('\n\n').filter(p => p.trim());
 
   const renderFormattedText = (text: string) => {

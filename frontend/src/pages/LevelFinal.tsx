@@ -1,7 +1,7 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { getLevelById, courseData } from '@/data/courseData';
+import { useCourses } from '@/hooks/useCourses';
 import { Header } from '@/components/layout/Header';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,11 @@ const LevelFinal = () => {
   const { levelId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const { isModuleCompleted, isLevelCompleted, isLevelUnlocked, loading: progressLoading } = useProgress();
+  const { levels, loading: coursesLoading, getLevelById } = useCourses();
   const navigate = useNavigate();
   const [showConfetti, setShowConfetti] = useState(false);
+
+  const loading = authLoading || progressLoading || coursesLoading;
 
   const level = levelId ? getLevelById(levelId) : null;
 
@@ -25,7 +28,7 @@ const LevelFinal = () => {
     }
   }, [level, levelId, isLevelCompleted]);
 
-  if (authLoading || progressLoading) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -41,12 +44,12 @@ const LevelFinal = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const allModulesComplete = level.modules.every(m => isModuleCompleted(levelId, m.id));
+  const allModulesComplete = level.modules.every(m => isModuleCompleted(levelId!, m.id));
   const levelComplete = isLevelCompleted(levelId);
 
   // Find next level
-  const levelIndex = courseData.findIndex(l => l.id === levelId);
-  const nextLevel = courseData[levelIndex + 1];
+  const levelIndex = levels.findIndex(l => l.id === levelId);
+  const nextLevel = levels[levelIndex + 1];
 
   return (
     <div className="min-h-screen bg-background">

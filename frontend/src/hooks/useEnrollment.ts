@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Enrollment {
@@ -8,23 +8,45 @@ interface Enrollment {
   deadline_at: string;
 }
 
+interface BackendCourse {
+  id: number;
+  title: string;
+  description: string;
+  is_published: boolean;
+}
+
 export const useEnrollment = () => {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchEnrollments = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('level_enrollments')
-      .select('level_id, enrolled_at, deadline_at')
-      .eq('user_id', user.id);
-
-    if (!error && data) {
-      setEnrollments(data);
+    if (!user) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      // Backend has course enrollments, not level enrollments
+      // For now, we'll fetch enrolled courses and map them
+      // Since the frontend expects level enrollments, we'll create a stub
+      const courses = await apiFetch<BackendCourse[]>('/api/courses/');
+      
+      // Map courses to level enrollments (simplified - assumes one course = one level for now)
+      // In production, you'd want to properly map courses to levels
+      const mappedEnrollments: Enrollment[] = courses.map((course, index) => ({
+        level_id: `level-${course.id}`, // Temporary mapping
+        enrolled_at: new Date().toISOString(), // Backend doesn't return this in course list
+        deadline_at: new Date(Date.now() + 70 * 24 * 60 * 60 * 1000).toISOString(), // Default 10 weeks
+      }));
+      
+      setEnrollments(mappedEnrollments);
+    } catch (error) {
+      console.error('Failed to fetch enrollments:', error);
+      setEnrollments([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -32,26 +54,32 @@ export const useEnrollment = () => {
   }, [user]);
 
   const enrollInLevel = async (levelId: string, weeksToComplete: number = 10) => {
-    if (!user) return;
+    if (!user) return false;
 
-    const deadline = new Date();
-    deadline.setDate(deadline.getDate() + (weeksToComplete * 7));
+    try {
+      // Backend enrolls in courses, not levels
+      // For now, we'll need to map levelId to courseId
+      // This is a simplified stub - in production you'd need proper mapping
+      const courseId = parseInt(levelId.replace('level-', ''), 10);
+      
+      if (isNaN(courseId)) {
+        console.error('Cannot enroll: levelId must map to a valid course ID');
+        return false;
+      }
 
-    const { error } = await supabase
-      .from('level_enrollments')
-      .upsert({
-        user_id: user.id,
-        level_id: levelId,
-        deadline_at: deadline.toISOString()
-      }, {
-        onConflict: 'user_id,level_id'
+      await apiFetch('/api/courses/enroll/', {
+        method: 'POST',
+        body: JSON.stringify({
+          course_id: courseId,
+        }),
       });
-
-    if (!error) {
+      
       await fetchEnrollments();
+      return true;
+    } catch (error) {
+      console.error('Failed to enroll:', error);
+      return false;
     }
-
-    return !error;
   };
 
   const getEnrollment = (levelId: string): Enrollment | undefined => {
