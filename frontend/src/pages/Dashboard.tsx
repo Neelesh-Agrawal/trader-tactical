@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useCourses } from '@/hooks/useCourses';
 import { useProgress } from '@/hooks/useProgress';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/landing/Footer';
 import { DashboardSkeleton } from '@/components/layout/LoadingSkeleton';
 import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LevelCard } from '@/components/dashboard/LevelCard';
@@ -62,11 +63,11 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header showStreak />
       <QnAWidget contextType="dashboard" />
 
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl flex-1">
         {/* Continue Learning Hero Card */}
         <div className="mb-8 sm:mb-10 animate-fade-in">
           <ContinueLearning />
@@ -136,6 +137,8 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

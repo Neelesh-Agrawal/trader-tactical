@@ -1,4 +1,4 @@
-import { TrendingUp, Shield, MapPin, BookOpen } from 'lucide-react';
+import { Shield, MapPin, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
@@ -11,9 +11,11 @@ const quickLinks = [
 ];
 
 const legalLinks = [
-  { label: 'Disclaimer', href: '/disclaimer' },
+  { label: 'Terms & Conditions', href: '/terms' },
   { label: 'Privacy Policy', href: '/privacy' },
-  { label: 'Terms & Conditions', href: '/terms' }
+  { label: 'Refund Policy', href: '/refund' },
+  { label: 'Risk Disclosure', href: '/risk' },
+  { label: 'Disclaimer', href: '/disclaimer' }
 ];
 
 const trustSignals = [
@@ -54,10 +56,12 @@ export const Footer = () => {
           {/* Brand */}
           <AnimatedSection direction="up" delay={100} className="sm:col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-                <TrendingUp className="h-5 w-5 text-primary" />
-              </div>
-              <span className={`${typography.heading.h4} font-display font-bold`}>TradeMaster</span>
+              <img 
+                src="/logo.png" 
+                alt="Easy Option Learning" 
+                className="h-10 w-10 object-contain shrink-0"
+              />
+              <span className={`${typography.heading.h4} font-display font-bold`}>Easy Option Learning</span>
             </Link>
             <p className={`${typography.body.sm} font-body text-muted-foreground max-w-sm leading-relaxed`}>
               A structured options trading education platform designed to help you think like a trader, 
@@ -100,11 +104,22 @@ export const Footer = () => {
           </AnimatedSection>
         </div>
 
-        {/* Copyright */}
+        {/* Company Info & Copyright */}
         <AnimatedSection direction="up" delay={250}>
-          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border text-center">
+          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border text-center space-y-4">
+            <div className={`${typography.body.xs} font-body text-muted-foreground space-y-1 max-w-2xl mx-auto`}>
+              <p className="font-semibold text-foreground">Operated By: Anata Securities Private Limited</p>
+              <p>CIN: U66120KL2024PTC086709</p>
+              <p>Registered Address: Door No. 1001 B, 2502 B, KunjanBava Road, Vytilla, Ernakulam, Kerala – 682019</p>
+              <p>
+                Contact & Grievance:{' '}
+                <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">
+                  care@easyoptionlearning.com
+                </a>
+              </p>
+            </div>
             <p className={`${typography.body.sm} font-mono text-muted-foreground`}>
-              © {new Date().getFullYear()} TradeMaster — Options Education Platform
+              © {new Date().getFullYear()} Easy Option Learning — Options Education Platform
             </p>
           </div>
         </AnimatedSection>
