@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.throttling import AnonRateThrottle
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
@@ -32,6 +33,7 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
 
 class UserProfileView(generics.RetrieveAPIView):
@@ -66,6 +68,7 @@ class ChangePasswordView(APIView):
 
 class PhoneTokenObtainPairView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         serializer = PhoneTokenObtainPairSerializer(data=request.data)
@@ -81,6 +84,7 @@ class PhoneTokenObtainPairView(APIView):
 
 class SendOTPView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         phone = request.data.get("phone")
@@ -140,6 +144,7 @@ class SendOTPView(APIView):
 
 class VerifyOTPView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         phone = request.data.get("phone")
@@ -217,6 +222,7 @@ class VerifyOTPView(APIView):
 
 class SendEmailOTPView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         email = request.data.get("email")
@@ -261,6 +267,7 @@ class SendEmailOTPView(APIView):
 
 class VerifyEmailOTPView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         email = request.data.get("email")
