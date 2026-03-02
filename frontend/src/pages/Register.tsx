@@ -7,9 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PinInput } from '@/components/ui/pin-input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { typography } from '@/design-system';
 import authImage from '@/assets/auth-trading.jpg';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
@@ -61,6 +68,9 @@ const Register = () => {
   const [emailOtpError, setEmailOtpError] = useState('');
   const [emailOtpLoading, setEmailOtpLoading] = useState(false);
   const [emailResendTimer, setEmailResendTimer] = useState(0);
+
+  // Terms modal
+  const [showTermsModal, setShowTermsModal] = useState(false);
   
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -392,6 +402,7 @@ const Register = () => {
           
           <CardContent>
             {step === 'details' ? (
+              <>
               <form onSubmit={(e) => { e.preventDefault(); handleNextStep(); }} className="space-y-4" noValidate>
                 <div>
                   <label htmlFor="name" className="mono text-xs text-muted-foreground mb-2 block">
@@ -514,11 +525,103 @@ const Register = () => {
                   </div>
                 </div>
 
+                <p className="text-xs text-muted-foreground text-center">
+                  By continuing, you accept the{' '}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                    className="text-primary hover:underline font-medium underline-offset-2"
+                  >
+                    Terms and Conditions
+                  </button>
+                </p>
+
                 <Button type="submit" className="w-full gap-2" disabled={loading}>
                   {loading ? 'Please wait...' : 'Continue'}
                   {!loading && <ArrowRight className="h-4 w-4" />}
                 </Button>
               </form>
+
+              <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+                <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0">
+                  <DialogHeader className="p-6 pb-0 shrink-0">
+                    <DialogTitle className="font-display">Terms and Conditions</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 font-body">
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>1. Introduction</h3>
+                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
+                        These Terms and Conditions ("Terms") govern the use of the website www.easyoptionlearning.com ("Website"), 
+                        owned and operated by Anata Securities Private Limited ("Company", "We", "Us", "Our"). 
+                        By accessing or enrolling in any course offered on this Website, you agree to be legally bound by these Terms.
+                      </p>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>2. Nature of Services</h3>
+                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
+                        <li>The Website provides educational content related to options trading and financial markets.</li>
+                        <li>The content includes video lectures, written materials, webinars, and downloadable resources.</li>
+                        <li>The services are strictly educational. The Company does not provide investment advisory services or stock tips.</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>3. Eligibility</h3>
+                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
+                        <li>Users must be at least 18 years of age.</li>
+                        <li>By enrolling, you confirm you are legally competent to enter into a binding contract.</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>4. User Account & Responsibilities</h3>
+                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
+                        <li>You must provide accurate information during registration.</li>
+                        <li>Login credentials are confidential. Sharing course access is strictly prohibited.</li>
+                        <li>The Company reserves the right to suspend or terminate accounts for misuse.</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>5. Intellectual Property Rights</h3>
+                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
+                        <li>All content is the exclusive property of Anata Securities Private Limited.</li>
+                        <li>No content may be copied, reproduced, or redistributed without written permission.</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>6. Payment Terms</h3>
+                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
+                        <li>All course fees must be paid in full before access is granted.</li>
+                        <li>Prices are subject to change. Payments are governed by our Refund Policy.</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>7. Limitation of Liability</h3>
+                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
+                        The Company shall not be liable for trading losses, indirect damages, or loss of profits. 
+                        Users are solely responsible for their trading decisions.
+                      </p>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>8. Termination</h3>
+                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
+                        The Company may terminate access for violation of Terms, modify content, or discontinue services.
+                      </p>
+                    </section>
+                    <section>
+                      <h3 className={`${typography.heading.h4} font-display mb-2`}>9. Governing Law</h3>
+                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
+                        These Terms are governed by the laws of India. Disputes shall be subject to courts in Ernakulam, Kerala.
+                      </p>
+                    </section>
+                    <p className={`${typography.body.xs} text-muted-foreground italic`}>
+                      Last updated: {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              </>
             ) : step === 'phone-otp' ? (
               <div className="space-y-6">
                 <div className="flex justify-center mb-4">
