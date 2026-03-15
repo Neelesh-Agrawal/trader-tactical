@@ -4,6 +4,7 @@ from django.db import models
 from courses.models import Lesson, Module, Level
 from django.utils import timezone
 from datetime import date
+import uuid
 
 User = settings.AUTH_USER_MODEL
 
@@ -101,3 +102,32 @@ class LevelProgress(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.level}"
+
+
+class Certificate(models.Model):
+    STORAGE_BACKEND_CHOICES = (
+        ("local", "Local"),
+        ("remote", "Remote"),
+    )
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="certificates"
+    )
+    level = models.ForeignKey(
+        Level, on_delete=models.CASCADE, related_name="certificates"
+    )
+    certificate_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    issued_at = models.DateTimeField(auto_now_add=True)
+    image_file = models.FileField(upload_to="certificates/", null=True, blank=True)
+    storage_backend = models.CharField(
+        max_length=20,
+        choices=STORAGE_BACKEND_CHOICES,
+        default="local",
+    )
+
+    class Meta:
+        unique_together = ("user", "level")
+        ordering = ("-issued_at",)
+
+    def __str__(self):
+        return f"{self.user} - {self.level} - {self.certificate_id}"

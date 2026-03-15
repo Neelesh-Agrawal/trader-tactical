@@ -141,36 +141,34 @@ const Module = () => {
         </div>
 
         {/* Module Final Quiz */}
-        {module.finalQuiz.length > 0 && (
-          <div className="tactical-card p-8 text-center border-2 border-primary/30">
-            <Trophy className="h-12 w-12 mx-auto mb-4 text-warning" />
-            <h3 className="text-xl font-bold mb-2">Module Final Assessment</h3>
-            <p className="text-muted-foreground mb-6">
-              Complete all lessons to unlock the final quiz
-            </p>
-            
-            <Button 
-              size="lg"
-              disabled={!allLessonsCompleted || moduleComplete}
-              onClick={() => navigate(`/quiz/module/${levelId}/${moduleId}`)}
-              className="gap-2"
-            >
-              {moduleComplete ? (
-                <>
-                  <CheckCircle className="h-5 w-5" />
-                  Module Completed
-                </>
-              ) : allLessonsCompleted ? (
-                'Begin Final Assessment'
-              ) : (
-                <>
-                  <Lock className="h-4 w-4" />
-                  Complete All Lessons First
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+        <div className="tactical-card p-8 text-center border-2 border-primary/30">
+          <Trophy className="h-12 w-12 mx-auto mb-4 text-warning" />
+          <h3 className="text-xl font-bold mb-2">Module Final Assessment</h3>
+          <p className="text-muted-foreground mb-6">
+            Complete all lessons to unlock the final quiz
+          </p>
+
+          <Button
+            size="lg"
+            disabled={!allLessonsCompleted || moduleComplete}
+            onClick={() => navigate(`/quiz/module/${levelId}/${moduleId}`)}
+            className="gap-2"
+          >
+            {moduleComplete ? (
+              <>
+                <CheckCircle className="h-5 w-5" />
+                Module Completed
+              </>
+            ) : allLessonsCompleted ? (
+              'Take Module Quiz'
+            ) : (
+              <>
+                <Lock className="h-4 w-4" />
+                Complete All Lessons First
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

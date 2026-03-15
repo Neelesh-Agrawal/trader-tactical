@@ -191,6 +191,12 @@ AUTH_USER_MODEL = "users.User"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+CERTIFICATE_STORAGE_BACKEND = os.getenv("CERTIFICATE_STORAGE_BACKEND", "local")
+DUMMY_CERTIFICATE_PNG_PATH = os.getenv(
+    "DUMMY_CERTIFICATE_PNG_PATH",
+    str(MEDIA_ROOT / "certificates" / "dummy.png"),
+)
+
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
 CKEDITOR_5_CONFIGS = {
     "default": {

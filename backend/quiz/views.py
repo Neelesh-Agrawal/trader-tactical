@@ -3,11 +3,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.exceptions import PermissionDenied
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from .models import Quiz, QuizAttempt
 from .serializers import QuizSerializer, QuizAttemptSerializer
-from courses.models import Enrollment
+from courses.models import Enrollment, Level, Module
+from progress.models import LessonProgress, ModuleProgress
+from progress.services import maybe_issue_level_certificate
 
 
 def check_enrollment(user, quiz):
@@ -45,15 +48,76 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet):
 
         return queryset
 
+    def _is_module_quiz_unlocked(self, module):
+        total_lessons = module.lessons.count()
+        completed_lessons = LessonProgress.objects.filter(
+            user=self.request.user,
+            lesson__module=module,
+            completed=True,
+        ).count()
+        return total_lessons > 0 and total_lessons == completed_lessons
+
+    def _is_level_quiz_unlocked(self, level):
+        total_modules = level.modules.count()
+        completed_modules = ModuleProgress.objects.filter(
+            user=self.request.user,
+            module__level=level,
+            completed=True,
+        ).count()
+        return total_modules > 0 and total_modules == completed_modules
+
+    def list(self, request, *args, **kwargs):
+        module_id = request.query_params.get("module_id")
+        level_id = request.query_params.get("level_id")
+
+        if module_id:
+            module = get_object_or_404(Module, id=module_id)
+            if not Enrollment.objects.filter(
+                user=request.user,
+                course=module.level.course,
+                is_active=True,
+            ).exists():
+                raise PermissionDenied("You must be enrolled in this course")
+            if not self._is_module_quiz_unlocked(module):
+                raise PermissionDenied(
+                    "Complete all lessons in this module to unlock the module quiz"
+                )
+
+        if level_id:
+            level = get_object_or_404(Level, id=level_id)
+            if not Enrollment.objects.filter(
+                user=request.user,
+                course=level.course,
+                is_active=True,
+            ).exists():
+                raise PermissionDenied("You must be enrolled in this course")
+            if not self._is_level_quiz_unlocked(level):
+                raise PermissionDenied(
+                    "Complete all modules in this level to unlock the level quiz"
+                )
+
+        return super().list(request, *args, **kwargs)
+
     def get_object(self):
         """Override to add enrollment check"""
         obj = super().get_object()
         if not check_enrollment(self.request.user, obj):
-            from rest_framework.exceptions import PermissionDenied
-
             raise PermissionDenied(
                 "You must be enrolled in this course to access this quiz"
             )
+
+        if obj.quiz_type == "module" and obj.module:
+            if not self._is_module_quiz_unlocked(obj.module):
+                raise PermissionDenied(
+                    "Complete all lessons in this module to unlock the module quiz"
+                )
+
+        if obj.quiz_type == "level" and obj.level:
+            if not self._is_level_quiz_unlocked(obj.level):
+                raise PermissionDenied(
+                    "Complete all modules in this level to unlock the level quiz"
+                )
+
         return obj
 
     @action(detail=True, methods=["post"], url_path="submit")
@@ -86,6 +150,9 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet):
         attempt = QuizAttempt.objects.create(
             user=request.user, quiz=quiz, score=score, passed=passed
         )
+
+        if passed and quiz.quiz_type == "level" and quiz.level:
+            maybe_issue_level_certificate(request.user, quiz.level)
 
         return Response(QuizAttemptSerializer(attempt).data)
 

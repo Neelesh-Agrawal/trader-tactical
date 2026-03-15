@@ -51,6 +51,13 @@ class Module(models.Model):
     def __str__(self):
         return self.title
 
+    def get_previous_module(self):
+        return (
+            Module.objects.filter(level=self.level, order__lt=self.order)
+            .order_by("-order")
+            .first()
+        )
+
 
 class Lesson(models.Model):
     module = models.ForeignKey(Module, related_name="lessons", on_delete=models.CASCADE)
@@ -66,6 +73,13 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_previous_lesson(self):
+        return (
+            Lesson.objects.filter(module=self.module, order__lt=self.order)
+            .order_by("-order")
+            .first()
+        )
 
 
 class LessonFAQ(models.Model):

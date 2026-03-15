@@ -1,8 +1,18 @@
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import LessonProgress, ModuleProgress, LevelProgress, UserStreak
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+
+from .models import (
+    Certificate,
+    LessonProgress,
+    ModuleProgress,
+    LevelProgress,
+    UserStreak,
+)
 from .serializers import (
+    CertificateSerializer,
     LessonProgressSerializer,
     ModuleProgressSerializer,
     LevelProgressSerializer,
@@ -158,3 +168,49 @@ class LessonActivityView(APIView):
 
         serializer = UserStreakSerializer(streak)
         return Response(serializer.data)
+
+
+class CertificateListView(APIView):
+    """Get all certificates issued to current user"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        certificates = Certificate.objects.filter(user=request.user).select_related(
+            "level",
+            "level__course",
+        )
+        serializer = CertificateSerializer(
+            certificates,
+            many=True,
+            context={"request": request},
+        )
+        return Response(serializer.data)
+
+
+class CertificateDownloadView(APIView):
+    """Download a certificate image for current user"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, certificate_id):
+        certificate = get_object_or_404(
+            Certificate.objects.select_related("level"),
+            id=certificate_id,
+            user=request.user,
+        )
+
+        if not certificate.image_file:
+            return Response(
+                {"detail": "Certificate file not available"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        safe_level_title = certificate.level.title.replace(" ", "-")
+        filename = f"certificate-{safe_level_title}-{certificate.certificate_id}.png"
+        return FileResponse(
+            certificate.image_file.open("rb"),
+            as_attachment=True,
+            filename=filename,
+            content_type="image/png",
+        )

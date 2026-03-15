@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Flame, Moon, Sun, User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
+import { Flame, Moon, Sun, User, LogOut, ChevronDown, Menu, X, Award } from 'lucide-react';
 
 interface HeaderProps {
   showAuth?: boolean;
@@ -126,6 +126,10 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
                 <DropdownMenuItem onClick={() => navigate('/profile')} className="py-3 touch-manipulation">
                   <User className="h-4 w-4 mr-2" />
                   View Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/certificates')} className="py-3 touch-manipulation">
+                  <Award className="h-4 w-4 mr-2" />
+                  My Certificates
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive py-3 touch-manipulation">
