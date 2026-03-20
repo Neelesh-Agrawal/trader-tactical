@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { typography } from '@/design-system';
-import authImage from '@/assets/auth-trading.jpg';
+import authSignupImage from '@/assets/auth-signup.png';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
@@ -341,12 +341,13 @@ const Register = () => {
     <div className="min-h-screen bg-background flex">
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <img 
-          src={authImage} 
-          alt="Trading chart visualization"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <img
+            src={authSignupImage}
+            alt="Trading chart visualization"
+            className="w-[85%] h-[85%] object-contain"
+          />
+        </div>
         <div className="relative z-10 p-12 flex flex-col justify-end">
           <h2 className="text-3xl font-bold mb-2">Start Your Trading Journey</h2>
           <p className="text-muted-foreground">Join thousands of traders mastering the markets</p>
