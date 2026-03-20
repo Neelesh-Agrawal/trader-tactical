@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, PhoneVerification, EmailVerification
+from .models import User, PhoneVerification, EmailVerification, PasswordResetOTP
 
 
 @admin.register(User)
@@ -119,3 +119,11 @@ class EmailVerificationAdmin(admin.ModelAdmin):
     list_filter = ("verified", "created_at")
     search_fields = ("email",)
     readonly_fields = ("otp", "created_at", "expires_at")
+
+
+@admin.register(PasswordResetOTP)
+class PasswordResetOTPAdmin(admin.ModelAdmin):
+    list_display = ("email", "otp", "created_at", "expires_at", "used", "used_at")
+    list_filter = ("used", "created_at")
+    search_fields = ("email",)
+    readonly_fields = ("otp", "created_at", "expires_at", "used_at")

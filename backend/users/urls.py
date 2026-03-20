@@ -11,6 +11,8 @@ from .views import (
     VerifyOTPView,
     SendEmailOTPView,
     VerifyEmailOTPView,
+    SendPasswordResetOTPView,
+    ResetPasswordWithOTPView,
     FeedbackView,
     QnASubmitView,
 )
@@ -27,6 +29,16 @@ urlpatterns = [
     # Email OTP
     path("send-email-otp/", SendEmailOTPView.as_view(), name="send-email-otp"),
     path("verify-email-otp/", VerifyEmailOTPView.as_view(), name="verify-email-otp"),
+    path(
+        "password-reset/request-otp/",
+        SendPasswordResetOTPView.as_view(),
+        name="password-reset-request-otp",
+    ),
+    path(
+        "password-reset/confirm/",
+        ResetPasswordWithOTPView.as_view(),
+        name="password-reset-confirm",
+    ),
     # Feedback
     path("feedback/", FeedbackView.as_view(), name="feedback"),
     # QnA

@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from .models import User, PhoneVerification, EmailVerification
+from .models import User, PhoneVerification, EmailVerification, PasswordResetOTP
 from .serializers import (
     RegisterSerializer,
     EmailTokenObtainPairSerializer,
@@ -22,7 +22,7 @@ from .serializers import (
 )
 from .otp import generate_otp, get_otp_expiry
 from .sms import send_otp_sms
-from .email import send_email_otp
+from .email import send_email_otp, send_password_reset_otp
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -321,6 +321,118 @@ class VerifyEmailOTPView(APIView):
                 "verified": True,
             }
         )
+
+
+class SendPasswordResetOTPView(APIView):
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
+
+    def post(self, request):
+        email = request.data.get("email")
+
+        if not email:
+            return Response(
+                {"error": "Email is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = email.lower().strip()
+
+        PasswordResetOTP.objects.filter(email=email, used=False).delete()
+
+        response_data = {
+            "message": "If an account exists with this email, an OTP has been sent."
+        }
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(response_data)
+
+        otp = generate_otp()
+        expires_at = get_otp_expiry(minutes=5)
+        PasswordResetOTP.objects.create(email=email, otp=otp, expires_at=expires_at)
+
+        sent = send_password_reset_otp(email, otp)
+        if not sent and getattr(settings, "DEBUG", False):
+            response_data["otp"] = otp
+
+        logger.info(f"SendPasswordResetOTPView: OTP requested for user {user.id}")
+        return Response(response_data)
+
+
+class ResetPasswordWithOTPView(APIView):
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AnonRateThrottle]
+
+    def post(self, request):
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        new_pin = request.data.get("new_pin")
+        confirm_pin = request.data.get("confirm_pin")
+
+        if not email or not otp or not new_pin or not confirm_pin:
+            return Response(
+                {"error": "Email, OTP, new PIN, and confirm PIN are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_pin != confirm_pin:
+            return Response(
+                {"error": "PIN confirmation does not match"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not (new_pin.isdigit() and len(new_pin) == 4):
+            return Response(
+                {"error": "PIN must be exactly 4 digits"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = email.lower().strip()
+
+        try:
+            verification = PasswordResetOTP.objects.filter(
+                email=email,
+                used=False,
+            ).latest("created_at")
+        except PasswordResetOTP.DoesNotExist:
+            return Response(
+                {"error": "Invalid or expired OTP"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if verification.expires_at < timezone.now():
+            return Response(
+                {"error": "OTP has expired"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if verification.otp != otp:
+            return Response(
+                {"error": "Invalid OTP"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Invalid reset request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new_pin)
+        user.save(update_fields=["password"])
+
+        verification.used = True
+        verification.used_at = timezone.now()
+        verification.save(update_fields=["used", "used_at"])
+        PasswordResetOTP.objects.filter(email=email, used=False).exclude(
+            id=verification.id
+        ).update(used=True, used_at=timezone.now())
+
+        return Response({"message": "PIN reset successfully"})
 
 
 class FeedbackView(APIView):
