@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PinInput } from '@/components/ui/pin-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import authLoginImage from '@/assets/auth-login.png';
+import authChartImage from '@/assets/auth-chart.png';
 const REMEMBER_ME_KEY = 'trademaster_remember_phone';
 
 const Login = () => {
@@ -71,17 +71,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center">
+      {/* Left side - Chart image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white">
+        <div className="absolute inset-0 flex items-center justify-center p-8">
           <img
-            src={authLoginImage}
-            alt="Trading chart visualization"
-            className="w-[85%] h-[85%] object-contain"
+            src={authChartImage}
+            alt="NIFTY 50 chart - trading education"
+            className="w-full h-full max-w-[520px] object-contain"
           />
         </div>
-        <div className="relative z-10 p-12 flex flex-col justify-end">
-          <h2 className="text-3xl font-bold mb-2">Master the Markets</h2>
+        <div className="absolute top-0 left-0 right-0 z-10 p-12 flex flex-col">
+          <h2 className="text-3xl font-bold mb-2 text-foreground">Master the Markets</h2>
           <p className="text-muted-foreground">Access your personalized trading education dashboard</p>
         </div>
       </div>
