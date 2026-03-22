@@ -63,6 +63,8 @@ const Module = () => {
     return 'locked';
   };
 
+  const stripHtml = (value: string) => value.replace(/<[^>]*>/g, '').trim();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -129,7 +131,7 @@ const Module = () => {
                 <div className="flex-1 min-w-0">
                   <div className="caption text-muted-foreground mb-1">LESSON {index + 1}</div>
                   <h3 className="font-semibold text-lg">{lesson.title}</h3>
-                  <p className="text-sm text-muted-foreground truncate">{lesson.objective}</p>
+                  <p className="text-sm text-muted-foreground truncate">{stripHtml(lesson.lesson_objective)}</p>
                 </div>
                 
                 {status === 'active' && (

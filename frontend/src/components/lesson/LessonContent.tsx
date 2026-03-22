@@ -31,8 +31,9 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
   const { isLessonCompleted } = useProgress();
   const quizRef = useRef<HTMLDivElement>(null);
 
-  // Ensure keyTakeaways and faqs are always arrays
-  const keyTakeaways = lesson.keyTakeaways || [];
+  const keyTakeaways = lesson.key_takeaway
+    ? [lesson.key_takeaway.replace(/<[^>]*>/g, '').trim()].filter(Boolean)
+    : [];
   const faqs = lesson.faqs || [];
 
   const isCompleted = isLessonCompleted(levelId, module.id, lesson.id);
@@ -111,7 +112,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         </div>
 
         {/* What You'll Learn */}
-        <LessonObjectives objective={lesson.objective} keyTakeaways={keyTakeaways} />
+        <LessonObjectives objective={lesson.lesson_objective} keyTakeaways={keyTakeaways} />
 
         {/* Main Content */}
         <LessonIntelV2 content={lesson.content} />

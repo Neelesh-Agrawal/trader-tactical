@@ -28,7 +28,7 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
-            "objective",
+            "lesson_objective",
             "order",
             "estimated_time_minutes",
             "is_unlocked",
@@ -82,28 +82,23 @@ class CourseStructureSerializer(serializers.ModelSerializer):
 
 class LessonDetailSerializer(serializers.ModelSerializer):
     faqs = serializers.SerializerMethodField()
-    takeaways = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
         fields = (
             "id",
             "title",
-            "objective",
+            "lesson_objective",
             "content",
+            "common_mistakes",
+            "key_takeaway",
+            "practical_task",
             "estimated_time_minutes",
             "faqs",
-            "takeaways",
         )
 
     def get_faqs(self, obj):
         return [
             {"id": faq.id, "question": faq.question, "answer": faq.answer}
             for faq in obj.faqs.all()
-        ]
-
-    def get_takeaways(self, obj):
-        return [
-            {"id": takeaway.id, "text": takeaway.text}
-            for takeaway in obj.takeaways.all()
         ]

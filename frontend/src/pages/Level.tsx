@@ -125,8 +125,11 @@ const Level = () => {
   const currentLesson = basicLesson ? {
     ...basicLesson,
     ...lessonDetail,
-    objective: lessonDetail?.objective || basicLesson.objective || '',
-    keyTakeaways: lessonDetail?.takeaways?.map(t => t.text) || [],
+    lesson_objective:
+      lessonDetail?.lesson_objective || basicLesson.lesson_objective || '',
+    common_mistakes: lessonDetail?.common_mistakes || basicLesson.common_mistakes || '',
+    key_takeaway: lessonDetail?.key_takeaway || basicLesson.key_takeaway || '',
+    practical_task: lessonDetail?.practical_task || basicLesson.practical_task || '',
     faqs: lessonDetail?.faqs || [],
   } : undefined;
 

@@ -168,11 +168,11 @@ class LessonListView(APIView):
 
 
 class LessonDetailView(generics.RetrieveAPIView):
-    """Get lesson details with FAQs and takeaways"""
+    """Get lesson details with rich lesson sections and FAQs"""
 
     queryset = Lesson.objects.select_related(
         "module", "module__level"
-    ).prefetch_related("faqs", "takeaways")
+    ).prefetch_related("faqs")
     serializer_class = LessonDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
 

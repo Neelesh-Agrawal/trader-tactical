@@ -10,7 +10,7 @@ import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X } from 'lucide-react';
+import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X, AlertTriangle, Wrench } from 'lucide-react';
 
 const Lesson = () => {
   const { levelId, moduleId, lessonId } = useParams();
@@ -67,7 +67,6 @@ const Lesson = () => {
   const fullLesson = lesson ? {
     ...lesson,
     ...lessonDetail,
-    keyTakeaways: lessonDetail?.takeaways?.map(t => t.text) || lesson.keyTakeaways || [],
     faqs: lessonDetail?.faqs || lesson.faqs || [],
   } : null;
   
@@ -90,7 +89,9 @@ const Lesson = () => {
     }
   };
 
-  const contentParagraphs = fullLesson.content.split('\n\n').filter(p => p.trim());
+  const renderHtmlSection = (html: string) => (
+    <div className="lesson-content ck-content" dangerouslySetInnerHTML={{ __html: html }} />
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,12 +138,12 @@ const Lesson = () => {
           </div>
 
           {/* Mission Briefing */}
-          <div className="mission-briefing mb-8">
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="h-5 w-5 text-primary" />
-              <span className="subheader">Mission Briefing</span>
-            </div>
-            <p className="prose-body text-muted-foreground">{fullLesson.objective}</p>
+            <div className="mission-briefing mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="h-5 w-5 text-primary" />
+                <span className="subheader">Mission Briefing</span>
+              </div>
+            {renderHtmlSection(fullLesson.lesson_objective)}
           </div>
 
           {/* Intel Section */}
@@ -152,31 +153,29 @@ const Lesson = () => {
               <span className="subheader">Intel</span>
             </div>
             <div className="lesson-content space-y-6">
-              {contentParagraphs.map((paragraph, index) => {
-                if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                  return <h3 key={index} className="text-xl font-bold mt-8 mb-4">{paragraph.replace(/\*\*/g, '')}</h3>;
-                }
-                const formattedText = paragraph.split('**').map((part, i) => i % 2 === 1 ? <strong key={i}>{part}</strong> : part);
-                return <p key={index} className="prose-body text-foreground/90 leading-relaxed">{formattedText}</p>;
-              })}
+              {renderHtmlSection(fullLesson.content)}
             </div>
           </div>
 
+          {/* Common Mistakes */}
+          {fullLesson.common_mistakes && (
+            <div className="tactical-card p-6 mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="h-5 w-5 text-warning" />
+                <span className="subheader">Common Mistakes</span>
+              </div>
+              {renderHtmlSection(fullLesson.common_mistakes)}
+            </div>
+          )}
+
           {/* Key Takeaways */}
-          {fullLesson.keyTakeaways.length > 0 && (
+          {fullLesson.key_takeaway && (
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="h-5 w-5 text-warning" />
                 <span className="subheader">Key Signals</span>
               </div>
-              <div className="space-y-3">
-                {fullLesson.keyTakeaways.map((takeaway, index) => (
-                  <div key={index} className="signal-item">
-                    <CheckCircle className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                    <p className="text-sm">{takeaway}</p>
-                  </div>
-                ))}
-              </div>
+              {renderHtmlSection(fullLesson.key_takeaway)}
             </div>
           )}
 
@@ -189,12 +188,25 @@ const Lesson = () => {
               </div>
               <Accordion type="single" collapsible>
                 {fullLesson.faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`faq-${index}`}>
-                    <AccordionTrigger className="text-left hover:text-primary">{faq.question}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                    <AccordionItem key={index} value={`faq-${index}`}>
+                      <AccordionTrigger className="text-left hover:text-primary">{faq.question}</AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground">
+                        <div className="lesson-content ck-content" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+          )}
+
+          {/* Practical Task */}
+          {fullLesson.practical_task && (
+            <div className="tactical-card p-6 mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Wrench className="h-5 w-5 text-primary" />
+                <span className="subheader">Practical Task</span>
+              </div>
+              {renderHtmlSection(fullLesson.practical_task)}
             </div>
           )}
 
