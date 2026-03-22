@@ -55,6 +55,9 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
   };
 
   const levelDisplayName = level.id.charAt(0).toUpperCase() + level.id.slice(1);
+  const allModulesCompleted =
+    level.modules.length > 0 &&
+    level.modules.every(module => isModuleCompleted(level.id, module.id));
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-fade-in">
@@ -232,6 +235,28 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
                         </button>
                       );
                     })}
+
+                    <div className="pt-3">
+                      <Button
+                        size="sm"
+                        className="w-full gap-2"
+                        variant={progress.completed === progress.total ? 'default' : 'secondary'}
+                        disabled={progress.completed !== progress.total}
+                        onClick={() => navigate(`/quiz/module/${level.id}/${module.id}`)}
+                      >
+                        {progress.completed === progress.total ? (
+                          <>
+                            <ArrowRight className="h-4 w-4" />
+                            Take Module Quiz
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-4 w-4" />
+                            Complete all lessons to unlock quiz
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -241,26 +266,38 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
       </div>
 
       {/* Final Assessment Card */}
-      {level.finalAssessment.length > 0 && (
-        <div className="tactical-card p-4 sm:p-6 border-warning/30 bg-gradient-to-br from-card to-warning/5">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-warning/20 flex items-center justify-center text-xl sm:text-2xl shrink-0">
-              🏆
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-ui text-lg sm:text-xl font-semibold mb-1">Final Assessment</h3>
-              <p className="font-body text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                Complete all modules to unlock the final assessment and earn your certificate.
-              </p>
-              <Button disabled variant="secondary" className="gap-2 h-9 sm:h-10 text-xs sm:text-sm touch-manipulation">
-                <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Complete all modules to unlock</span>
-                <span className="sm:hidden">Locked</span>
-              </Button>
-            </div>
+      <div className="tactical-card p-4 sm:p-6 border-warning/30 bg-gradient-to-br from-card to-warning/5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-warning/20 flex items-center justify-center text-xl sm:text-2xl shrink-0">
+            🏆
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-ui text-lg sm:text-xl font-semibold mb-1">Final Assessment</h3>
+            <p className="font-body text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+              Complete all modules to unlock the final assessment and earn your certificate.
+            </p>
+            <Button
+              variant={allModulesCompleted ? 'default' : 'secondary'}
+              className="gap-2 h-9 sm:h-10 text-xs sm:text-sm touch-manipulation"
+              disabled={!allModulesCompleted}
+              onClick={() => navigate(`/quiz/level/${level.id}`)}
+            >
+              {allModulesCompleted ? (
+                <>
+                  <ArrowRight className="h-4 w-4" />
+                  Take Level Quiz
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Complete all modules to unlock</span>
+                  <span className="sm:hidden">Locked</span>
+                </>
+              )}
+            </Button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

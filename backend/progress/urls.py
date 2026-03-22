@@ -8,6 +8,8 @@ from .views import (
     UserStreakView,
     UpdateStreakView,
     LessonActivityView,
+    CertificateListView,
+    CertificateDownloadView,
 )
 
 urlpatterns = [
@@ -28,4 +30,10 @@ urlpatterns = [
     path("streak/", UserStreakView.as_view(), name="user-streak"),
     path("streak/update/", UpdateStreakView.as_view(), name="update-streak"),
     path("lessons/activity/", LessonActivityView.as_view(), name="lesson-activity"),
+    path("certificates/", CertificateListView.as_view(), name="certificate-list"),
+    path(
+        "certificates/<int:certificate_id>/download/",
+        CertificateDownloadView.as_view(),
+        name="certificate-download",
+    ),
 ]

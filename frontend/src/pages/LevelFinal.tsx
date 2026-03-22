@@ -2,6 +2,7 @@ import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useCourses } from '@/hooks/useCourses';
+import { useCertificates } from '@/hooks/useCertificates';
 import { Header } from '@/components/layout/Header';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -12,8 +13,9 @@ import { useState, useEffect } from 'react';
 const LevelFinal = () => {
   const { levelId } = useParams();
   const { user, loading: authLoading } = useAuth();
-  const { isModuleCompleted, isLevelCompleted, isLevelUnlocked, loading: progressLoading } = useProgress();
+  const { isModuleCompleted, isLevelCompleted, loading: progressLoading } = useProgress();
   const { levels, loading: coursesLoading, getLevelById } = useCourses();
+  const { certificates, loading: certificatesLoading, downloadCertificate, refreshCertificates } = useCertificates();
   const navigate = useNavigate();
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -27,6 +29,12 @@ const LevelFinal = () => {
       setTimeout(() => setShowConfetti(false), 5000);
     }
   }, [level, levelId, isLevelCompleted]);
+
+  useEffect(() => {
+    if (level && isLevelCompleted(levelId!)) {
+      refreshCertificates();
+    }
+  }, [level, levelId, isLevelCompleted, refreshCertificates]);
 
   if (loading) {
     return (
@@ -50,6 +58,7 @@ const LevelFinal = () => {
   // Find next level
   const levelIndex = levels.findIndex(l => l.id === levelId);
   const nextLevel = levels[levelIndex + 1];
+  const levelCertificate = certificates.find(c => c.level_title === level.title);
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,19 +128,40 @@ const LevelFinal = () => {
             </p>
             
             {nextLevel ? (
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/dashboard')}
-                className="gap-2"
-              >
-                Continue to {nextLevel.title}
-                <ArrowRight className="h-5 w-5" />
-              </Button>
+              <div className="flex flex-col items-center gap-3">
+                {levelCertificate && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => downloadCertificate(levelCertificate.id)}
+                  >
+                    Download Certificate (PNG)
+                  </Button>
+                )}
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/dashboard')}
+                  className="gap-2"
+                >
+                  Continue to {nextLevel.title}
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </div>
             ) : (
               <div className="text-center">
                 <p className="text-lg font-medium text-warning mb-4">
                   🎉 You've completed all levels!
                 </p>
+                {levelCertificate && (
+                  <Button
+                    className="mb-4"
+                    onClick={() => downloadCertificate(levelCertificate.id)}
+                  >
+                    Download Certificate (PNG)
+                  </Button>
+                )}
+                {!levelCertificate && certificatesLoading && (
+                  <p className="text-sm text-muted-foreground mb-4">Checking certificate availability...</p>
+                )}
                 <Button onClick={() => navigate('/dashboard')}>
                   Return to Dashboard
                 </Button>

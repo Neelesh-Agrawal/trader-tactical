@@ -40,7 +40,7 @@ class Level(models.Model):
 class Module(models.Model):
     level = models.ForeignKey(Level, related_name="modules", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    description = CKEditor5Field(config_name="default", blank=True, default="")
     icon = models.CharField(max_length=50, blank=True, default="")
     order = models.PositiveIntegerField()
 
@@ -51,12 +51,22 @@ class Module(models.Model):
     def __str__(self):
         return self.title
 
+    def get_previous_module(self):
+        return (
+            Module.objects.filter(level=self.level, order__lt=self.order)
+            .order_by("-order")
+            .first()
+        )
+
 
 class Lesson(models.Model):
     module = models.ForeignKey(Module, related_name="lessons", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    objective = models.TextField(blank=True, default="")
+    lesson_objective = CKEditor5Field(config_name="default", blank=True, default="")
     content = CKEditor5Field(config_name="default")
+    common_mistakes = CKEditor5Field(config_name="default", blank=True, default="")
+    key_takeaway = CKEditor5Field(config_name="default", blank=True, default="")
+    practical_task = CKEditor5Field(config_name="default", blank=True, default="")
     order = models.PositiveIntegerField()
     estimated_time_minutes = models.PositiveIntegerField(null=True, blank=True)
 
@@ -67,24 +77,21 @@ class Lesson(models.Model):
     def __str__(self):
         return self.title
 
+    def get_previous_lesson(self):
+        return (
+            Lesson.objects.filter(module=self.module, order__lt=self.order)
+            .order_by("-order")
+            .first()
+        )
+
 
 class LessonFAQ(models.Model):
     lesson = models.ForeignKey(Lesson, related_name="faqs", on_delete=models.CASCADE)
     question = models.CharField(max_length=500)
-    answer = models.TextField()
+    answer = CKEditor5Field(config_name="default", blank=True, default="")
 
     def __str__(self):
         return self.question
-
-
-class LessonTakeaway(models.Model):
-    lesson = models.ForeignKey(
-        Lesson, related_name="takeaways", on_delete=models.CASCADE
-    )
-    text = models.CharField(max_length=500)
-
-    def __str__(self):
-        return self.text
 
 
 class Enrollment(models.Model):

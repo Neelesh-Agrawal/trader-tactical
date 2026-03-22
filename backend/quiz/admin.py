@@ -48,15 +48,24 @@ class QuizAdmin(nested_admin.NestedModelAdmin):
     inlines = [QuestionInline]
 
     fieldsets = (
-        (None, {
-            "fields": ("quiz_type",),
-        }),
-        ("Attach Quiz To (select exactly ONE)", {
-            "fields": ("lesson", "module", "level"),
-        }),
-        ("Rules", {
-            "fields": ("pass_percentage", "cooldown_minutes"),
-        }),
+        (
+            None,
+            {
+                "fields": ("quiz_type",),
+            },
+        ),
+        (
+            "Attach Quiz To (select exactly ONE)",
+            {
+                "fields": ("lesson", "module", "level"),
+            },
+        ),
+        (
+            "Rules",
+            {
+                "fields": ("pass_percentage", "cooldown_minutes"),
+            },
+        ),
     )
 
     def attached_to(self, obj):
@@ -71,10 +80,10 @@ class QuizAdmin(nested_admin.NestedModelAdmin):
             if isinstance(obj, Question):
                 if not obj.order or obj.order == 0:
                     last_order = (
-                        Question.objects
-                        .filter(quiz=obj.quiz)
+                        Question.objects.filter(quiz=obj.quiz)
                         .aggregate(max_order=models.Max("order"))
-                        .get("max_order") or 0
+                        .get("max_order")
+                        or 0
                     )
                     obj.order = last_order + 1
 
@@ -89,6 +98,21 @@ class QuizAdmin(nested_admin.NestedModelAdmin):
                 "Quiz must be attached to exactly ONE of: Lesson, Module, or Level."
             )
         super().save_model(request, obj, form, change)
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+
+        lesson_id = request.GET.get("lesson")
+        quiz_type = request.GET.get("quiz_type")
+
+        if lesson_id:
+            initial["lesson"] = lesson_id
+            initial["quiz_type"] = "lesson"
+
+        if quiz_type in {"lesson", "module", "level"}:
+            initial["quiz_type"] = quiz_type
+
+        return initial
 
 
 @admin.register(QuizAttempt)
@@ -105,4 +129,3 @@ class QuizAttemptAdmin(admin.ModelAdmin):
         "quiz__quiz_type",
     )
     readonly_fields = list_display
-

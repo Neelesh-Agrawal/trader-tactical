@@ -63,6 +63,8 @@ const Module = () => {
     return 'locked';
   };
 
+  const stripHtml = (value: string) => value.replace(/<[^>]*>/g, '').trim();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -129,7 +131,7 @@ const Module = () => {
                 <div className="flex-1 min-w-0">
                   <div className="caption text-muted-foreground mb-1">LESSON {index + 1}</div>
                   <h3 className="font-semibold text-lg">{lesson.title}</h3>
-                  <p className="text-sm text-muted-foreground truncate">{lesson.objective}</p>
+                  <p className="text-sm text-muted-foreground truncate">{stripHtml(lesson.lesson_objective)}</p>
                 </div>
                 
                 {status === 'active' && (
@@ -141,36 +143,34 @@ const Module = () => {
         </div>
 
         {/* Module Final Quiz */}
-        {module.finalQuiz.length > 0 && (
-          <div className="tactical-card p-8 text-center border-2 border-primary/30">
-            <Trophy className="h-12 w-12 mx-auto mb-4 text-warning" />
-            <h3 className="text-xl font-bold mb-2">Module Final Assessment</h3>
-            <p className="text-muted-foreground mb-6">
-              Complete all lessons to unlock the final quiz
-            </p>
-            
-            <Button 
-              size="lg"
-              disabled={!allLessonsCompleted || moduleComplete}
-              onClick={() => navigate(`/quiz/module/${levelId}/${moduleId}`)}
-              className="gap-2"
-            >
-              {moduleComplete ? (
-                <>
-                  <CheckCircle className="h-5 w-5" />
-                  Module Completed
-                </>
-              ) : allLessonsCompleted ? (
-                'Begin Final Assessment'
-              ) : (
-                <>
-                  <Lock className="h-4 w-4" />
-                  Complete All Lessons First
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+        <div className="tactical-card p-8 text-center border-2 border-primary/30">
+          <Trophy className="h-12 w-12 mx-auto mb-4 text-warning" />
+          <h3 className="text-xl font-bold mb-2">Module Final Assessment</h3>
+          <p className="text-muted-foreground mb-6">
+            Complete all lessons to unlock the final quiz
+          </p>
+
+          <Button
+            size="lg"
+            disabled={!allLessonsCompleted || moduleComplete}
+            onClick={() => navigate(`/quiz/module/${levelId}/${moduleId}`)}
+            className="gap-2"
+          >
+            {moduleComplete ? (
+              <>
+                <CheckCircle className="h-5 w-5" />
+                Module Completed
+              </>
+            ) : allLessonsCompleted ? (
+              'Take Module Quiz'
+            ) : (
+              <>
+                <Lock className="h-4 w-4" />
+                Complete All Lessons First
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

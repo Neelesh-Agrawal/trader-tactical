@@ -18,6 +18,7 @@ import Module from "./pages/Module";
 import Lesson from "./pages/Lesson";
 import Quiz from "./pages/Quiz";
 import Profile from "./pages/Profile";
+import Certificates from "./pages/Certificates";
 import LevelFinal from "./pages/LevelFinal";
 import NotFound from "./pages/NotFound";
 import TermsConditions from "./pages/TermsConditions";
@@ -89,6 +90,7 @@ const App = () => (
               <Route path="/forgot-pin" element={<ForgotPin />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/certificates" element={<Certificates />} />
               <Route path="/level/:levelId" element={<Level />} />
               <Route path="/level/:levelId/final" element={<LevelFinal />} />
               <Route path="/module/:levelId/:moduleId" element={<Module />} />

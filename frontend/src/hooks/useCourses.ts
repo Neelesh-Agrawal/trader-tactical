@@ -16,21 +16,18 @@ export interface LessonFAQ {
   answer: string;
 }
 
-export interface LessonTakeaway {
-  id: string;
-  text: string;
-}
-
 export interface Lesson {
   id: string;
   title: string;
-  objective: string;
+  lesson_objective: string;
   content: string;
+  common_mistakes: string;
+  key_takeaway: string;
+  practical_task: string;
   estimated_time_minutes: number | null;
   order: number;
   is_unlocked: boolean;
   faqs: LessonFAQ[];
-  takeaways: LessonTakeaway[];
   quiz: Question[];
 }
 
@@ -85,7 +82,7 @@ interface BackendModuleResponse {
 interface BackendLessonResponse {
   id: number;
   title: string;
-  objective: string;
+  lesson_objective: string;
   order: number;
   estimated_time_minutes: number | null;
   is_unlocked: boolean;
@@ -94,11 +91,13 @@ interface BackendLessonResponse {
 interface BackendLessonDetailResponse {
   id: number;
   title: string;
-  objective: string;
+  lesson_objective: string;
   content: string;
+  common_mistakes: string;
+  key_takeaway: string;
+  practical_task: string;
   estimated_time_minutes: number | null;
   faqs: { id: number; question: string; answer: string }[];
-  takeaways: { id: number; text: string }[];
 }
 
 interface BackendQuizOption {
@@ -187,13 +186,15 @@ export const useCourses = () => {
             lessons: m.lessons.map(les => ({
               id: `lesson-${l.id}-${m.id}-${les.id}`,
               title: les.title,
-              objective: les.objective,
+              lesson_objective: les.lesson_objective,
               content: '',
+              common_mistakes: '',
+              key_takeaway: '',
+              practical_task: '',
               estimated_time_minutes: les.estimated_time_minutes,
               order: les.order,
               is_unlocked: les.is_unlocked,
               faqs: [],
-              takeaways: [],
               quiz: [],
             })),
           })),
@@ -253,13 +254,15 @@ export const useCourses = () => {
       return {
         id: String(data.id),
         title: data.title,
-        objective: data.objective,
+        lesson_objective: data.lesson_objective,
         content: data.content,
+        common_mistakes: data.common_mistakes,
+        key_takeaway: data.key_takeaway,
+        practical_task: data.practical_task,
         estimated_time_minutes: data.estimated_time_minutes,
         order: 0,
         is_unlocked: true,
         faqs: data.faqs.map(f => ({ ...f, id: String(f.id) })),
-        takeaways: data.takeaways.map(t => ({ ...t, id: String(t.id) })),
         quiz: [],
       };
     } catch (err) {

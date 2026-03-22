@@ -25,14 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY", "django-insecure-lnsa5m4$00rh)ij(dn69)v_7963z5d=-^v)x2zxyy$!e8p4i52"
-)
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is required for production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
@@ -89,20 +90,76 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "lms_db",
-        "USER": "django",
-        "PASSWORD": "django",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+db_engine = os.getenv("DB_ENGINE", "mysql").lower()
+
+if db_engine in {"mysql", "mariadb"}:
+    database_engine = "django.db.backends.mysql"
+    default_port = "3306"
+    db_socket = os.getenv("DB_SOCKET", "").strip()
+    database_options = {
+        "charset": "utf8mb4",
     }
-}
+    if db_socket:
+        database_options["unix_socket"] = db_socket
+elif db_engine in {"postgres", "postgresql"}:
+    database_engine = "django.db.backends.postgresql"
+    default_port = "5432"
+    database_options = {}
+elif db_engine == "sqlite":
+    database_engine = "django.db.backends.sqlite3"
+    default_port = ""
+    database_options = {}
+else:
+    raise ValueError(
+        "Unsupported DB_ENGINE. Use one of: mysql, mariadb, postgres, postgresql, sqlite"
+    )
+
+if database_engine == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": database_engine,
+            "NAME": os.getenv("DB_NAME", str(BASE_DIR / "db.sqlite3")),
+        }
+    }
+else:
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_port = os.getenv("DB_PORT", default_port)
+
+    if (
+        database_engine == "django.db.backends.mysql"
+        and "unix_socket" in database_options
+    ):
+        # Force socket auth when DB_SOCKET is configured.
+        db_host = ""
+        db_port = ""
+
+    DATABASES = {
+        "default": {
+            "ENGINE": database_engine,
+            "NAME": os.getenv("DB_NAME", "lms_db"),
+            "USER": os.getenv("DB_USER", "django"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": db_host,
+            "PORT": db_port,
+            "OPTIONS": database_options,
+        }
+    }
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 CORS_ALLOW_CREDENTIALS = True
+
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
 
 
 # Password validation
@@ -140,13 +197,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATIC_ROOT = "staticfiles"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "500/hour",
+        "otp": "5/minute",
+        "login": "10/minute",
+    },
 }
 
 SIMPLE_JWT = {
@@ -165,8 +232,14 @@ PASSWORD_HASHERS = [
 
 AUTH_USER_MODEL = "users.User"
 
-MEDIA_URL = "/media/"
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
 MEDIA_ROOT = BASE_DIR / "media"
+
+CERTIFICATE_STORAGE_BACKEND = os.getenv("CERTIFICATE_STORAGE_BACKEND", "local")
+DUMMY_CERTIFICATE_PNG_PATH = os.getenv(
+    "DUMMY_CERTIFICATE_PNG_PATH",
+    str(MEDIA_ROOT / "certificates" / "dummy.png"),
+)
 
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
 CKEDITOR_5_CONFIGS = {

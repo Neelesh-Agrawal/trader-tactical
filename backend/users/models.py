@@ -72,3 +72,21 @@ class EmailVerification(models.Model):
 
     def __str__(self):
         return f"{self.email} - {'verified' if self.verified else 'pending'}"
+
+
+class PasswordResetOTP(models.Model):
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["email", "-created_at"]),
+        ]
+
+    def __str__(self):
+        status = "used" if self.used else "pending"
+        return f"{self.email} - {status}"

@@ -22,6 +22,13 @@ export const LessonObjectives = ({ objective, keyTakeaways }: LessonObjectivesPr
         By the end of this lesson, you will be able to:
       </p>
 
+      {objective && (
+        <div
+          className="lesson-content ck-content mb-5"
+          dangerouslySetInnerHTML={{ __html: objective }}
+        />
+      )}
+
       <div className="space-y-4">
         {objectives.map((item, index) => (
           <div key={index} className="flex items-start gap-3">
