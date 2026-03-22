@@ -40,7 +40,7 @@ class Level(models.Model):
 class Module(models.Model):
     level = models.ForeignKey(Level, related_name="modules", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    description = CKEditor5Field(config_name="default", blank=True, default="")
     icon = models.CharField(max_length=50, blank=True, default="")
     order = models.PositiveIntegerField()
 
