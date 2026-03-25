@@ -91,7 +91,7 @@ const Login = () => {
         <main id="main-content" className="w-full max-w-md">
           <Card className="tactical-card">
             <CardHeader className="text-center">
-              <div className="caption text-primary mb-2">AUTHENTICATION</div>
+              <div className="caption text-primary mb-2"></div>
               <CardTitle className="text-2xl">Welcome Back, Trader</CardTitle>
               <CardDescription>Enter your credentials to continue</CardDescription>
             </CardHeader>
@@ -175,7 +175,7 @@ const Login = () => {
               </form>
 
               <p className="text-center text-sm text-muted-foreground mt-6">
-                New recruit?{' '}
+                Don't Have an Account?{' '}
                 <Link to="/register" className="text-primary hover:underline font-medium">
                   Create Account
                 </Link>

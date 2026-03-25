@@ -359,7 +359,7 @@ const Register = () => {
         <main id="main-content" className="w-full max-w-md">
           <Card className="tactical-card">
             <CardHeader className="text-center">
-              <div className="caption text-primary mb-2">RECRUITMENT</div>
+              <div className="caption text-primary mb-2"></div>
               <CardTitle className="text-2xl">
                 {getStepTitle()}
               </CardTitle>
@@ -840,7 +840,7 @@ const Register = () => {
             )}
 
             <p className="text-center text-sm text-muted-foreground mt-6">
-              Already registered?{' '}
+              Already Have an Account?{' '}
               <Link to="/login" className="text-primary hover:underline font-medium">
                 Sign In
               </Link>
