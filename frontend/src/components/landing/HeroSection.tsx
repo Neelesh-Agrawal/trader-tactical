@@ -26,8 +26,8 @@ export const HeroSection = () => {
               </h1>
               
               <p className={`${typography.body.lg} font-body text-muted-foreground mb-7 sm:mb-8 leading-relaxed`}>
-                No shortcuts. No guesswork. Build real understanding with structured learning 
-                that takes you from basics to professional-level trading.
+              A step-by-step learning path built for beginners 
+              — no jargon, no confusion, just clarity. And yes, you can actually get hired after this.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
@@ -69,7 +69,7 @@ export const HeroSection = () => {
 
           {/* Hero Visual - Progress Card */}
           <AnimatedSection direction="right" delay={200} className="relative hidden lg:block">
-            <div className="bg-card rounded-xl border border-border shadow-lg p-5 max-w-md ml-auto">
+            <div className="bg-card rounded-xl border border-border shadow-lg p-5 max-w-lg ml-auto">
               {/* Concept Mastered Badge */}
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center shrink-0">

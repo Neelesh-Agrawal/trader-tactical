@@ -59,7 +59,7 @@ export const Footer = () => {
               <img 
                 src="/logo.png" 
                 alt="Easy Option Learning" 
-                className="h-10 w-10 object-contain shrink-0"
+                className="h-10 w-10 object-contain shrink-0 rounded-md"
               />
               <span className={`${typography.heading.h4} font-display font-bold`}>Easy Option Learning</span>
             </Link>
@@ -112,7 +112,7 @@ export const Footer = () => {
               <p>CIN: U66120KL2024PTC086709</p>
               <p>Registered Address: Door No. 1001 B, 2502 B, KunjanBava Road, Vytilla, Ernakulam, Kerala – 682019</p>
               <p>
-                Contact & Grievance:{' '}
+                Contact Us:{' '}
                 <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">
                   care@easyoptionlearning.com
                 </a>

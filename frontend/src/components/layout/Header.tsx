@@ -65,7 +65,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
           <img 
             src="/logo.png" 
             alt="Easy Option Learning" 
-            className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+            className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
           />
           <span className="font-display text-lg sm:text-xl font-bold hidden xs:inline">Easy Option Learning</span>
         </Link>
@@ -148,6 +148,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
                 Login
               </Button>
               <Button 
+                variant="success"
                 onClick={() => navigate('/register')} 
                 className="h-9 sm:h-10 px-3 sm:px-4 text-sm touch-manipulation"
               >
