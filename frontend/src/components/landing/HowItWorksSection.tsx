@@ -1,27 +1,27 @@
-import { UserPlus, Clock, Zap, TrendingUp } from 'lucide-react';
+import { BookOpen, Link2, Target, Briefcase } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
 
 const learningFlow = [
   { 
-    icon: UserPlus, 
-    title: 'Sign Up', 
-    description: 'Create your account in minutes' 
+    icon: BookOpen, 
+    title: 'Learn', 
+    description: 'Start with the basics, explained simply and without jargon. No rushing ahead until things click.' 
   },
   { 
-    icon: Clock, 
-    title: 'Learn at Your Own Pace', 
-    description: 'Structured modules with deep clarity' 
+    icon: Link2, 
+    title: 'Connect the Dots', 
+    description: 'See how concepts work in real market situations. This is where confusion starts turning into clarity.' 
   },
   { 
-    icon: Zap, 
-    title: 'Apply It Practically', 
-    description: 'Learn how concepts work in real markets' 
+    icon: Target, 
+    title: 'Apply With Confidence', 
+    description: "Move into real trade thinking with clear logic, not guessing. You'll know what you're doing and why." 
   },
   { 
-    icon: TrendingUp, 
-    title: 'Level Up', 
-    description: 'Unlock higher levels as you progress' 
+    icon: Briefcase, 
+    title: 'Grow / Get Hired', 
+    description: 'Prove your understanding and unlock the opportunity to work with us.' 
   }
 ];
 
@@ -32,11 +32,8 @@ export const HowItWorksSection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
             <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
-              How <span className="text-success">It Works</span>
+              How This <span className="text-success">Actually Works</span>
             </h2>
-            <p className={`${typography.body.lg} font-body text-muted-foreground leading-relaxed`}>
-              A clear, structured learning process designed to build real understanding.
-            </p>
           </div>
         </AnimatedSection>
 
@@ -55,7 +52,7 @@ export const HowItWorksSection = () => {
                         <item.icon className="h-4 w-4 md:h-5 md:w-5 text-success" />
                       </div>
                       <h4 className={`${typography.heading.h5} font-ui font-semibold mb-2 text-foreground`}>{item.title}</h4>
-                      <p className={`${typography.body.sm} font-body text-muted-foreground line-clamp-2`}>{item.description}</p>
+                      <p className={`${typography.body.sm} font-body text-muted-foreground line-clamp-3`}>{item.description}</p>
                     </div>
                   </div>
                 </AnimatedSection>

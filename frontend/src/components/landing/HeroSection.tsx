@@ -53,7 +53,7 @@ export const HeroSection = () => {
               <div className={`flex flex-wrap items-center gap-3 sm:gap-4 ${typography.body.sm} font-body text-muted-foreground`}>
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-success shrink-0" />
-                  <span>Structured Learning</span>
+                  <span>Beginner-friendly</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-success shrink-0" />

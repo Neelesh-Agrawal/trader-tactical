@@ -5,23 +5,23 @@ import { typography } from '@/design-system';
 const features = [
   {
     icon: Lightbulb,
-    title: 'Break Complex Concepts',
-    description: 'Transform intimidating topics into simple, digestible ideas you can truly understand.'
+    title: 'You watch videos but still feel confused.',
+    description: 'Content alone is not enough when the fundamentals are unclear.'
   },
   {
     icon: Layers,
-    title: "Teach the 'Why'",
-    description: 'Go beyond surface-level knowledge to understand why strategies work.'
+    title: 'You hesitate before every trade.',
+    description: 'Confidence drops when decision-making is not systematic.'
   },
   {
     icon: Brain,
-    title: 'Think Like a Trader',
-    description: 'Build the mental framework that separates professionals from guessers.'
+    title: "You feel like you're guessing, not trading.",
+    description: 'Without a framework, every entry and exit feels random.'
   },
   {
     icon: GraduationCap,
-    title: 'Professional Readiness',
-    description: 'Prepare for real trading with structured, practical knowledge.'
+    title: "You understand theory... but can't apply it.",
+    description: 'Practical execution is where most beginners get stuck.'
   }
 ];
 
@@ -35,10 +35,10 @@ export const AboutSection = () => {
               THE APPROACH
             </span>
             <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
-              What This Course Is Really About
+              If this feels like you... you're in the right place
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground leading-relaxed`}>
-              No fluff. No shortcuts. Just clear, structured education that builds real understanding from the ground up.
+              You're not alone - this is where most beginners get stuck. This is exactly what we fix.
             </p>
           </div>
         </AnimatedSection>
