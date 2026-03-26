@@ -124,7 +124,7 @@ export const LevelCard = ({ level, levelIndex, isCurrent }: LevelCardProps) => {
           )}
           
           {/* Icon in center of ring */}
-          {isUnlocked && (
+          {isUnlocked && level.id !== 'beginner' && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div 
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:rotate-12"

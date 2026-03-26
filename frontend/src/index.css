@@ -22,8 +22,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary - Deep Navy accent */
-    --primary: 217 91% 50%;
+    /* Primary - Growth Green accent */
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary */
@@ -44,7 +44,7 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 217 91% 50%;
+    --ring: 160 84% 39%;
 
     --radius: 0.75rem;
 
@@ -60,11 +60,11 @@
     --hex-complete: 160 84% 39%;
     --hex-active: 38 92% 50%;
     --hex-locked: 210 40% 85%;
-    --hex-border: 217 91% 50%;
+    --hex-border: 160 84% 39%;
     
     /* Level Colors */
     --level-beginner: 160 84% 39%;
-    --level-intermediate: 217 91% 50%;
+    --level-intermediate: 160 84% 39%;
     --level-advanced: 270 70% 55%;
 
     /* Gradients */
@@ -74,18 +74,18 @@
 
     /* Shadows */
     --shadow-tactical: 0 4px 20px -4px hsla(222, 47%, 20%, 0.1);
-    --shadow-glow: 0 0 30px -5px hsla(217, 91%, 50%, 0.2);
+    --shadow-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.25);
     --shadow-success-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.3);
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 217 91% 50%;
+    --sidebar-primary: 160 84% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 217 91% 50%;
+    --sidebar-ring: 160 84% 39%;
   }
 
   .dark {
@@ -99,8 +99,8 @@
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 96%;
 
-    /* Primary - Deep Navy accent */
-    --primary: 217 91% 60%;
+    /* Primary - Growth Green accent */
+    --primary: 160 84% 39%;
     --primary-foreground: 222 47% 6%;
 
     /* Secondary */
@@ -121,7 +121,7 @@
 
     --border: 222 30% 18%;
     --input: 222 30% 18%;
-    --ring: 217 91% 60%;
+    --ring: 160 84% 39%;
 
     /* Tactical Status Colors */
     --success: 160 84% 39%;
@@ -135,11 +135,11 @@
     --hex-complete: 160 84% 39%;
     --hex-active: 38 92% 50%;
     --hex-locked: 222 30% 20%;
-    --hex-border: 217 91% 60%;
+    --hex-border: 160 84% 39%;
     
     /* Level Colors */
     --level-beginner: 160 84% 39%;
-    --level-intermediate: 217 91% 60%;
+    --level-intermediate: 160 84% 39%;
     --level-advanced: 270 70% 55%;
 
     /* Gradients */
@@ -149,18 +149,18 @@
 
     /* Shadows */
     --shadow-tactical: 0 4px 20px -4px hsla(222, 47%, 4%, 0.8);
-    --shadow-glow: 0 0 30px -5px hsla(217, 91%, 60%, 0.3);
+    --shadow-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.35);
     --shadow-success-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.4);
 
     /* Sidebar */
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 160 84% 39%;
     --sidebar-primary-foreground: 222 47% 6%;
     --sidebar-accent: 222 47% 12%;
     --sidebar-accent-foreground: 210 40% 96%;
     --sidebar-border: 222 30% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 160 84% 39%;
   }
 }
 
@@ -685,4 +685,31 @@
   img:not([loading="lazy"]) {
     opacity: 1;
   }
+}
+
+/* Date input calendar icon visibility in dark mode */
+.dob-date-input::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dob-date-input {
+  position: relative;
+  padding-right: 2.5rem;
+  background-image: none;
+}
+
+.dark .dob-date-input {
+  color-scheme: dark;
+}
+
+.dark .dob-date-input::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: brightness(0) invert(1);
 }

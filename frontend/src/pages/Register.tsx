@@ -17,7 +17,8 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { typography } from '@/design-system';
-import authChartImage from '@/assets/auth-chart.png';
+import authChartLightImage from '@/assets/auth-chart-light.png';
+import authChartDarkImage from '@/assets/auth-chart-dark.png';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
@@ -340,14 +341,20 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left side - Chart image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white">
-        <div className="absolute inset-0 flex items-center justify-center p-8">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white dark:bg-background">
+        <div className="absolute inset-0 flex items-center justify-center p-6">
           <img
-            src={authChartImage}
+            src={authChartLightImage}
             alt="NIFTY 50 chart - trading education"
-            className="w-full h-full max-w-[520px] object-contain"
+            className="w-full h-full max-w-[94%] max-h-[94%] object-contain block dark:hidden"
+          />
+          <img
+            src={authChartDarkImage}
+            alt="NIFTY 50 chart - trading education dark mode"
+            className="w-full h-full max-w-[94%] max-h-[94%] object-contain hidden dark:block"
           />
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white dark:bg-background" />
         <div className="absolute top-0 left-0 right-0 z-10 p-12 flex flex-col">
           <h2 className="text-3xl font-bold mb-2 text-foreground">Start Your Trading Journey</h2>
           <p className="text-muted-foreground">Join thousands of traders mastering the markets</p>
@@ -479,6 +486,7 @@ const Register = () => {
                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                     required
                     autoComplete="bday"
+                    className="dob-date-input"
                   />
                 </div>
 
