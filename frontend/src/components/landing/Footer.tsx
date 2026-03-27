@@ -3,13 +3,6 @@ import { Link } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
 
-const quickLinks = [
-  { label: 'Levels', href: '#levels' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'FAQs', href: '#faqs' },
-  { label: 'Contact', href: '#contact' }
-];
-
 const legalLinks = [
   { label: 'Terms & Conditions', href: '/terms' },
   { label: 'Privacy Policy', href: '/privacy' },
@@ -25,13 +18,6 @@ const trustSignals = [
 ];
 
 export const Footer = () => {
-  const handleAnchorClick = (href: string) => {
-    if (href.startsWith('#')) {
-      const element = document.getElementById(href.slice(1));
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <footer className="border-t border-border bg-card" role="contentinfo">
       {/* Trust Signals */}
@@ -52,7 +38,7 @@ export const Footer = () => {
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Brand */}
           <AnimatedSection direction="up" delay={100} className="sm:col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
@@ -69,25 +55,8 @@ export const Footer = () => {
             </p>
           </AnimatedSection>
 
-          {/* Quick Links */}
-          <AnimatedSection direction="up" delay={150}>
-            <h4 className={`${typography.heading.h6} font-ui font-semibold mb-4 text-foreground`}>Quick Links</h4>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
-                  <button
-                    onClick={() => handleAnchorClick(link.href)}
-                    className={`${typography.body.sm} font-ui text-muted-foreground hover:text-primary transition-colors text-left`}
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </AnimatedSection>
-
           {/* Legal */}
-          <AnimatedSection direction="up" delay={200}>
+          <AnimatedSection direction="up" delay={150}>
             <h4 className={`${typography.heading.h6} font-ui font-semibold mb-4 text-foreground`}>Legal</h4>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
@@ -108,7 +77,7 @@ export const Footer = () => {
         <AnimatedSection direction="up" delay={250}>
           <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border text-center space-y-4">
             <div className={`${typography.body.xs} font-body text-muted-foreground space-y-1 max-w-2xl mx-auto`}>
-              <p className="font-semibold text-foreground">Operated By: Anata Securities Private Limited</p>
+              <p className="font-semibold text-foreground">Operated By: Ananta Securities Private Limited</p>
               <p>CIN: U66120KL2024PTC086709</p>
               <p>Registered Address: Door No. 1001 B, 2502 B, KunjanBava Road, Vytilla, Ernakulam, Kerala – 682019</p>
               <p>

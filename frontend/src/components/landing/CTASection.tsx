@@ -19,7 +19,7 @@ export const CTASection = () => {
               Start Learning Options the <span className="text-success">Right Way</span>
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground mb-8 leading-relaxed`}>
-              Build clarity first. Confidence next. Capital last.
+              Build clarity first. Then Confidence.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -28,7 +28,7 @@ export const CTASection = () => {
                 className={`${typography.ui.lg} font-ui px-8 gap-2 h-12 md:h-14 bg-success hover:bg-success/90 text-success-foreground`}
                 onClick={() => navigate('/register')}
               >
-                Start with Beginner Level
+                Take the first step
                 <ArrowRight className="h-5 w-5" />
               </Button>
               <Button 

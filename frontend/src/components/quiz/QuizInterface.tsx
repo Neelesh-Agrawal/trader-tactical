@@ -211,11 +211,7 @@ export const QuizInterface = ({
             </div>
           </div>
 
-          {!passed && (
-            <p className="text-sm text-muted-foreground mb-6">
-              Required: 80% to pass. Cooldown: {quizType === 'level' ? '3' : '2'} minutes before retry.
-            </p>
-          )}
+          
 
           {/* Show answers review */}
           <div className="text-left mb-8 max-h-64 overflow-y-auto scrollbar-tactical">
@@ -258,7 +254,7 @@ export const QuizInterface = ({
             ) : (
               <Button onClick={() => window.location.reload()} className="gap-2">
                 <RotateCcw className="h-4 w-4" />
-                Retry (after cooldown)
+                Retry
               </Button>
             )}
           </div>

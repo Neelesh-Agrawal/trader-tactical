@@ -36,7 +36,7 @@ const PrivacyPolicy = () => {
                   <section>
                     <h2 className={`${typography.heading.h3} font-display mb-3`}>1. Introduction</h2>
                     <p className={`${typography.body.md} text-muted-foreground leading-relaxed`}>
-                      Anata Securities Private Limited respects your privacy and is committed to protecting your personal data.
+                      Ananta Securities Private Limited respects your privacy and is committed to protecting your personal data.
                     </p>
                   </section>
 

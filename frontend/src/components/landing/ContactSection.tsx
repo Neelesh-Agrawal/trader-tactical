@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Linkedin, MessageSquare, Send } from 'lucide-react';
+import { Mail, MessageSquare, Send } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
 import { Button } from '@/components/ui/button';
@@ -70,7 +70,7 @@ export const ContactSection = () => {
               Contact <span className="text-success">Us</span>
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground mb-8`}>
-              Have questions? We're happy to help.
+            Got a question? We're happy to help.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -78,7 +78,7 @@ export const ContactSection = () => {
                 <DrawerTrigger asChild>
                   <button className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group cursor-pointer">
                     <MessageSquare className="h-5 w-5 text-success" />
-                    <span className={`${typography.body.md} font-ui font-medium text-foreground`}>Send Feedback</span>
+                    <span className={`${typography.body.md} font-ui font-medium text-foreground`}>Send us a message</span>
                   </button>
                 </DrawerTrigger>
                 <DrawerContent>
@@ -142,15 +142,6 @@ export const ContactSection = () => {
                   </form>
                 </DrawerContent>
               </Drawer>
-              <a 
-                href="https://linkedin.com/company/easyoptionlearning"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-card border border-border hover:border-success/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
-              >
-                <Linkedin className="h-5 w-5 text-success" />
-                <span className={`${typography.body.md} font-ui font-medium text-foreground`}>LinkedIn</span>
-              </a>
             </div>
           </div>
         </AnimatedSection>

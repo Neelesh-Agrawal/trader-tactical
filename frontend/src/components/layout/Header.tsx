@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,10 @@ interface HeaderProps {
 export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => {
   const { user, profile, streak, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('#levels');
 
   const getInitials = (name: string) => {
     const parts = name.split(' ').filter(Boolean);
@@ -38,6 +40,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
 
   const handleNavClick = (href: string) => {
     setMobileMenuOpen(false);
+    setActiveSection(href);
     if (href.startsWith('#')) {
       const element = document.getElementById(href.slice(1));
       element?.scrollIntoView({ behavior: 'smooth' });
@@ -52,6 +55,38 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
     { label: 'FAQs', href: '#faqs' },
     { label: 'Contact Us', href: '#contact' }
   ];
+
+  useEffect(() => {
+    // Run scroll-spy only on public landing page where sections exist
+    if (user || location.pathname !== '/') return;
+
+    const sectionIds = navLinks.map((link) => link.href.slice(1));
+    const sectionElements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (!sectionElements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible.length > 0) {
+          setActiveSection(`#${visible[0].target.id}`);
+        }
+      },
+      {
+        // Account for sticky header height
+        rootMargin: '-96px 0px -55% 0px',
+        threshold: [0.2, 0.4, 0.6],
+      }
+    );
+
+    sectionElements.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [user, location.pathname]);
 
   return (
     <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50" role="banner">
@@ -77,9 +112,18 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
               <button
                 key={link.label}
                 onClick={() => handleNavClick(link.href)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-sm"
+                className={`relative px-1 py-1.5 transition-colors duration-300 font-medium text-sm ${
+                  activeSection === link.href
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 {link.label}
+                <span
+                  className={`absolute left-0 -bottom-0.5 h-0.5 bg-success transition-all duration-300 ${
+                    activeSection === link.href ? 'w-full opacity-100' : 'w-0 opacity-0'
+                  }`}
+                />
               </button>
             ))}
           </nav>
@@ -177,9 +221,18 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
               <button
                 key={link.label}
                 onClick={() => handleNavClick(link.href)}
-                className="text-left py-3 px-4 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors font-medium"
+                className={`relative text-left py-3 px-4 rounded-lg transition-colors duration-300 font-medium ${
+                  activeSection === link.href
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
               >
                 {link.label}
+                <span
+                  className={`absolute left-4 right-4 bottom-1 h-0.5 bg-success transition-all duration-300 ${
+                    activeSection === link.href ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+                  } origin-left`}
+                />
               </button>
             ))}
             <Button 

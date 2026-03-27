@@ -10,15 +10,10 @@ const levels = [
     number: 1,
     title: 'Beginner',
     status: 'active',
-    modules: 12,
-    duration: '4-6 weeks',
+    modules: 6,
+    duration: '6-10 weeks',
     points: [
-      'Build Conceptual Clarity – Understand the core concepts behind options trading.',
-      'Learn Key Terminology – Master the essential words and phrases used in the market.',
-      'Identify Risks and Rewards – Recognize potential gains and pitfalls before placing trades.',
-      'Gain Basic Execution Skills – Practice safe beginner-level trades and apply your learning.',
-      'Read Option Chains Confidently – Analyze and interpret option data like a pro.',
-      'Avoid Common Pitfalls – Learn strategies to prevent mistakes that beginners often make.'
+      'Go from “What’s an option?” to placing real trades with clarity. No panic, no guessing — just simple rules you understand.'
     ],
     cta: 'Start Now'
   },
@@ -27,34 +22,20 @@ const levels = [
     number: 2,
     title: 'Intermediate',
     status: 'locked',
-    modules: 10,
-    duration: '6-8 weeks',
     points: [
-      'Master Option Strategies – Learn single-leg and multi-leg strategies used in real markets.',
-      'Analyse Market Context – Understand volatility, probabilities, and trends to make informed decisions.',
-      'Evaluate Risk vs Reward – Assess each trade\'s potential outcomes before committing capital.',
-      'Apply Practical Case Studies – Practice with real-life examples to strengthen decision-making.',
-      'Build Structured Trading Processes – Develop repeatable frameworks for consistent trading.',
-      'Trade with Confidence – Move beyond guessing to disciplined, process-driven execution.'
+      'Move beyond guessing direction and start thinking in probabilities. Trade more consistently while managing risk the right way.'
     ],
-    cta: 'Working on it'
+    cta: 'Coming soon'
   },
   {
     id: 'advanced' as const,
     number: 3,
     title: 'Advanced',
     status: 'locked',
-    modules: 8,
-    duration: '8-10 weeks',
     points: [
-      'Learn Advanced Strategies – Master spreads, hedging techniques, and volatility-based trades.',
-      'Manage Risk Effectively – Apply position sizing and capital protection strategies for sustainable trading.',
-      'Analyse Complex Market Scenarios – Evaluate multiple factors and market conditions before making decisions.',
-      'Simulate Real Trades – Practice advanced trades in a safe, hands-on environment.',
-      'Develop Process-Driven Execution – Build a repeatable framework for disciplined and consistent trading.',
-      'Trade with Long-Term Focus – Make decisions that prioritise capital preservation and sustainable growth.'
+      'Start thinking like a pro — not just trading, but understanding the market deeply. Build a clear, repeatable approach you can trust.'
     ],
-    cta: 'Working on it'
+    cta: 'Coming soon'
   }
 ];
 
@@ -70,7 +51,7 @@ export const LevelsSection = () => {
             No more random YouTube learning <span className="text-success">Just a clear path</span>
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground leading-relaxed`}>
-              Progress through three structured levels, mastering concepts before moving forward.
+            Three clear levels. Learn it. Master it. Then move forward.
             </p>
           </div>
         </AnimatedSection>

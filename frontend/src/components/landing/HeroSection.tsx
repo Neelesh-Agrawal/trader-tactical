@@ -21,8 +21,8 @@ export const HeroSection = () => {
               </div>
               
               <h1 className={`${typography.display.md} font-display font-bold mb-5 sm:mb-6 leading-tight text-foreground`}>
-                Learn Options Trading{' '}
-                <span className="text-success">Step by Step</span>
+              Options feel complicated? {' '}
+                <span className="text-success">Let’s simplify them</span>
               </h1>
               
               <p className={`${typography.body.lg} font-body text-muted-foreground mb-7 sm:mb-8 leading-relaxed`}>
@@ -36,7 +36,7 @@ export const HeroSection = () => {
                   className={`${typography.ui.md} font-ui px-6 sm:px-8 gap-2 h-11 sm:h-12 bg-success hover:bg-success/90 text-success-foreground rounded-full`}
                   onClick={() => navigate('/register')}
                 >
-                  Start with the Basics
+                  I'm Ready — Take Me In
                   <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
                 <Button 

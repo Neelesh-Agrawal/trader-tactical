@@ -37,7 +37,7 @@ const TermsConditions = () => {
                     <h2 className={`${typography.heading.h3} font-display mb-3`}>1. Introduction</h2>
                     <p className={`${typography.body.md} text-muted-foreground leading-relaxed`}>
                       These Terms and Conditions ("Terms") govern the use of the website www.easyoptionlearning.com ("Website"), 
-                      owned and operated by Anata Securities Private Limited ("Company", "We", "Us", "Our").
+                      owned and operated by Ananta Securities Private Limited ("Company", "We", "Us", "Our").
                     </p>
                     <p className={`${typography.body.md} text-muted-foreground leading-relaxed mt-2`}>
                       By accessing or enrolling in any course offered on this Website, you agree to be legally bound by these Terms.
@@ -76,7 +76,7 @@ const TermsConditions = () => {
                   <section>
                     <h2 className={`${typography.heading.h3} font-display mb-3`}>5. Intellectual Property Rights</h2>
                     <ul className={`${typography.body.md} text-muted-foreground leading-relaxed list-disc pl-6 space-y-2`}>
-                      <li>All content (videos, graphics, PDFs, logos, trademarks) is the exclusive property of Anata Securities Private Limited.</li>
+                      <li>All content (videos, graphics, PDFs, logos, trademarks) is the exclusive property of Ananta Securities Private Limited.</li>
                       <li>No content may be copied, reproduced, redistributed, recorded, or resold without written permission.</li>
                       <li>Unauthorized distribution may lead to legal action under applicable laws.</li>
                     </ul>
