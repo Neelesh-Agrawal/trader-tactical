@@ -78,7 +78,12 @@ export const Footer = () => {
           <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border text-center space-y-4">
             <div className={`${typography.body.xs} font-body text-muted-foreground space-y-1 max-w-2xl mx-auto`}>
               <p className="font-semibold text-foreground">Operated By: Ananta Securities Private Limited</p>
-              <p>CIN: U66120KL2024PTC086709</p>
+              <p>
+                CIN:{' '}
+                <span className="font-mono tabular-nums tracking-wide text-foreground/90">
+                  U66120KL2024PTC086709
+                </span>
+              </p>
               <p>Registered Address: Door No. 1001 B, 2502 B, KunjanBava Road, Vytilla, Ernakulam, Kerala – 682019</p>
               <p>
                 Contact Us:{' '}

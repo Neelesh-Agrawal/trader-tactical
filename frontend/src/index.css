@@ -188,6 +188,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Charter', 'Georgia', serif;
+    /* Lining + tabular figures — avoids “wavy” old-style digits in prose */
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
     /* Prevent text size adjustment on orientation change in iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -203,6 +206,8 @@
   /* All Headers - Libre Baskerville for premium consistent look */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Libre Baskerville', Georgia, serif;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
   }
 
   h1 {
