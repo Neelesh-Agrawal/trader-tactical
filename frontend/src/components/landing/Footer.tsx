@@ -18,6 +18,8 @@ const trustSignals = [
 ];
 
 export const Footer = () => {
+  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
+
   return (
     <footer className="border-t border-border bg-card" role="contentinfo">
       {/* Trust Signals */}
@@ -43,7 +45,7 @@ export const Footer = () => {
           <AnimatedSection direction="up" delay={100} className="sm:col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <img 
-                src="/logo.png" 
+                src={logoSrc}
                 alt="Easy Option Learning" 
                 className="h-10 w-10 object-contain shrink-0 rounded-md"
               />

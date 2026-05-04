@@ -5,6 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Production deploy lives under /easyoptionlearning/
+  base: mode === "production" ? "/easyoptionlearning/" : "/",
   server: {
     host: "::",
     port: 8080,

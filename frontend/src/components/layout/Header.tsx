@@ -18,6 +18,7 @@ interface HeaderProps {
 }
 
 export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => {
+  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
   const { user, profile, streak, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,7 +99,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
           aria-label="Easy Option Learning - Go to home"
         >
           <img 
-            src="/logo.png" 
+            src={logoSrc}
             alt="Easy Option Learning" 
             className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
           />
