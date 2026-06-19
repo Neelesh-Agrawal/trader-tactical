@@ -18,7 +18,7 @@ from .serializers import (
     LevelProgressSerializer,
     UserStreakSerializer,
 )
-from .services import complete_lesson, complete_module, complete_level
+from .services import complete_lesson
 
 
 class UserProgressView(APIView):

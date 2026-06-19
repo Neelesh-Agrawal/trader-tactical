@@ -15,10 +15,22 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = BASE_DIR.parent
+
+# Load env from repo root first, then optional backend/.env overrides
+load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv(BASE_DIR / ".env")
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,10 +40,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 if not SECRET_KEY:
-    raise ValueError("SECRET_KEY environment variable is required for production")
+    if os.getenv("DEBUG", "False").lower() == "true":
+        SECRET_KEY = "django-insecure-local-dev-only-change-me"
+    else:
+        raise ValueError("SECRET_KEY environment variable is required for production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
+APP_MODE = os.getenv("APP_MODE", "PROD")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
@@ -90,7 +107,10 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-db_engine = os.getenv("DB_ENGINE", "mysql").lower()
+db_engine = os.getenv("DB_ENGINE")
+if not db_engine:
+    db_engine = "sqlite" if DEBUG else "mysql"
+db_engine = db_engine.lower()
 
 if db_engine in {"mysql", "mariadb"}:
     database_engine = "django.db.backends.mysql"
@@ -146,10 +166,13 @@ else:
     }
 
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = _env_bool("SECURE_SSL_REDIRECT", default=not DEBUG)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -200,9 +223,9 @@ STATIC_URL = "static/"
 STATIC_ROOT = "staticfiles"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+    ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
@@ -215,6 +238,9 @@ REST_FRAMEWORK = {
         "login": "10/minute",
     },
 }
+
+if DEBUG and APP_MODE == "DEV":
+    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].insert(0, "backend.authentication.DevModeAuthentication")
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
@@ -293,15 +319,22 @@ CKEDITOR_5_CONFIGS = {
 }
 
 # ============================================================================
-# Email Configuration (Gmail SMTP)
+# Email Configuration (SMTP — GoDaddy, Gmail, etc.)
 # ============================================================================
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@trademaster.com")
+
+if DEBUG and not EMAIL_HOST_USER:
+    # Local testing without SMTP credentials — OTP still returned in API when DEBUG=True
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_USE_SSL = _env_bool("EMAIL_USE_SSL", default=EMAIL_PORT == 465)
+    EMAIL_USE_TLS = _env_bool("EMAIL_USE_TLS", default=not EMAIL_USE_SSL)
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@easyoptionlearning.com")
 
 # Feedback recipient email
 FEEDBACK_RECIPIENT = os.getenv(
@@ -309,7 +342,14 @@ FEEDBACK_RECIPIENT = os.getenv(
 )
 
 # ============================================================================
-# Moplet Configuration (SMS OTP)
+# SMS OTP — Moplet (trader-tactical) + optional Fortius (Hostinger production)
 # ============================================================================
 MOPLET_API_KEY = os.getenv("MOPLET_API_KEY", "")
 MOPLET_SENDER_ID = os.getenv("MOPLET_SENDER_ID", "MOPLET")
+
+SMS_API_URL = os.getenv("SMS_API_URL", "https://smsfortius.org/V2/")
+SMS_API_KEY = os.getenv("SMS_API_KEY", "")
+SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "")
+SMS_OTP_TEMPLATE_ID = os.getenv("SMS_OTP_TEMPLATE_ID", "")
+# Leave blank to use trader-tactical default TradeMaster OTP text in users/sms.py
+SMS_OTP_MESSAGE_TEMPLATE = os.getenv("SMS_OTP_MESSAGE_TEMPLATE", "")

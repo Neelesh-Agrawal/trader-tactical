@@ -1,7 +1,9 @@
+import logging
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from django.contrib.auth.models import User
+logger = logging.getLogger(__name__)
+
 from .models import User
 from django.contrib.auth.password_validation import validate_password
 from courses.models import Enrollment, Course
@@ -47,13 +49,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Auto-enroll user in course ID 1
         try:
             course = Course.objects.get(id=1)
-            Enrollment.objects.get_or_create(
+            _, created = Enrollment.objects.get_or_create(
                 user=user, course=course, defaults={"is_active": True}
             )
+            if created:
+                from progress.services import unlock_initial_course_progress
+
+                unlock_initial_course_progress(user, course)
         except Course.DoesNotExist:
             pass
         except Exception as e:
-            print(f"Auto-enrollment error: {e}")
+            logger.error(f"Auto-enrollment error: {e}")
 
         return user
 

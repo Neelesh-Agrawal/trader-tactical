@@ -1,3 +1,4 @@
+import logging
 import nested_admin
 from django.contrib import admin
 from django.db.models import Max
@@ -16,7 +17,8 @@ from .models import (
     Enrollment,
 )
 
-print("courses.admin loaded")
+logger = logging.getLogger(__name__)
+logger.info("courses.admin loaded")
 
 
 class LessonFAQInline(nested_admin.NestedStackedInline):

@@ -9,6 +9,47 @@ from .models import (
 from django.utils import timezone
 
 
+def unlock_initial_course_progress(user, course):
+    """Unlock the first level and its first module for a newly enrolled user."""
+    from courses.models import Level, Module
+
+    first_level = (
+        Level.objects.filter(course=course).order_by("order").first()
+    )
+    if not first_level:
+        return
+
+    LevelProgress.objects.get_or_create(
+        user=user,
+        level=first_level,
+        defaults={"unlocked": True},
+    )
+
+    first_module = (
+        Module.objects.filter(level=first_level).order_by("order").first()
+    )
+    if first_module:
+        ModuleProgress.objects.get_or_create(
+            user=user,
+            module=first_module,
+            defaults={"unlocked": True},
+        )
+
+
+def is_level_unlocked(user, level):
+    """Level unlocked if progress says so, or it is the first level in the course."""
+    progress = LevelProgress.objects.filter(user=user, level=level).first()
+    if progress and progress.unlocked:
+        return True
+
+    from courses.models import Level
+
+    first_in_course = (
+        Level.objects.filter(course=level.course).order_by("order").first()
+    )
+    return first_in_course is not None and first_in_course.id == level.id
+
+
 def is_lesson_unlocked(user, lesson):
     """
     A lesson is unlocked if:

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Course, Level, Module, Lesson
-from progress.services import is_lesson_unlocked, is_module_unlocked
+from progress.services import is_lesson_unlocked, is_module_unlocked, is_level_unlocked
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -66,10 +66,17 @@ class ModuleSerializer(serializers.ModelSerializer):
 
 class LevelSerializer(serializers.ModelSerializer):
     modules = ModuleSerializer(many=True, read_only=True)
+    is_unlocked = serializers.SerializerMethodField()
 
     class Meta:
         model = Level
-        fields = ("id", "title", "order", "modules")
+        fields = ("id", "title", "order", "modules", "is_unlocked")
+
+    def get_is_unlocked(self, level):
+        request = self.context.get("request")
+        if not request:
+            return False
+        return is_level_unlocked(request.user, level)
 
 
 class CourseStructureSerializer(serializers.ModelSerializer):

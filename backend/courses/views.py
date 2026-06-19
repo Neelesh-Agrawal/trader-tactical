@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -11,7 +11,6 @@ from progress.services import is_lesson_unlocked
 from .serializers import (
     CourseSerializer,
     CourseListSerializer,
-    CourseStructureSerializer,
     LessonDetailSerializer,
     LessonSerializer,
     LevelSerializer,
@@ -25,7 +24,7 @@ class CourseListView(generics.ListAPIView):
 
     queryset = Course.objects.filter(is_published=True)
     serializer_class = CourseListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class CourseDetailView(APIView):
@@ -75,12 +74,15 @@ class EnrollCourseView(APIView):
             user=request.user, course=course
         )
 
-        if not created:
-            return Response({"detail": "Already enrolled"}, status=status.HTTP_200_OK)
+        if created:
+            from progress.services import unlock_initial_course_progress
 
-        return Response(
-            {"detail": "Enrolled successfully"}, status=status.HTTP_201_CREATED
-        )
+            unlock_initial_course_progress(request.user, course)
+            return Response(
+                {"detail": "Enrolled successfully"}, status=status.HTTP_201_CREATED
+            )
+
+        return Response({"detail": "Already enrolled"}, status=status.HTTP_200_OK)
 
 
 # Level Endpoints
@@ -95,7 +97,9 @@ class LevelListView(APIView):
 
         levels = Level.objects.filter(course_id=course_id).order_by("order")
 
-        serializer = LevelSerializer(levels, many=True)
+        serializer = LevelSerializer(
+            levels, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -110,7 +114,7 @@ class LevelDetailView(APIView):
 
         level = get_object_or_404(Level, id=level_id, course_id=course_id)
 
-        serializer = LevelSerializer(level)
+        serializer = LevelSerializer(level, context={"request": request})
         return Response(serializer.data)
 
 
@@ -128,7 +132,9 @@ class ModuleListView(APIView):
             level_id=level_id, level__course_id=course_id
         ).order_by("order")
 
-        serializer = ModuleSerializer(modules, many=True)
+        serializer = ModuleSerializer(
+            modules, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -145,7 +151,7 @@ class ModuleDetailView(APIView):
             Module, id=module_id, level_id=level_id, level__course_id=course_id
         )
 
-        serializer = ModuleSerializer(module)
+        serializer = ModuleSerializer(module, context={"request": request})
         return Response(serializer.data)
 
 
@@ -163,7 +169,9 @@ class LessonListView(APIView):
             module_id=module_id, module__level__course_id=course_id
         ).order_by("order")
 
-        serializer = LessonSerializer(lessons, many=True)
+        serializer = LessonSerializer(
+            lessons, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -174,7 +182,7 @@ class LessonDetailView(generics.RetrieveAPIView):
         "module", "module__level"
     ).prefetch_related("faqs")
     serializer_class = LessonDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         lesson = super().get_object()
@@ -198,7 +206,7 @@ class LessonDetailView(generics.RetrieveAPIView):
 class LessonFAQListView(APIView):
     """Get FAQs for a specific lesson"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, lesson_id):
         from .models import LessonFAQ

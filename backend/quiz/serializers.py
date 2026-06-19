@@ -1,11 +1,22 @@
+import logging
 from rest_framework import serializers
 from .models import Quiz, Question, Option, QuizAttempt
+
+logger = logging.getLogger(__name__)
 
 
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = ('id', 'text', 'is_correct')
+
+
+class OptionPublicSerializer(serializers.ModelSerializer):
+    """Quiz-taking view: do not expose correct answers."""
+
+    class Meta:
+        model = Option
+        fields = ('id', 'text')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -16,8 +27,16 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'explanation', 'order', 'options')
 
 
+class QuestionPublicSerializer(serializers.ModelSerializer):
+    options = OptionPublicSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = ('id', 'text', 'order', 'options')
+
+
 class QuizSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True, read_only=True)
+    questions = QuestionPublicSerializer(many=True, read_only=True)
     name = serializers.SerializerMethodField()
 
     class Meta:
@@ -34,7 +53,7 @@ class QuizSerializer(serializers.ModelSerializer):
             elif obj.level:
                 return obj.level.title
         except Exception as e:
-            print(f"Error getting quiz name: {e}")
+            logger.error(f"Error getting quiz name: {e}")
         return 'Quiz'
 
 class QuizAttemptSerializer(serializers.ModelSerializer):
