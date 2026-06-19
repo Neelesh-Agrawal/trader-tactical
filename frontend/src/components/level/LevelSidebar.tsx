@@ -38,8 +38,9 @@ export const LevelSidebar = ({
     );
   };
 
-  const getLessonStatus = (moduleId: string, lessonId: string, lessonIndex: number) => {
+  const getLessonStatus = (moduleId: string, lessonId: string, lessonIndex: number, lessonUnlockedFromApi?: boolean) => {
     if (isLessonCompleted(level.id, moduleId, lessonId)) return 'complete';
+    if (lessonUnlockedFromApi) return 'active';
     if (lessonIndex === 0) return 'active';
     
     const module = level.modules.find(m => m.id === moduleId);
@@ -96,7 +97,7 @@ export const LevelSidebar = ({
       {/* Modules List */}
       <div className="p-2 flex-1 overflow-y-auto">
         {level.modules.map((module, moduleIndex) => {
-          const isUnlocked = isModuleUnlocked(level.id, module.id);
+          const isUnlocked = module.is_unlocked || isModuleUnlocked(level.id, module.id);
           const isComplete = isModuleCompleted(level.id, module.id);
           const isExpanded = expandedModules.includes(module.id);
           const isCurrent = module.id === currentModuleId;
@@ -162,7 +163,7 @@ export const LevelSidebar = ({
               <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                 <div className="ml-3 pl-3 border-l-2 border-sidebar-border/50 mt-1 space-y-0.5 pb-2">
                   {module.lessons.map((lesson, lessonIndex) => {
-                    const status = getLessonStatus(module.id, lesson.id, lessonIndex);
+                    const status = getLessonStatus(module.id, lesson.id, lessonIndex, lesson.is_unlocked);
                     const isCurrentLesson = lesson.id === currentLessonId && module.id === currentModuleId;
 
                     return (

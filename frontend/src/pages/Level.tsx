@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
 import { useCourses, Lesson } from '@/hooks/useCourses';
@@ -18,7 +19,7 @@ const Level = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { loading: progressLoading } = useProgress();
-  const { levels, loading: coursesLoading, getLevelById, getModuleById, getLessonById, fetchLessonDetail } = useCourses();
+  const { loading: coursesLoading, error: coursesError, getLevelById, getModuleById, getLessonById, fetchLessonDetail } = useCourses();
   const { progress: scrollProgress, isScrolling } = useScrollProgress();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -110,11 +111,40 @@ const Level = () => {
     return <LessonSkeleton />;
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (isAuthRequired() && !user) return <Navigate to="/login" replace />;
   if (!levelId) return <Navigate to="/dashboard" replace />;
 
   const level = getLevelById(levelId);
-  if (!level) return <Navigate to="/dashboard" replace />;
+
+  if (!level) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header showStreak />
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="max-w-md text-center space-y-4">
+            <h1 className="text-2xl font-bold">Course content not available</h1>
+            <p className="text-muted-foreground">
+              {coursesError ||
+                'No modules were found for this level. Ask your admin to seed course content.'}
+            </p>
+            <p className="text-sm text-muted-foreground font-mono">
+              Run: python manage.py seed_course
+            </p>
+            <button
+              onClick={() => window.location.assign('/dashboard')}
+              className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!level.is_unlocked) {
+    return <Navigate to={`/pricing?level=${levelId}`} replace />;
+  }
 
   const currentModule = currentModuleId ? getModuleById(levelId, currentModuleId) : undefined;
   const basicLesson = currentModuleId && currentLessonId 
@@ -143,12 +173,7 @@ const Level = () => {
     setSidebarOpen(false);
   };
 
-  const handleModuleSelect = (moduleId: string) => {
-    const module = getModuleById(levelId, moduleId);
-    if (module && module.lessons.length > 0) {
-      handleLessonSelect(moduleId, module.lessons[0].id);
-    }
-  };
+
 
   const lessonIndex = currentModule?.lessons.findIndex(l => l.id === currentLessonId) ?? -1;
 
@@ -230,7 +255,6 @@ const Level = () => {
             ) : (
               <LevelOverview 
                 level={level}
-                onModuleSelect={handleModuleSelect}
                 onLessonSelect={handleLessonSelect}
               />
             )}

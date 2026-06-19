@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
+import { AnimatedSection } from '@/components/landing/AnimatedSection';
 
 interface LessonActionsProps {
   isCompleted: boolean;

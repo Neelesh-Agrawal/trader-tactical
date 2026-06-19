@@ -89,8 +89,8 @@ export const Footer = () => {
               <p>Registered Address: Door No. 1001 B, 2502 B, KunjanBava Road, Vytilla, Ernakulam, Kerala – 682019</p>
               <p>
                 Contact Us:{' '}
-                <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">
-                  care@easyoptionlearning.com
+                <a href="mailto:support@anantasecurities.in" className="text-primary hover:underline">
+                  support@anantasecurities.in
                 </a>
               </p>
             </div>

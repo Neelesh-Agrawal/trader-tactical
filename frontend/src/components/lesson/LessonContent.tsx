@@ -10,11 +10,9 @@ import { ReadingTimeRemaining } from './ReadingTimeRemaining';
 import { LessonObjectives } from './LessonObjectives';
 import { LessonIntelV2 } from './LessonIntelV2';
 import { LessonKeyTakeaways } from './LessonKeyTakeaways';
-import { ProgressRing } from '@/components/ui/progress-ring';
 import { 
-  ChevronLeft, Clock, BookOpen, Badge
+  ChevronLeft, Clock, BookOpen
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { Lesson, Module } from '@/hooks/useCourses';
 
 interface LessonContentProps {
@@ -43,9 +41,6 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
   const wordCount = lesson.content.split(/\s+/).length;
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-  // Calculate module progress
-  const completedInModule = module.lessons.filter(l => isLessonCompleted(levelId, module.id, l.id)).length;
-  const moduleProgress = Math.round((completedInModule / module.lessons.length) * 100);
 
   const handleStartQuiz = async () => {
     await updateStreak();
@@ -118,7 +113,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         <LessonIntelV2 content={lesson.content} />
 
         {/* Key Takeaways */}
-        <LessonKeyTakeaways takeaways={keyTakeaways} lessonId={lesson.id} />
+        <LessonKeyTakeaways takeaways={keyTakeaways} />
 
         {/* FAQs */}
         <LessonFAQs faqs={faqs} />

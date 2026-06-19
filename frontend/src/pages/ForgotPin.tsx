@@ -31,7 +31,7 @@ const ForgotPin = () => {
   }, [resendCooldown]);
 
   const requestOtp = async ({ verifyStep }: { verifyStep: boolean }) => {
-    await apiFetch('/api/users/password-reset/request-otp/', {
+    await apiFetch('/api/auth/password-reset/request-otp/', {
       method: 'POST',
       auth: false,
       body: JSON.stringify({ email }),
@@ -110,7 +110,7 @@ const ForgotPin = () => {
 
     setLoading(true);
     try {
-      await apiFetch('/api/users/password-reset/confirm/', {
+      await apiFetch('/api/auth/password-reset/confirm/', {
         method: 'POST',
         auth: false,
         body: JSON.stringify({

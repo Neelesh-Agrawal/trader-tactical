@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { useProgress } from '@/hooks/useProgress';
-import { useCourses, Lesson } from '@/hooks/useCourses';
+import { useCourses } from '@/hooks/useCourses';
+import type { Lesson as LessonType } from '@/hooks/useCourses';
 import { CourseSidebar } from '@/components/course/CourseSidebar';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Header } from '@/components/layout/Header';
@@ -19,7 +21,7 @@ const Lesson = () => {
   const { getModuleById, getLessonById, fetchLessonDetail, trackLessonActivity, loading: coursesLoading } = useCourses();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [lessonDetail, setLessonDetail] = useState<Lesson | null>(null);
+  const [lessonDetail, setLessonDetail] = useState<LessonType | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(true);
 
   const loading = authLoading || progressLoading || coursesLoading;
@@ -57,7 +59,7 @@ const Lesson = () => {
     return <LessonSkeleton />;
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (isAuthRequired() && !user) return <Navigate to="/login" replace />;
   if (!levelId || !moduleId || !lessonId) return <Navigate to="/dashboard" replace />;
 
   const module = getModuleById(levelId, moduleId);

@@ -92,7 +92,7 @@ const RefundPolicy = () => {
                       To request a refund, please:
                     </p>
                     <ol className={`${typography.body.md} text-muted-foreground leading-relaxed list-decimal pl-6 space-y-2`}>
-                      <li>Send an email to <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">care@easyoptionlearning.com</a></li>
+                      <li>Send an email to <a href="mailto:support@anantasecurities.in" className="text-primary hover:underline">support@anantasecurities.in</a></li>
                       <li>Include your order ID and registered email address</li>
                       <li>Clearly state the reason for your refund request</li>
                       <li>Allow 2-3 business days for our team to review your request</li>
@@ -107,8 +107,8 @@ const RefundPolicy = () => {
                     <div className="mt-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
                       <p className={`${typography.body.md} text-foreground`}>
                         <strong>Email:</strong>{' '}
-                        <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">
-                          care@easyoptionlearning.com
+                        <a href="mailto:support@anantasecurities.in" className="text-primary hover:underline">
+                          support@anantasecurities.in
                         </a>
                       </p>
                     </div>

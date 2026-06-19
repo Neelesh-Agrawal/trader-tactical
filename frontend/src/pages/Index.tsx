@@ -1,9 +1,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
+import { AnnouncementRibbon } from '@/components/layout/AnnouncementRibbon';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { AboutSection } from '@/components/landing/AboutSection';
 import { LevelsSection } from '@/components/landing/LevelsSection';
+import { NISMSection } from '@/components/landing/NISMSection';
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { WhyChooseUsSection } from '@/components/landing/WhyChooseUsSection';
@@ -30,10 +32,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header showAuth />
+      <AnnouncementRibbon />
       <main id="main-content">
         <HeroSection />
         <AboutSection />
         <LevelsSection />
+        <NISMSection />
         <HowItWorksSection />
         <TestimonialsSection />
         <WhyChooseUsSection />

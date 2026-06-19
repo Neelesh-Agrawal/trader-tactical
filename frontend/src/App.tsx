@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { isAuthRequired } from "@/config/appConfig";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SkipLink } from "@/components/ui/skip-link";
 import Index from "./pages/Index";
@@ -26,6 +27,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import RiskDisclosure from "./pages/RiskDisclosure";
 import Disclaimer from "./pages/Disclaimer";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +50,10 @@ const ScrollToTop = () => {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, profile, loading } = useAuth();
+
+  if (!isAuthRequired()) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return null;
@@ -88,16 +94,87 @@ const App = () => (
                 }
               />
               <Route path="/forgot-pin" element={<ForgotPin />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/certificates" element={<Certificates />} />
-              <Route path="/level/:levelId" element={<Level />} />
-              <Route path="/level/:levelId/final" element={<LevelFinal />} />
-              <Route path="/module/:levelId/:moduleId" element={<Module />} />
-              <Route path="/lesson/:levelId/:moduleId/:lessonId" element={<Lesson />} />
-              <Route path="/quiz/:quizType/:levelId" element={<Quiz />} />
-              <Route path="/quiz/:quizType/:levelId/:moduleId" element={<Quiz />} />
-              <Route path="/quiz/:quizType/:levelId/:moduleId/:lessonId" element={<Quiz />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/certificates"
+                element={
+                  <ProtectedRoute>
+                    <Certificates />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/level/:levelId"
+                element={
+                  <ProtectedRoute>
+                    <Level />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/level/:levelId/final"
+                element={
+                  <ProtectedRoute>
+                    <LevelFinal />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/module/:levelId/:moduleId"
+                element={
+                  <ProtectedRoute>
+                    <Module />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/lesson/:levelId/:moduleId/:lessonId"
+                element={
+                  <ProtectedRoute>
+                    <Lesson />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/quiz/:quizType/:levelId"
+                element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/quiz/:quizType/:levelId/:moduleId"
+                element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/quiz/:quizType/:levelId/:moduleId/:lessonId"
+                element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/terms" element={<TermsConditions />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/refund" element={<RefundPolicy />} />

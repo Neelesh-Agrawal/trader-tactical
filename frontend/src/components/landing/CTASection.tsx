@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
+import { ctaSectionConfig } from '@/config/courseConfig';
 
 export const CTASection = () => {
   const navigate = useNavigate();
@@ -16,29 +17,29 @@ export const CTASection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-2xl mx-auto text-center">
             <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
-              Start Learning Options the <span className="text-success">Right Way</span>
+              {ctaSectionConfig.titlePart1} <span className="text-success">{ctaSectionConfig.titlePart2}</span>
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground mb-8 leading-relaxed`}>
-              Build clarity first. Then Confidence.
+              {ctaSectionConfig.subtitle}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className={`${typography.ui.lg} font-ui px-8 gap-2 h-12 md:h-14 bg-success hover:bg-success/90 text-success-foreground`}
+                className={`${typography.ui.lg} font-ui px-8 gap-2 h-12 md:h-14 bg-success hover:bg-success/90 text-white`}
                 onClick={() => navigate('/register')}
               >
-                Take the first step
+                {ctaSectionConfig.primaryCTA}
                 <ArrowRight className="h-5 w-5" />
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
                 className={`${typography.ui.lg} font-ui px-8 gap-2 h-12 md:h-14`}
-                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('levels')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <BookOpen className="h-5 w-5" />
-                View Course Structure
+                {ctaSectionConfig.secondaryCTA}
               </Button>
             </div>
           </div>

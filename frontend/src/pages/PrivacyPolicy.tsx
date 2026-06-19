@@ -112,8 +112,8 @@ const PrivacyPolicy = () => {
                     </ul>
                     <p className={`${typography.body.md} text-muted-foreground leading-relaxed mt-4`}>
                       Requests may be sent to:{' '}
-                      <a href="mailto:care@easyoptionlearning.com" className="text-primary hover:underline">
-                        care@easyoptionlearning.com
+                      <a href="mailto:support@anantasecurities.in" className="text-primary hover:underline">
+                        support@anantasecurities.in
                       </a>
                     </p>
                   </section>

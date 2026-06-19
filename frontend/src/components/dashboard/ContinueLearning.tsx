@@ -15,7 +15,7 @@ interface LastLessonData {
 }
 
 export const ContinueLearning = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { isLessonCompleted } = useProgress();
   const { levels, getLevelById, getModuleById, getLessonById } = useCourses();
   const navigate = useNavigate();
@@ -98,8 +98,10 @@ export const ContinueLearning = () => {
   const handleContinue = () => {
     if (lastLesson) {
       navigate(`/level/${lastLesson.levelId}?module=${lastLesson.moduleId}&lesson=${lastLesson.lessonId}`);
+    } else if (levels[0]) {
+      navigate(`/level/${levels[0].id}`);
     } else {
-      navigate('/level/beginner');
+      navigate('/dashboard');
     }
   };
 
@@ -121,7 +123,7 @@ export const ContinueLearning = () => {
     levelProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   }
 
-  const levelDisplayName = level ? level.id.charAt(0).toUpperCase() + level.id.slice(1) : 'Beginner';
+  const levelDisplayName = level?.title || (lastLesson ? lastLesson.levelId : 'Your course');
 
   return (
     <div 
@@ -132,68 +134,59 @@ export const ContinueLearning = () => {
       )} 
       onClick={handleContinue}
     >
-      <div className="relative z-10 p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center gap-6">
-        {/* Left side - Info */}
-        <div className="flex-1 min-w-0">
-          {/* Welcome Message */}
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
-            Welcome back, {profile?.name?.split(' ')[0] || 'Learner'}!
-          </h2>
-          <p className="text-sm text-white/60 mb-4">Continue your {levelDisplayName} level journey</p>
+      <div className="relative z-10 p-5 sm:p-8 flex flex-col items-center text-center">
+        {/* Welcome Message & Subheading */}
+        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+          <Sparkles className="h-5 w-5 text-amber-300" />
+          Back at it!
+        </h2>
+        <p className="text-sm text-white/75 mb-6 leading-relaxed max-w-xl">Let's crush your next lesson and keep the momentum going.</p>
 
-          {/* Module & Lesson */}
-          {module && lesson && (
-            <div className="space-y-1 mb-5">
-              <p className="flex items-center gap-2 text-sm text-white/70">
-                <BookOpen className="h-3.5 w-3.5" />
-                Module: <span className="font-semibold text-white/90">{module.title}</span>
-              </p>
-              <p className="flex items-center gap-2 text-sm text-white/70">
-                <Play className="h-3.5 w-3.5" />
-                Lesson: <span className="font-semibold text-white/90">{lesson.title}</span>
-              </p>
-            </div>
-          )}
-
-          {/* Progress Bar */}
-          <div className="max-w-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-white/60">Level Progress</span>
-              <span className="text-xs font-mono font-medium text-white/80">{levelProgress}%</span>
-            </div>
-            <div className="h-2 rounded-full bg-white/20 overflow-hidden relative">
-              <div 
-                className="absolute inset-y-0 left-0 rounded-full bg-white/80 transition-all duration-700"
-                style={{ width: `${levelProgress}%` }}
-              />
-            </div>
+        {/* Module & Lesson */}
+        {module && lesson && (
+          <div className="space-y-1 mb-6">
+            <p className="flex items-center justify-center gap-2 text-sm text-white/70">
+              <BookOpen className="h-3.5 w-3.5" />
+              <span className="font-semibold text-white/90">{module.title}</span>
+            </p>
+            <p className="flex items-center justify-center gap-2 text-sm text-white/70">
+              <Play className="h-3.5 w-3.5" />
+              <span className="font-semibold text-white/90">{lesson.title}</span>
+            </p>
           </div>
-        </div>
+        )}
 
-        {/* Right side - CTA */}
-        <div className="lg:text-right shrink-0">
-          {lesson && (
-            <div className="hidden lg:block mb-3">
-              <span className="text-xs text-white/50">Pick up where you left off</span>
-              <p className="text-sm font-semibold text-white">{lesson.title}</p>
-            </div>
-          )}
+        {/* CTA Button */}
+        <div className="mb-8">
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleContinue();
             }}
+            aria-label={`Continue learning ${lesson?.title ?? ''}`}
             className={cn(
-              "inline-flex items-center gap-2 px-6 py-3 rounded-xl",
+              "relative inline-flex items-center gap-2 px-6 py-3 rounded-xl",
               "bg-white text-primary font-semibold text-sm",
-              "hover:bg-white/95 transition-all duration-200",
-              "shadow-lg hover:shadow-xl",
-              "w-full sm:w-auto justify-center"
+              "transition-all duration-300 ease-out",
+              "hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(255,255,255,0.25)]",
+              "active:scale-[0.98]",
+              "shadow-lg"
             )}
           >
-            Continue Learning
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <span className="relative z-10 inline-flex items-center gap-2">
+              Continue Learning
+              <ArrowRight className="h-4 w-4 transition-transform duration-500 ease-out group-hover:translate-x-1" />
+            </span>
           </button>
+        </div>
+
+        {/* Full-width Level Progress Section */}
+        <div className="w-full">
+          <div className="mb-3 flex items-center justify-center gap-2">
+            <span className="text-xs font-medium text-white/60 uppercase tracking-wider">Level Progress</span>
+            <span className="text-xs font-semibold text-amber-300">{levelDisplayName}</span>
+          </div>
+          <AnimatedProgress value={levelProgress} showPulse={false} variant={levelProgress >= 80 ? 'success' : 'default'} className="h-2.5 rounded-full" />
         </div>
       </div>
     </div>

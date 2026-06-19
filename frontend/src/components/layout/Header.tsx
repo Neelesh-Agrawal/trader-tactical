@@ -52,7 +52,6 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
 
   const navLinks = [
     { label: 'Levels', href: '#levels' },
-    { label: 'How It Works', href: '#how-it-works' },
     { label: 'FAQs', href: '#faqs' },
     { label: 'Contact Us', href: '#contact' }
   ];
@@ -94,7 +93,8 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
         {/* Logo */}
         <Link 
-          to={user ? '/dashboard' : '/'} 
+          to={user ? '/dashboard' : '/'}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-2 hover-scale touch-manipulation"
           aria-label="Easy Option Learning - Go to home"
         >

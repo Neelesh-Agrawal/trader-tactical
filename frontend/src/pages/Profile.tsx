@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { apiFetch } from '@/lib/api';
 import { Header } from '@/components/layout/Header';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
@@ -25,7 +26,7 @@ const calculateAge = (birthDate: Date | string | null): number | null => {
 
 const Profile = () => {
   const { user, profile, streak, loading, refreshProfile } = useAuth();
-  const navigate = useNavigate();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ const Profile = () => {
     );
   }
 
-  if (!user || !profile) {
+  if (isAuthRequired() && (!user || !profile)) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { HelpCircle } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
+import { AnimatedSection } from '@/components/landing/AnimatedSection';
 
 interface FAQ {
   question: string;

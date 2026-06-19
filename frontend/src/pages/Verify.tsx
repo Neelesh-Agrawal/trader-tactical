@@ -17,13 +17,11 @@ const Verify = () => {
   
   // Phone OTP state
   const [phoneOtp, setPhoneOtp] = useState('');
-  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
   const [phoneOtpError, setPhoneOtpError] = useState('');
   const [phoneResendTimer, setPhoneResendTimer] = useState(0);
   
   // Email OTP state
   const [emailOtp, setEmailOtp] = useState('');
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtpError, setEmailOtpError] = useState('');
   const [emailResendTimer, setEmailResendTimer] = useState(0);
   
@@ -64,7 +62,6 @@ const Verify = () => {
         body: JSON.stringify({ phone: profile.phone_number }),
       });
       
-      setPhoneOtpSent(true);
       setPhoneResendTimer(60);
       
       const timer = setInterval(() => {
@@ -79,7 +76,7 @@ const Verify = () => {
       
       toast({ title: 'OTP Sent', description: 'Verification code sent to your phone' });
       
-      if (response.otp) {
+      if (response.otp && import.meta.env.DEV) {
         console.log('Dev mode phone OTP:', response.otp);
       }
     } catch (error: any) {
@@ -137,7 +134,6 @@ const Verify = () => {
         body: JSON.stringify({ email: profile.email }),
       });
       
-      setEmailOtpSent(true);
       setEmailResendTimer(60);
       
       const timer = setInterval(() => {
@@ -152,7 +148,7 @@ const Verify = () => {
       
       toast({ title: 'OTP Sent', description: 'Verification code sent to your email' });
       
-      if (response.otp) {
+      if (response.otp && import.meta.env.DEV) {
         console.log('Dev mode email OTP:', response.otp);
       }
     } catch (error: any) {

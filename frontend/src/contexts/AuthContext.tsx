@@ -6,6 +6,19 @@ import React, {
   ReactNode,
 } from 'react';
 import { apiFetch, AuthTokens, getAuthTokens, setAuthTokens } from '@/lib/api';
+import { isAuthRequired } from '@/config/appConfig';
+const DUMMY_AUTH_USER = { id: 0, email: 'test@easyoptionlearning.local' };
+const DUMMY_AUTH_PROFILE = {
+  id: 0,
+  name: 'Test Student',
+  email: 'test@easyoptionlearning.local',
+  current_level: 'beginner',
+};
+const DUMMY_AUTH_STREAK = {
+  current_streak: 3,
+  longest_streak: 10,
+  last_activity_date: null,
+};
 
 interface Profile {
   id: number;
@@ -83,7 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         phone_number: data.phone,
         phone_verified: data.phone_verified,
         email_verified: data.email_verified,
-        date_of_birth: data.birth_date ? new Date(data.birth_date) : null,
+        date_of_birth: data.birth_date || null,
         current_level: 'beginner',
       });
     } catch (error) {
@@ -122,6 +135,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const bootstrap = async () => {
       const tokens = getAuthTokens();
       if (!tokens) {
+        if (!isAuthRequired()) {
+          setUser(DUMMY_AUTH_USER);
+          setProfile(DUMMY_AUTH_PROFILE);
+          setStreak(DUMMY_AUTH_STREAK);
+          setLoading(false);
+          return;
+        }
+
         setLoading(false);
         return;
       }
@@ -157,7 +178,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           phone: data.phone_number,
           occupation: data.occupation,
           sex: data.sex,
-          birth_date: data.birth_date,
+          birth_date: data.birth_date || null,
         }),
       });
 
@@ -205,7 +226,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   ): Promise<{ error: Error | null }> => {
     try {
       // Normalize phone number (remove spaces, dashes, etc.)
-      const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+      const normalizedPhone = phoneNumber.replace(/[\s()-]/g, '');
 
       const tokens = await apiFetch<AuthTokens>('/api/auth/phone-login/', {
         method: 'POST',

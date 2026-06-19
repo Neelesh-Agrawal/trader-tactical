@@ -1,18 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Easy Option Learning Design System - Options Trading Education Platform
-   Typography inspired by Medium.com for optimal readability
-   Color palette: Deep Navy, Growth Green, Active Yellow
-*/
-
-/* Medium.com inspired fonts - Charter for body text, system fonts for UI */
-@import url('https://fonts.googleapis.com/css2?family=Charter:ital,wght@0,400;0,700;1,400&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
-
 @layer base {
   :root {
-    /* Light Mode - Clean, professional fintech aesthetic */
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
 
@@ -22,74 +15,62 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary - Growth Green accent */
-    --primary: 160 84% 39%;
+    --primary: 160 72% 33%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary */
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
 
-    /* Muted */
     --muted: 210 40% 94%;
     --muted-foreground: 215 20% 45%;
 
-    /* Accent */
     --accent: 210 40% 94%;
     --accent-foreground: 222 47% 11%;
 
-    /* Destructive */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 160 84% 39%;
+    --ring: 160 72% 33%;
 
     --radius: 0.75rem;
 
-    /* Tactical Status Colors */
-    --success: 160 84% 39%;
-    --success-foreground: 160 84% 10%;
+    --success: 160 72% 33%;
+    --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 38 92% 10%;
     --locked: 210 40% 90%;
     --locked-foreground: 215 20% 55%;
 
-    /* Hex Grid Colors */
-    --hex-complete: 160 84% 39%;
+    --hex-complete: 160 72% 33%;
     --hex-active: 38 92% 50%;
     --hex-locked: 210 40% 85%;
-    --hex-border: 160 84% 39%;
-    
-    /* Level Colors */
-    --level-beginner: 160 84% 39%;
-    --level-intermediate: 160 84% 39%;
-    --level-advanced: 270 70% 55%;
+    --hex-border: 160 72% 33%;
 
-    /* Gradients */
+    --level-beginner: 160 72% 33%;
+    --level-intermediate: 160 72% 33%;
+    --level-advanced: 160 72% 33%;
+
     --gradient-tactical: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(160 84% 35%) 0%, hsl(160 84% 45%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(160 72% 28%) 0%, hsl(160 72% 38%) 100%);
     --gradient-warning: linear-gradient(135deg, hsl(38 92% 45%) 0%, hsl(38 92% 55%) 100%);
 
-    /* Shadows */
     --shadow-tactical: 0 4px 20px -4px hsla(222, 47%, 20%, 0.1);
-    --shadow-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.25);
-    --shadow-success-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.3);
+    --shadow-glow: 0 0 30px -5px hsla(160, 72%, 33%, 0.25);
+    --shadow-success-glow: 0 0 30px -5px hsla(160, 72%, 33%, 0.3);
 
-    /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary: 160 72% 33%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-ring: 160 72% 33%;
   }
 
   .dark {
-    /* Dark Mode - Tactical options trading aesthetic */
     --background: 222 47% 6%;
     --foreground: 210 40% 96%;
 
@@ -99,68 +80,57 @@
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 96%;
 
-    /* Primary - Growth Green accent */
-    --primary: 160 84% 39%;
+    --primary: 160 72% 33%;
     --primary-foreground: 222 47% 6%;
 
-    /* Secondary */
     --secondary: 222 47% 14%;
     --secondary-foreground: 210 40% 96%;
 
-    /* Muted */
     --muted: 222 30% 18%;
     --muted-foreground: 215 20% 60%;
 
-    /* Accent */
     --accent: 222 47% 14%;
     --accent-foreground: 210 40% 96%;
 
-    /* Destructive */
     --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 222 30% 18%;
     --input: 222 30% 18%;
-    --ring: 160 84% 39%;
+    --ring: 160 72% 33%;
 
-    /* Tactical Status Colors */
-    --success: 160 84% 39%;
-    --success-foreground: 160 84% 95%;
+    --success: 160 72% 33%;
+    --success-foreground: 160 72% 95%;
     --warning: 38 92% 50%;
     --warning-foreground: 38 92% 10%;
     --locked: 222 30% 25%;
     --locked-foreground: 222 20% 50%;
 
-    /* Hex Grid Colors */
-    --hex-complete: 160 84% 39%;
+    --hex-complete: 160 72% 33%;
     --hex-active: 38 92% 50%;
     --hex-locked: 222 30% 20%;
-    --hex-border: 160 84% 39%;
-    
-    /* Level Colors */
-    --level-beginner: 160 84% 39%;
-    --level-intermediate: 160 84% 39%;
-    --level-advanced: 270 70% 55%;
+    --hex-border: 160 72% 33%;
 
-    /* Gradients */
+    --level-beginner: 160 72% 33%;
+    --level-intermediate: 160 72% 33%;
+    --level-advanced: 160 72% 33%;
+
     --gradient-tactical: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(222 47% 12%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(160 84% 35%) 0%, hsl(160 84% 45%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(160 72% 28%) 0%, hsl(160 72% 38%) 100%);
     --gradient-warning: linear-gradient(135deg, hsl(38 92% 45%) 0%, hsl(38 92% 55%) 100%);
 
-    /* Shadows */
     --shadow-tactical: 0 4px 20px -4px hsla(222, 47%, 4%, 0.8);
-    --shadow-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.35);
-    --shadow-success-glow: 0 0 30px -5px hsla(160, 84%, 39%, 0.4);
+    --shadow-glow: 0 0 30px -5px hsla(160, 72%, 33%, 0.35);
+    --shadow-success-glow: 0 0 30px -5px hsla(160, 72%, 33%, 0.4);
 
-    /* Sidebar */
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary: 160 72% 33%;
     --sidebar-primary-foreground: 222 47% 6%;
     --sidebar-accent: 222 47% 12%;
     --sidebar-accent-foreground: 210 40% 96%;
     --sidebar-border: 222 30% 15%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-ring: 160 72% 33%;
   }
 }
 
@@ -169,121 +139,129 @@
     @apply border-border;
   }
 
-  /* Focus ring for accessibility */
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  /* Smooth scrolling with reduced motion respect */
   html {
     scroll-behavior: smooth;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
+    html { scroll-behavior: auto; }
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Charter', 'Georgia', serif;
-    /* Lining + tabular figures — avoids “wavy” old-style digits in prose */
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 400;
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: "lnum" 1, "tnum" 1;
-    /* Prevent text size adjustment on orientation change in iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
-  /* Medium.com inspired Typography System
-     Headers: Libre Baskerville (serif for emphasis)
-     Body/Paragraphs: Charter (Medium.com's primary font for readability)
-     UI elements/labels: System fonts (SF Pro, Segoe UI, etc.)
-     Data: JetBrains Mono
-  */
-  
-  /* All Headers - Libre Baskerville for premium consistent look */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Libre Baskerville', Georgia, serif;
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-weight: 700;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-size: 17px;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  h5, h6 {
+    font-size: 15px;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  @media (max-width: 768px) {
+    h1 { font-size: 26px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 17px; }
+    h4 { font-size: 15px; }
+  }
+
+  p {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .subheader {
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .prose-body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  .reading-content p {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    @apply mb-6;
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  .ui-text {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: "lnum" 1, "tnum" 1;
   }
 
-  h1 {
-    @apply text-4xl font-bold tracking-tight;
-    line-height: 1.2;
-    color: hsl(var(--foreground));
-  }
-
-  h2 {
-    @apply text-2xl font-semibold tracking-tight;
-    line-height: 1.3;
-    color: hsl(var(--foreground));
-  }
-
-  h3 {
-    @apply text-xl font-semibold;
-    line-height: 1.35;
-    color: hsl(var(--foreground));
-  }
-
-  h4, h5, h6 {
-    @apply font-medium;
-  }
-
-  /* Default paragraph styling - Charter for Medium.com readability */
-  p {
-    font-family: 'Charter', 'Georgia', serif;
-    line-height: 1.7;
-  }
-
-  /* Subheaders - Work Sans UI font */
-  .subheader {
-    font-family: 'Work Sans', system-ui, sans-serif;
-    @apply text-lg md:text-xl font-medium;
-  }
-
-  /* Body text - Charter for Medium.com style readability */
-  .prose-body {
-    font-family: 'Charter', 'Georgia', serif;
-    @apply text-lg;
-    line-height: 1.75;
-    letter-spacing: -0.003em;
-    color: hsl(var(--foreground) / 0.9);
-  }
-
-  /* Enhanced paragraph styling for content-heavy pages */
-  .reading-content p {
-    font-family: 'Charter', 'Georgia', serif;
-    @apply text-lg leading-relaxed mb-6;
-    line-height: 1.75;
-    color: hsl(var(--foreground) / 0.9);
-  }
-
-  /* UI Text - System fonts for interface elements (like Medium.com) */
-  .ui-text {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    @apply text-sm md:text-base font-medium;
-  }
-
-  /* Data/Terminal style - JetBrains Mono */
-  .mono {
-    font-family: 'JetBrains Mono', monospace;
-    @apply text-sm;
-  }
-
-  /* Caption text - Monospace for data labels */
   .caption {
-    font-family: 'JetBrains Mono', monospace;
-    @apply text-xs uppercase tracking-wider;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
-  /* Pull quotes for impactful statements */
   .pull-quote {
-    font-family: 'Libre Baskerville', Georgia, serif;
-    @apply text-xl md:text-2xl italic;
-    line-height: 1.5;
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
     color: hsl(var(--primary));
     border-left: 3px solid hsl(var(--primary));
     padding-left: 1.5rem;
@@ -292,349 +270,162 @@
 }
 
 @layer components {
-  /* Hexagon shape */
   .hex-shape {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   }
 
-  /* Tactical card styling */
   .tactical-card {
     @apply bg-card border border-border rounded-lg;
     box-shadow: var(--shadow-tactical);
   }
 
-  /* Glow effects */
-  .glow-primary {
-    box-shadow: var(--shadow-glow);
-  }
+  .glow-primary { box-shadow: var(--shadow-glow); }
+  .glow-success { box-shadow: var(--shadow-success-glow); }
 
-  .glow-success {
-    box-shadow: var(--shadow-success-glow);
-  }
+  .status-complete { @apply bg-success text-success-foreground; }
+  .status-active { @apply bg-warning text-warning-foreground; }
+  .status-locked { @apply bg-locked text-locked-foreground; }
 
-  /* Status badges */
-  .status-complete {
-    @apply bg-success text-success-foreground;
-  }
-
-  .status-active {
-    @apply bg-warning text-warning-foreground;
-  }
-
-  .status-locked {
-    @apply bg-locked text-locked-foreground;
-  }
-
-  /* Quiz timer animation */
   @keyframes timer-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.6; }
   }
 
-  .timer-critical {
-    animation: timer-pulse 0.5s ease-in-out infinite;
-  }
+  .timer-critical { animation: timer-pulse 0.5s ease-in-out infinite; }
 
-  /* Confetti container */
   .confetti-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 1000;
   }
 
-  /* Streak fire animation */
   @keyframes flame {
     0%, 100% { transform: scaleY(1); }
     50% { transform: scaleY(1.1); }
   }
 
-  .streak-flame {
-    animation: flame 0.8s ease-in-out infinite;
-  }
+  .streak-flame { animation: flame 0.8s ease-in-out infinite; }
 
-  /* Lesson content styling */
-  .lesson-content {
-    @apply prose-body;
-  }
+  .lesson-content { @apply prose-body; }
+  .lesson-content p { @apply mb-6; }
+  .lesson-content ul, .lesson-content ol { @apply mb-6 pl-6; }
+  .lesson-content li { @apply mb-2; }
+  .lesson-content strong { @apply font-bold; }
+  .lesson-content em { @apply italic; }
 
-  .lesson-content p {
-    @apply mb-6;
-  }
+  .ck-content { @apply text-foreground/90; }
 
-  .lesson-content ul, .lesson-content ol {
-    @apply mb-6 pl-6;
-  }
-
-  .lesson-content li {
-    @apply mb-2;
-  }
-
-  .lesson-content strong {
-    @apply font-bold;
-  }
-
-  .lesson-content em {
-    @apply italic;
-  }
-
-  /* CKEditor content dark mode support */
-  .ck-content {
-    @apply text-foreground/90;
-  }
-
-  .ck-content h1,
-  .ck-content h2,
-  .ck-content h3,
-  .ck-content h4,
-  .ck-content h5,
-  .ck-content h6 {
+  .ck-content h1, .ck-content h2, .ck-content h3,
+  .ck-content h4, .ck-content h5, .ck-content h6 {
     @apply text-foreground font-bold mt-8 mb-4;
   }
 
-  .ck-content h2 {
-    @apply text-2xl;
-  }
+  .ck-content h2 { @apply text-2xl; }
+  .ck-content h3 { @apply text-xl; }
+  .ck-content h4 { @apply text-lg; }
+  .ck-content p { @apply mb-4 leading-relaxed; }
+  .ck-content ul, .ck-content ol { @apply mb-4 pl-6; }
+  .ck-content li { @apply mb-2; }
+  .ck-content ul { @apply list-disc; }
+  .ck-content ol { @apply list-decimal; }
+  .ck-content strong { @apply font-bold text-foreground; }
+  .ck-content em { @apply italic; }
+  .ck-content a { @apply text-primary underline; }
+  .ck-content table { @apply w-full mb-4 border-collapse; }
+  .ck-content td, .ck-content th { @apply border border-border p-2; }
+  .ck-content th { @apply bg-muted font-bold; }
+  .ck-content hr { @apply my-6 border-border; }
+  .ck-content blockquote { @apply border-l-4 border-primary pl-4 italic my-4; }
 
-  .ck-content h3 {
-    @apply text-xl;
-  }
+  .dark .ck-content [style*="color"] { color: inherit !important; }
+  .dark .ck-content [style*="background-color"] { background-color: transparent !important; }
+  .dark .ck-content span[style*="color"] { color: inherit !important; }
 
-  .ck-content h4 {
-    @apply text-lg;
-  }
+  .mission-briefing { @apply tactical-card p-6 border-l-4 border-l-primary; }
+  .intel-section { @apply tactical-card p-8; }
+  .signal-item { @apply flex items-start gap-3 p-3 rounded-lg bg-muted/30; }
+  .faq-item { @apply border-b border-border; }
 
-  .ck-content p {
-    @apply mb-4 leading-relaxed;
-  }
-
-  .ck-content ul,
-  .ck-content ol {
-    @apply mb-4 pl-6;
-  }
-
-  .ck-content li {
-    @apply mb-2;
-  }
-
-  .ck-content ul {
-    @apply list-disc;
-  }
-
-  .ck-content ol {
-    @apply list-decimal;
-  }
-
-  .ck-content strong {
-    @apply font-bold text-foreground;
-  }
-
-  .ck-content em {
-    @apply italic;
-  }
-
-  .ck-content a {
-    @apply text-primary underline;
-  }
-
-  .ck-content table {
-    @apply w-full mb-4 border-collapse;
-  }
-
-  .ck-content td,
-  .ck-content th {
-    @apply border border-border p-2;
-  }
-
-  .ck-content th {
-    @apply bg-muted font-bold;
-  }
-
-  .ck-content hr {
-    @apply my-6 border-border;
-  }
-
-  .ck-content blockquote {
-    @apply border-l-4 border-primary pl-4 italic my-4;
-  }
-
-  /* Dark mode specific overrides for inline styles from CKEditor */
-  .dark .ck-content [style*="color"] {
-    color: inherit !important;
-  }
-
-  .dark .ck-content [style*="background-color"] {
-    background-color: transparent !important;
-  }
-
-  .dark .ck-content span[style*="color"] {
-    color: inherit !important;
-  }
-
-  /* Mission briefing card */
-  .mission-briefing {
-    @apply tactical-card p-6 border-l-4 border-l-primary;
-  }
-
-  /* Intel section */
-  .intel-section {
-    @apply tactical-card p-8;
-  }
-
-  /* Signal/Takeaway items */
-  .signal-item {
-    @apply flex items-start gap-3 p-3 rounded-lg bg-muted/30;
-  }
-
-  /* FAQ accordion styling */
-  .faq-item {
-    @apply border-b border-border;
-  }
-
-  /* Reading content area - optimized width for readability with reduced gaps */
   .reading-container {
     @apply max-w-full sm:max-w-[780px] mx-auto px-0 sm:px-2 md:px-4;
   }
 
-  /* Content depth effect - white content on off-white background */
-  .content-depth {
-    @apply bg-card rounded-xl shadow-lg;
-  }
+  .content-depth { @apply bg-card rounded-xl shadow-lg; }
 
-  /* Reading time badge */
   .reading-time-badge {
     @apply inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm rounded-full;
     @apply bg-muted text-muted-foreground;
   }
 
-  /* Sidebar dim effect when reading */
-  .sidebar-dimmed {
-    @apply opacity-60 transition-opacity duration-300;
-  }
+  .sidebar-dimmed { @apply opacity-60 transition-opacity duration-300; }
 
-  /* Reading progress gradient bar */
   .reading-progress-bar {
-    background: linear-gradient(90deg, hsl(var(--success)) 0%, hsl(160 60% 45%) 100%);
+    background: linear-gradient(90deg, hsl(var(--success)) 0%, hsl(160 72% 42%) 100%);
   }
 
-  /* Touch manipulation for mobile */
   .touch-manipulation {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Safe area for iOS */
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
 }
 
 @layer utilities {
-  /* Custom scrollbar */
-  .scrollbar-tactical::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+  .scrollbar-tactical::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-tactical::-webkit-scrollbar-track { @apply bg-muted/20 rounded; }
+  .scrollbar-tactical::-webkit-scrollbar-thumb { @apply bg-muted rounded; }
+  .scrollbar-tactical::-webkit-scrollbar-thumb:hover { @apply bg-muted-foreground/50; }
 
-  .scrollbar-tactical::-webkit-scrollbar-track {
-    @apply bg-muted/20 rounded;
-  }
-
-  .scrollbar-tactical::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded;
-  }
-
-  .scrollbar-tactical::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
-  }
-
-  /* Text gradient */
   .text-gradient-primary {
     @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
 
-  /* Blur overlay for locked content */
-  .locked-blur {
-    @apply blur-sm opacity-60 pointer-events-none select-none;
-  }
+  .locked-blur { @apply blur-sm opacity-60 pointer-events-none select-none; }
+  .glass { @apply bg-card/80 backdrop-blur-md; }
 
-  /* Glass effect */
-  .glass {
-    @apply bg-card/80 backdrop-blur-md;
-  }
-
-  /* Glassmorphism card */
   .glass-card {
     background: hsla(222, 47%, 8%, 0.7);
     backdrop-filter: blur(10px);
     border: 1px solid hsla(210, 40%, 96%, 0.1);
   }
 
-  /* Hover scale animation */
-  .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
-  }
+  .hover-scale { @apply transition-transform duration-200 hover:scale-105; }
 
-  /* Interactive card hover */
   .interactive-card {
     @apply transition-all duration-200 cursor-pointer;
     @apply hover:scale-[1.02] hover:shadow-lg;
   }
 
-  /* Card hover glow */
-  .hover-glow {
-    @apply transition-all duration-300;
-  }
-  
-  .hover-glow:hover {
-    box-shadow: 0 0 30px -5px hsla(217, 91%, 60%, 0.2);
-  }
+  .hover-glow { @apply transition-all duration-300; }
+  .hover-glow:hover { box-shadow: 0 0 30px -5px hsla(217, 91%, 60%, 0.2); }
 
-  /* Interactive button lift */
   .button-lift {
     @apply transition-all duration-200;
     @apply hover:scale-[1.05] hover:-translate-y-0.5;
     @apply active:scale-95 active:translate-y-0;
   }
 
-  /* Page transitions */
-  .page-enter {
-    @apply animate-fade-in;
-  }
+  .page-enter { @apply animate-fade-in; }
 
-  /* Stagger animation delay helpers */
   .stagger-1 { animation-delay: 0.1s; }
   .stagger-2 { animation-delay: 0.2s; }
   .stagger-3 { animation-delay: 0.3s; }
   .stagger-4 { animation-delay: 0.4s; }
   .stagger-5 { animation-delay: 0.5s; }
 
-  /* Animation delay utility */
   .animation-delay-150 { animation-delay: 150ms; }
   .animation-delay-300 { animation-delay: 300ms; }
 
-  /* Shimmer effect for loading states */
-  .shimmer {
-    position: relative;
-    overflow: hidden;
-  }
+  .shimmer { position: relative; overflow: hidden; }
 
   .shimmer::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      hsla(var(--foreground) / 0.05),
-      transparent
-    );
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, hsla(var(--foreground) / 0.05), transparent);
     animation: shimmer 2s infinite;
   }
 
@@ -643,19 +434,14 @@
     100% { transform: translateX(100%); }
   }
 
-  /* Enhanced focus styles for accessibility */
   .focus-ring {
     @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none;
   }
 
-  /* High contrast mode support */
   @media (prefers-contrast: high) {
-    .tactical-card {
-      border-width: 2px;
-    }
+    .tactical-card { border-width: 2px; }
   }
 
-  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -663,36 +449,18 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-
-    .animate-pulse,
-    .animate-bounce,
-    .animate-spin,
-    .animate-pulse-glow {
+    .animate-pulse, .animate-bounce, .animate-spin, .animate-pulse-glow {
       animation: none !important;
     }
   }
 
-  /* Selection styles */
-  ::selection {
-    @apply bg-primary/30 text-foreground;
-  }
+  ::selection { @apply bg-primary/30 text-foreground; }
 
-  /* Smooth image loading */
-  img {
-    @apply transition-opacity duration-300;
-  }
-
-  img[loading="lazy"] {
-    opacity: 0;
-  }
-
-  img[loading="lazy"].loaded,
-  img:not([loading="lazy"]) {
-    opacity: 1;
-  }
+  img { @apply transition-opacity duration-300; }
+  img[loading="lazy"] { opacity: 0; }
+  img[loading="lazy"].loaded, img:not([loading="lazy"]) { opacity: 1; }
 }
 
-/* Date input calendar icon visibility in dark mode */
 .dob-date-input::-webkit-calendar-picker-indicator {
   opacity: 1;
   width: 20px;
@@ -710,9 +478,7 @@
   background-image: none;
 }
 
-.dark .dob-date-input {
-  color-scheme: dark;
-}
+.dark .dob-date-input { color-scheme: dark; }
 
 .dark .dob-date-input::-webkit-calendar-picker-indicator {
   opacity: 1;

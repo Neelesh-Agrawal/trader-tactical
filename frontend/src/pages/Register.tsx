@@ -2,32 +2,153 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiFetch } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PinInput } from '@/components/ui/pin-input';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Check, Shield, MessageSquare, Mail } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { typography } from '@/design-system';
-import authChartLightImage from '@/assets/auth-chart-light.png';
-import authChartDarkImage from '@/assets/auth-chart-dark.png';
+
+import { RegisterDetailsStep, RegisterFormData } from '@/components/auth/RegisterDetailsStep';
+import { RegisterPhoneOtpStep } from '@/components/auth/RegisterPhoneOtpStep';
+import { RegisterEmailOtpStep } from '@/components/auth/RegisterEmailOtpStep';
+import { RegisterPinStep } from '@/components/auth/RegisterPinStep';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
-const GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-  { value: 'prefer-not-to-say', label: 'Prefer not to say' },
-];
+const RegisterVisual = () => (
+  <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+    <style>{`
+      @keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+      @keyframes floatB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+      @keyframes floatC { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+      @keyframes orbDrift1 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-14px)} 66%{transform:translate(-12px,18px)} }
+      @keyframes orbDrift2 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-16px,12px)} 66%{transform:translate(22px,-10px)} }
+      @keyframes softPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:0.9;transform:scale(1.04)} }
+      @keyframes rotateSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+      @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+      @keyframes progressFill { from{width:0%} to{width:72%} }
+      @keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+      .rv-float-a { animation: floatA 5s ease-in-out infinite; }
+      .rv-float-b { animation: floatB 6.5s ease-in-out infinite; }
+      .rv-float-c { animation: floatC 4.5s ease-in-out 0.5s infinite; }
+      .rv-orb1 { animation: orbDrift1 10s ease-in-out infinite; }
+      .rv-orb2 { animation: orbDrift2 13s ease-in-out infinite; }
+      .rv-pulse { animation: softPulse 3s ease-in-out infinite; }
+      .rv-rotate { animation: rotateSlow 18s linear infinite; }
+      .rv-fade-1 { animation: fadeUp 0.6s ease-out 0.2s both; }
+      .rv-fade-2 { animation: fadeUp 0.6s ease-out 0.5s both; }
+      .rv-fade-3 { animation: fadeUp 0.6s ease-out 0.8s both; }
+      .rv-fade-4 { animation: fadeUp 0.6s ease-out 1.1s both; }
+      .rv-progress { animation: progressFill 1.8s ease-out 1s both; }
+      .rv-check { animation: checkPop 0.4s ease-out 2s both; }
+    `}</style>
+
+    {/* Background */}
+    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30" />
+
+    <svg className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="register-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#register-grid)" />
+    </svg>
+
+    {/* Ambient orbs */}
+    <div className="rv-orb1 absolute top-10 left-10 w-52 h-52 rounded-full bg-emerald-300/20 dark:bg-emerald-500/10 blur-3xl" />
+    <div className="rv-orb2 absolute bottom-16 right-8 w-60 h-60 rounded-full bg-teal-200/25 dark:bg-teal-600/10 blur-3xl" />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-emerald-100/20 dark:bg-emerald-900/10 blur-3xl" />
+
+    {/* Rotating ring */}
+    <div className="rv-rotate absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-emerald-200/30 dark:border-emerald-700/20" />
+    <div className="rv-rotate absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full border border-dashed border-emerald-300/20 dark:border-emerald-600/15" style={{ animationDirection: 'reverse', animationDuration: '24s' }} />
+
+    {/* Main content */}
+    <div className="relative z-10 w-full max-w-sm px-6 flex flex-col gap-4">
+      {/* Header */}
+      <div className="rv-fade-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700/50 mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Beginner Friendly</span>
+        </div>
+        <h2 className="text-2xl font-bold text-foreground leading-tight">
+          Your learning journey<br />
+          <span className="text-emerald-500">starts with one step.</span>
+        </h2>
+      </div>
+
+      {/* Journey path card */}
+      <div className="rv-float-a rv-fade-2">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl border border-white/80 dark:border-slate-700/50 shadow-xl shadow-emerald-100/40 dark:shadow-black/30 p-4">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Your Learning Path</p>
+          <div className="space-y-2.5">
+            {[
+              { label: 'Options Fundamentals', done: true },
+              { label: 'Reading Option Chains', done: true },
+              { label: 'Greeks & Pricing', done: false, active: true },
+              { label: 'Strategy Building', done: false },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                  item.done ? 'bg-emerald-500' : item.active ? 'bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400' : 'bg-slate-100 dark:bg-slate-700'
+                }`}>
+                  {item.done && <svg className="rv-check w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {item.active && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
+                </div>
+                <span className={`text-sm ${
+                  item.done ? 'text-slate-400 dark:text-slate-500 line-through' :
+                  item.active ? 'text-slate-800 dark:text-white font-semibold' :
+                  'text-slate-400 dark:text-slate-500'
+                }`}>{item.label}</span>
+                {item.active && <span className="ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">In Progress</span>}
+              </div>
+            ))}
+          </div>
+          {/* Progress bar */}
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+              <span>Overall Progress</span><span className="font-mono font-semibold text-emerald-600">72%</span>
+            </div>
+            <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="rv-progress h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full" style={{ width: 0 }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Two mini cards row */}
+      <div className="rv-fade-3 grid grid-cols-2 gap-3">
+        {/* Achievement card */}
+        <div className="rv-float-b bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-xl border border-white/80 dark:border-slate-700/50 shadow-lg p-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mb-2">
+            <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Badges Earned</p>
+          <p className="text-lg font-bold font-mono text-slate-800 dark:text-white">4 / 12</p>
+        </div>
+
+        {/* Streak card */}
+        <div className="rv-float-c bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-xl border border-white/80 dark:border-slate-700/50 shadow-lg p-3">
+          <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-2">
+            <span className="text-base">🔥</span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Day Streak</p>
+          <p className="text-lg font-bold font-mono text-slate-800 dark:text-white">7 Days</p>
+        </div>
+      </div>
+
+      {/* Bottom trust line */}
+      <div className="rv-fade-4 rv-pulse flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50/80 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/40">
+        <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Your data is safe. 100% secure & private.</p>
+      </div>
+    </div>
+  </div>
+);
 
 const OCCUPATION_OPTIONS = [
   { value: 'student', label: 'Student' },
@@ -43,7 +164,7 @@ const OCCUPATION_OPTIONS = [
 const Register = () => {
   const [step, setStep] = useState<Step>('details');
   const [countryCode, setCountryCode] = useState('+91');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
     phoneNumber: '',
     email: '',
@@ -58,14 +179,12 @@ const Register = () => {
   
   // Phone OTP state
   const [phoneOtp, setPhoneOtp] = useState('');
-  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
   const [phoneOtpError, setPhoneOtpError] = useState('');
   const [phoneOtpLoading, setPhoneOtpLoading] = useState(false);
   const [phoneResendTimer, setPhoneResendTimer] = useState(0);
   
   // Email OTP state
   const [emailOtp, setEmailOtp] = useState('');
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtpError, setEmailOtpError] = useState('');
   const [emailOtpLoading, setEmailOtpLoading] = useState(false);
   const [emailResendTimer, setEmailResendTimer] = useState(0);
@@ -94,14 +213,6 @@ const Register = () => {
       toast({ title: 'Required', description: 'Please enter a valid email', variant: 'destructive' });
       return false;
     }
-    if (!formData.dateOfBirth) {
-      toast({ title: 'Required', description: 'Please enter your date of birth', variant: 'destructive' });
-      return false;
-    }
-    if (!formData.gender) {
-      toast({ title: 'Required', description: 'Please select your gender', variant: 'destructive' });
-      return false;
-    }
     if (!formData.occupation) {
       toast({ title: 'Required', description: 'Please select your occupation', variant: 'destructive' });
       return false;
@@ -111,7 +222,6 @@ const Register = () => {
 
   const sendPhoneOtp = async () => {
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
-    
     setPhoneOtpLoading(true);
     setPhoneOtpError('');
     
@@ -122,9 +232,7 @@ const Register = () => {
         body: JSON.stringify({ phone: normalizedPhone }),
       });
       
-      setPhoneOtpSent(true);
       setPhoneResendTimer(60);
-      
       const timer = setInterval(() => {
         setPhoneResendTimer((prev) => {
           if (prev <= 1) {
@@ -137,7 +245,7 @@ const Register = () => {
       
       toast({ title: 'OTP Sent', description: 'Verification code sent to your phone' });
       
-      if (response.otp) {
+      if (response.otp && import.meta.env.DEV) {
         console.log('Dev mode phone OTP:', response.otp);
       }
     } catch (error: any) {
@@ -152,9 +260,7 @@ const Register = () => {
       setPhoneOtpError('Please enter the 6-digit code');
       return;
     }
-    
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
-    
     setPhoneOtpLoading(true);
     setPhoneOtpError('');
     
@@ -165,7 +271,6 @@ const Register = () => {
         body: JSON.stringify({ phone: normalizedPhone, otp: phoneOtp }),
       });
       
-      // Phone verified, move to email step
       setStep('email-otp');
       sendEmailOtp();
     } catch (error: any) {
@@ -186,9 +291,7 @@ const Register = () => {
         body: JSON.stringify({ email: formData.email.toLowerCase() }),
       });
       
-      setEmailOtpSent(true);
       setEmailResendTimer(60);
-      
       const timer = setInterval(() => {
         setEmailResendTimer((prev) => {
           if (prev <= 1) {
@@ -201,7 +304,7 @@ const Register = () => {
       
       toast({ title: 'OTP Sent', description: 'Verification code sent to your email' });
       
-      if (response.otp) {
+      if (response.otp && import.meta.env.DEV) {
         console.log('Dev mode email OTP:', response.otp);
       }
     } catch (error: any) {
@@ -216,7 +319,6 @@ const Register = () => {
       setEmailOtpError('Please enter the 6-digit code');
       return;
     }
-    
     setEmailOtpLoading(true);
     setEmailOtpError('');
     
@@ -227,7 +329,6 @@ const Register = () => {
         body: JSON.stringify({ email: formData.email.toLowerCase(), otp: emailOtp }),
       });
       
-      // Email verified, move to PIN step
       setStep('pin');
     } catch (error: any) {
       setEmailOtpError(error.message || 'Invalid OTP. Please try again.');
@@ -240,12 +341,8 @@ const Register = () => {
     if (!validateDetailsStep()) {
       return;
     }
-    
-    // Set loading and step immediately
     setLoading(true);
     setStep('phone-otp');
-    
-    // Then send OTP
     sendPhoneOtp().finally(() => {
       setLoading(false);
     });
@@ -267,21 +364,16 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (pin.length !== 4) {
       setPinError('PIN must be 4 digits');
       return;
     }
-
     if (pin !== confirmPin) {
       setPinError('PINs do not match');
       return;
     }
-
     setLoading(true);
-    
     const normalizedPhone = countryCode + formData.phoneNumber.replace(/\D/g, '');
-    
     const sexMap: Record<string, string> = {
       'male': 'M',
       'female': 'F',
@@ -298,31 +390,20 @@ const Register = () => {
       sex: sexMap[formData.gender] || 'N',
       birth_date: formData.dateOfBirth,
     });
-    
     setLoading(false);
 
     if (error) {
       toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
     } else {
-      // Clear last lesson from localStorage for new users
       localStorage.removeItem('last_lesson');
       toast({ title: 'Welcome, Trader!', description: 'Your account has been created' });
-      navigate('/dashboard');
-    }
-  };
-
-  const getStepNumber = () => {
-    switch (step) {
-      case 'details': return 1;
-      case 'phone-otp': return 2;
-      case 'email-otp': return 3;
-      case 'pin': return 4;
+      navigate('/pricing');
     }
   };
 
   const getStepTitle = () => {
     switch (step) {
-      case 'details': return 'Begin Your Journey';
+      case 'details': return 'Create Your Account';
       case 'phone-otp': return 'Verify Your Phone';
       case 'email-otp': return 'Verify Your Email';
       case 'pin': return 'Secure Your Account';
@@ -331,7 +412,7 @@ const Register = () => {
 
   const getStepDescription = () => {
     switch (step) {
-      case 'details': return 'Create your trading profile';
+      case 'details': return 'Tell us a bit about yourself to get started';
       case 'phone-otp': return 'Enter the code sent to your phone';
       case 'email-otp': return 'Enter the code sent to your email';
       case 'pin': return 'Create a 4-digit PIN for quick login';
@@ -339,32 +420,29 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Left side - Chart image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white dark:bg-background">
-        <div className="absolute inset-0 flex items-center justify-center p-6">
-          <img
-            src={authChartLightImage}
-            alt="NIFTY 50 chart - trading education"
-            className="w-full h-full max-w-[94%] max-h-[94%] object-contain block dark:hidden"
-          />
-          <img
-            src={authChartDarkImage}
-            alt="NIFTY 50 chart - trading education dark mode"
-            className="w-full h-full max-w-[94%] max-h-[94%] object-contain hidden dark:block"
-          />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white dark:bg-background" />
-        <div className="absolute top-0 left-0 right-0 z-10 p-12 flex flex-col">
-          <h2 className="text-3xl font-bold mb-2 text-foreground">Start Your Trading Journey</h2>
-          <p className="text-muted-foreground">Join thousands of traders mastering the markets</p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        <RegisterVisual />
       </div>
+      <Link to="/" className="fixed left-6 top-6 z-30 flex items-center gap-3 transition hover:opacity-80 fixed-logo-mobile">
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Easy Option Learning" className="h-8 w-8 rounded-md object-contain" />
+        <span className="font-semibold text-foreground text-sm">Easy Option Learning</span>
+      </Link>
+      <style>{`
+        @media (max-width: 768px) {
+          .fixed-logo-mobile { left: 1rem; top: 1rem; }
+        }
+        @media (max-width: 480px) {
+          .fixed-logo-mobile { left: 0.75rem; top: 0.75rem; }
+        }
+      `}</style>
 
-      {/* Right side - Form */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <main id="main-content" className="w-full max-w-md">
-          <Card className="tactical-card">
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <main id="main-content" className="w-full max-w-lg mx-auto">
+          <Card
+            className="border border-border/60 bg-card/80 backdrop-blur-md shadow-2xl shadow-black/10 dark:shadow-black/40"
+            style={{ borderRadius: '22px', padding: '8px' }}
+          >
             <CardHeader className="text-center">
               <div className="caption text-primary mb-2"></div>
               <CardTitle className="text-2xl">
@@ -374,487 +452,143 @@ const Register = () => {
                 {getStepDescription()}
               </CardDescription>
             
-            {/* Step Indicator */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step !== 'details' ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary"
-              )}>
-                {step !== 'details' ? <Check className="h-4 w-4" /> : '1'}
-              </div>
-              <div className="w-8 h-0.5 bg-border" />
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step === 'phone-otp' ? "bg-primary text-primary-foreground" : 
-                (step === 'email-otp' || step === 'pin') ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-              )}>
-                {(step === 'email-otp' || step === 'pin') ? <Check className="h-4 w-4" /> : '2'}
-              </div>
-              <div className="w-8 h-0.5 bg-border" />
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step === 'email-otp' ? "bg-primary text-primary-foreground" : 
-                step === 'pin' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-              )}>
-                {step === 'pin' ? <Check className="h-4 w-4" /> : '3'}
-              </div>
-              <div className="w-8 h-0.5 bg-border" />
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                step === 'pin' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-              )}>
-                4
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            {step === 'details' ? (
-              <>
-              <form onSubmit={(e) => { e.preventDefault(); handleNextStep(); }} className="space-y-4" noValidate>
-                <div>
-                  <label htmlFor="name" className="mono text-xs text-muted-foreground mb-2 block">
-                    FULL NAME
-                  </label>
-                  <Input
-                    id="name"
-                    placeholder="Enter your name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    autoComplete="name"
-                  />
-                </div>
+              {/* Step Indicator */}
+              <div className="mt-4">
+                <style>{`
+                  @keyframes stepGlow {
+                    0%,100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.4); }
+                    50% { box-shadow: 0 0 0 6px hsl(var(--success) / 0); }
+                  }
+                  @keyframes lineFill {
+                    from { width: 0%; }
+                    to { width: 100%; }
+                  }
+                  .step-glow { animation: stepGlow 2s ease-in-out infinite; }
+                  .step-circle {
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                  }
+                  .step-circle:hover { transform: scale(1.12); }
+                  .line-fill { animation: lineFill 0.4s ease-out forwards; }
+                `}</style>
 
-                <div>
-                  <label htmlFor="phone" className="mono text-xs text-muted-foreground mb-2 block">
-                    PHONE NUMBER
-                  </label>
-                  <div className="flex gap-2">
-                    <Select value={countryCode} onValueChange={setCountryCode}>
-                      <SelectTrigger className="w-24">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="+91">🇮🇳 +91</SelectItem>
-                        <SelectItem value="+1">🇺🇸 +1</SelectItem>
-                        <SelectItem value="+44">🇬🇧 +44</SelectItem>
-                        <SelectItem value="+61">🇦🇺 +61</SelectItem>
-                        <SelectItem value="+971">🇦🇪 +971</SelectItem>
-                        <SelectItem value="+65">🇸🇬 +65</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="Enter phone number"
-                      value={formData.phoneNumber}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        setFormData({ ...formData, phoneNumber: value });
-                      }}
-                      required
-                      autoComplete="tel"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
+                <div className="flex items-center justify-center">
+                  {[
+                    { key: 'details',   label: 'Profile' },
+                    { key: 'phone-otp', label: 'Mobile OTP' },
+                    { key: 'email-otp', label: 'Email OTP' },
+                    { key: 'pin',       label: 'Set PIN' },
+                  ].map(({ key, label }, i, arr) => {
+                    const stepOrder = { details: 0, 'phone-otp': 1, 'email-otp': 2, pin: 3 };
+                    const currentIdx = stepOrder[step];
+                    const thisIdx = stepOrder[key as Step];
+                    const isCompleted = thisIdx < currentIdx;
+                    const isActive = thisIdx === currentIdx;
 
-                <div>
-                  <label htmlFor="email" className="mono text-xs text-muted-foreground mb-2 block">
-                    EMAIL
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
+                    return (
+                      <div key={key} className="flex items-center">
+                        <div className="flex flex-col items-center gap-1.5">
+                          <div
+                            className={cn(
+                              'step-circle w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold',
+                              isCompleted && 'bg-success text-white step-glow',
+                              isActive && 'bg-success text-white ring-2 ring-success/30 ring-offset-2 ring-offset-background',
+                              !isCompleted && !isActive && 'bg-muted text-muted-foreground'
+                            )}
+                          >
+                            {isCompleted ? <Check className="h-3.5 w-3.5" /> : thisIdx + 1}
+                          </div>
+                          <span className={cn(
+                            'text-[10px] font-medium whitespace-nowrap',
+                            isActive ? 'text-success' : isCompleted ? 'text-success/70' : 'text-muted-foreground'
+                          )}>
+                            {label}
+                          </span>
+                        </div>
 
-                <div>
-                  <label htmlFor="dob" className="mono text-xs text-muted-foreground mb-2 block">
-                    DATE OF BIRTH
-                  </label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                    required
-                    autoComplete="bday"
-                    className="dob-date-input"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="gender" className="mono text-xs text-muted-foreground mb-2 block">
-                      GENDER
-                    </label>
-                    <Select 
-                      value={formData.gender} 
-                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                    >
-                      <SelectTrigger id="gender">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {GENDER_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="occupation" className="mono text-xs text-muted-foreground mb-2 block">
-                      OCCUPATION
-                    </label>
-                    <Select 
-                      value={formData.occupation} 
-                      onValueChange={(value) => setFormData({ ...formData, occupation: value })}
-                    >
-                      <SelectTrigger id="occupation">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {OCCUPATION_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <p className="text-xs text-muted-foreground text-center">
-                  By continuing, you accept the{' '}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowTermsModal(true);
-                    }}
-                    className="text-primary hover:underline font-medium underline-offset-2"
-                  >
-                    Terms and Conditions
-                  </button>
-                </p>
-
-                <Button type="submit" className="w-full gap-2" disabled={loading}>
-                  {loading ? 'Please wait...' : 'Continue'}
-                  {!loading && <ArrowRight className="h-4 w-4" />}
-                </Button>
-              </form>
-
-              <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
-                <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0">
-                  <DialogHeader className="p-6 pb-0 shrink-0">
-                    <DialogTitle className="font-display">Terms and Conditions</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 font-body">
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>1. Introduction</h3>
-                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
-                        These Terms and Conditions ("Terms") govern the use of the website www.easyoptionlearning.com ("Website"), 
-                        owned and operated by Ananta Securities Private Limited ("Company", "We", "Us", "Our"). 
-                        By accessing or enrolling in any course offered on this Website, you agree to be legally bound by these Terms.
-                      </p>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>2. Nature of Services</h3>
-                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
-                        <li>The Website provides educational content related to options trading and financial markets.</li>
-                        <li>The content includes video lectures, written materials, webinars, and downloadable resources.</li>
-                        <li>The services are strictly educational. The Company does not provide investment advisory services or stock tips.</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>3. Eligibility</h3>
-                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
-                        <li>Users must be at least 18 years of age.</li>
-                        <li>By enrolling, you confirm you are legally competent to enter into a binding contract.</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>4. User Account & Responsibilities</h3>
-                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
-                        <li>You must provide accurate information during registration.</li>
-                        <li>Login credentials are confidential. Sharing course access is strictly prohibited.</li>
-                        <li>The Company reserves the right to suspend or terminate accounts for misuse.</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>5. Intellectual Property Rights</h3>
-                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
-                        <li>All content is the exclusive property of Ananta Securities Private Limited.</li>
-                        <li>No content may be copied, reproduced, or redistributed without written permission.</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>6. Payment Terms</h3>
-                      <ul className={`${typography.body.sm} text-muted-foreground leading-relaxed list-disc pl-6 space-y-1`}>
-                        <li>All course fees must be paid in full before access is granted.</li>
-                        <li>Prices are subject to change. Payments are governed by our Refund Policy.</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>7. Limitation of Liability</h3>
-                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
-                        The Company shall not be liable for trading losses, indirect damages, or loss of profits. 
-                        Users are solely responsible for their trading decisions.
-                      </p>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>8. Termination</h3>
-                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
-                        The Company may terminate access for violation of Terms, modify content, or discontinue services.
-                      </p>
-                    </section>
-                    <section>
-                      <h3 className={`${typography.heading.h4} font-display mb-2`}>9. Governing Law</h3>
-                      <p className={`${typography.body.sm} text-muted-foreground leading-relaxed`}>
-                        These Terms are governed by the laws of India. Disputes shall be subject to courts in Ernakulam, Kerala.
-                      </p>
-                    </section>
-                    <p className={`${typography.body.xs} text-muted-foreground italic`}>
-                      Last updated: {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
-                </DialogContent>
-              </Dialog>
-              </>
-            ) : step === 'phone-otp' ? (
-              <div className="space-y-6">
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MessageSquare className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-                
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    We've sent a verification code to
-                  </p>
-                  <p className="font-medium">
-                    {countryCode} {formData.phoneNumber}
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="mono text-xs text-muted-foreground text-center block">
-                    ENTER VERIFICATION CODE
-                  </label>
-                  <Input
-                    type="tel"
-                    placeholder="123456"
-                    value={phoneOtp}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                      setPhoneOtp(value);
-                      setPhoneOtpError('');
-                    }}
-                    className="text-center text-2xl tracking-widest"
-                    autoFocus
-                  />
-                  {phoneOtpError && (
-                    <p className="text-destructive text-sm text-center">{phoneOtpError}</p>
-                  )}
-                </div>
-
-                <div className="flex gap-3">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => {
-                      setPhoneOtpSent(false);
-                      setStep('details');
-                    }}
-                    className="flex-1 gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </Button>
-                  <Button 
-                    type="button"
-                    onClick={verifyPhoneOtp}
-                    disabled={phoneOtpLoading || phoneOtp.length !== 6}
-                    className="flex-1"
-                  >
-                    {phoneOtpLoading ? 'Verifying...' : 'Verify'}
-                  </Button>
-                </div>
-
-                <div className="text-center">
-                  {phoneResendTimer > 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      Resend code in {phoneResendTimer}s
-                    </p>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="link"
-                      onClick={sendPhoneOtp}
-                      disabled={phoneOtpLoading}
-                      className="text-sm"
-                    >
-                      Didn't receive the code? Resend
-                    </Button>
-                  )}
+                        {i < arr.length - 1 && (
+                          <div className="relative w-10 h-0.5 bg-border mx-1 mb-5 overflow-hidden rounded-full">
+                            {(isCompleted || (isActive && thisIdx < currentIdx)) && (
+                              <div className="absolute inset-0 bg-success line-fill rounded-full" />
+                            )}
+                            {isCompleted && (
+                              <div className="absolute inset-0 bg-success rounded-full" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ) : step === 'email-otp' ? (
-              <div className="space-y-6">
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Mail className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-                
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    We've sent a verification code to
-                  </p>
-                  <p className="font-medium">
-                    {formData.email}
-                  </p>
-                </div>
+            </CardHeader>
+            
+            <CardContent>
+              {step === 'details' && (
+                <RegisterDetailsStep
+                  formData={formData}
+                  setFormData={setFormData}
+                  countryCode={countryCode}
+                  setCountryCode={setCountryCode}
+                  loading={loading}
+                  showTermsModal={showTermsModal}
+                  setShowTermsModal={setShowTermsModal}
+                  onNext={handleNextStep}
+                  occupationOptions={OCCUPATION_OPTIONS}
+                />
+              )}
 
-                <div className="space-y-3">
-                  <label className="mono text-xs text-muted-foreground text-center block">
-                    ENTER VERIFICATION CODE
-                  </label>
-                  <Input
-                    type="tel"
-                    placeholder="123456"
-                    value={emailOtp}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                      setEmailOtp(value);
-                      setEmailOtpError('');
-                    }}
-                    className="text-center text-2xl tracking-widest"
-                    autoFocus
-                  />
-                  {emailOtpError && (
-                    <p className="text-destructive text-sm text-center">{emailOtpError}</p>
-                  )}
-                </div>
+              {step === 'phone-otp' && (
+                <RegisterPhoneOtpStep
+                  countryCode={countryCode}
+                  phoneNumber={formData.phoneNumber}
+                  phoneOtp={phoneOtp}
+                  setPhoneOtp={setPhoneOtp}
+                  phoneOtpError={phoneOtpError}
+                  setPhoneOtpError={setPhoneOtpError}
+                  phoneOtpLoading={phoneOtpLoading}
+                  phoneResendTimer={phoneResendTimer}
+                  onBack={() => setStep('details')}
+                  onVerify={verifyPhoneOtp}
+                  onResend={sendPhoneOtp}
+                />
+              )}
 
-                <div className="flex gap-3">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => {
-                      setEmailOtpSent(false);
-                      setStep('phone-otp');
-                    }}
-                    className="flex-1 gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </Button>
-                  <Button 
-                    type="button"
-                    onClick={verifyEmailOtp}
-                    disabled={emailOtpLoading || emailOtp.length !== 6}
-                    className="flex-1"
-                  >
-                    {emailOtpLoading ? 'Verifying...' : 'Verify'}
-                  </Button>
-                </div>
+              {step === 'email-otp' && (
+                <RegisterEmailOtpStep
+                  email={formData.email}
+                  emailOtp={emailOtp}
+                  setEmailOtp={setEmailOtp}
+                  emailOtpError={emailOtpError}
+                  setEmailOtpError={setEmailOtpError}
+                  emailOtpLoading={emailOtpLoading}
+                  emailResendTimer={emailResendTimer}
+                  onBack={() => setStep('phone-otp')}
+                  onVerify={verifyEmailOtp}
+                  onResend={sendEmailOtp}
+                />
+              )}
 
-                <div className="text-center">
-                  {emailResendTimer > 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      Resend code in {emailResendTimer}s
-                    </p>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="link"
-                      onClick={sendEmailOtp}
-                      disabled={emailOtpLoading}
-                      className="text-sm"
-                    >
-                      Didn't receive the code? Resend
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <label className="mono text-xs text-muted-foreground text-center block">
-                    CREATE YOUR PIN
-                  </label>
-                  <PinInput
-                    value={pin}
-                    onChange={handlePinChange}
-                    autoFocus
-                  />
-                </div>
+              {step === 'pin' && (
+                <RegisterPinStep
+                  pin={pin}
+                  handlePinChange={handlePinChange}
+                  confirmPin={confirmPin}
+                  handleConfirmPinChange={handleConfirmPinChange}
+                  pinError={pinError}
+                  loading={loading}
+                  onBack={() => setStep('email-otp')}
+                  onSubmit={handleSubmit}
+                />
+              )}
 
-                <div className="space-y-3">
-                  <label className="mono text-xs text-muted-foreground text-center block">
-                    CONFIRM YOUR PIN
-                  </label>
-                  <PinInput
-                    value={confirmPin}
-                    onChange={handleConfirmPinChange}
-                    error={!!pinError}
-                  />
-                  {pinError && (
-                    <p className="text-destructive text-sm text-center">{pinError}</p>
-                  )}
-                </div>
-
-                <p className="text-xs text-muted-foreground text-center">
-                  You'll use this PIN along with your email to log in
-                </p>
-
-                <div className="flex gap-3">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setStep('email-otp')}
-                    className="flex-1 gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="flex-1" 
-                    disabled={loading || pin.length !== 4 || confirmPin.length !== 4}
-                  >
-                    {loading ? 'Creating...' : 'Create Account'}
-                  </Button>
-                </div>
-              </form>
-            )}
-
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              Already Have an Account?{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign In
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary hover:underline font-medium">
+                  Sign In
+                </Link>
+              </p>
+            </CardContent>
+          </Card>
         </main>
       </div>
     </div>

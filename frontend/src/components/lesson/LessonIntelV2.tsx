@@ -1,4 +1,4 @@
-import { Lightbulb, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LessonIntelV2Props {

@@ -15,7 +15,6 @@ interface QuizInterfaceProps {
   levelId: string;
   moduleId?: string;
   lessonId?: string;
-  onComplete?: () => void;
   returnPath: string;
   quizId?: number;
   passPercentage?: number;
@@ -28,7 +27,6 @@ export const QuizInterface = ({
   levelId,
   moduleId,
   lessonId,
-  onComplete,
   returnPath,
   quizId,
   passPercentage = 80,
@@ -37,17 +35,15 @@ export const QuizInterface = ({
   const navigate = useNavigate();
   const { fire } = useConfetti();
   const hasFireRef = useRef(false);
-  
+
   // New state for instant feedback
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
 
   const {
     currentQuestion,
     currentQuestionIndex,
     totalQuestions,
-    currentAnswer,
     answers,
     timeRemaining,
     isSubmitted,
@@ -56,13 +52,10 @@ export const QuizInterface = ({
     score,
     passed,
     progress,
-    answeredCount,
-    canSubmit,
     isLastQuestion,
     questions: shuffledQuestions,
     selectAnswer,
     nextQuestion,
-    previousQuestion,
     submitQuiz
   } = useQuiz({
     questions,
@@ -94,7 +87,6 @@ export const QuizInterface = ({
   useEffect(() => {
     setSelectedAnswer(null);
     setShowFeedback(false);
-    setIsCorrect(false);
   }, [currentQuestionIndex]);
 
   // Warn about leaving
@@ -116,36 +108,21 @@ export const QuizInterface = ({
     return 'text-foreground';
   };
 
-  // Handle answer selection with instant feedback
+  // Advance after recording an answer (correctness revealed on final results screen)
   const handleAnswerSelect = (optionIndex: number) => {
-    if (showFeedback) return; // Already showing feedback
-    
+    if (showFeedback) return;
+
     setSelectedAnswer(optionIndex);
     selectAnswer(optionIndex);
-    
-    const correct = optionIndex === currentQuestion.correctIndex;
-    setIsCorrect(correct);
     setShowFeedback(true);
-    
-    // If correct, auto-advance after brief delay
-    if (correct) {
-      setTimeout(() => {
-        if (isLastQuestion) {
-          submitQuiz();
-        } else {
-          nextQuestion();
-        }
-      }, 1000);
-    }
-  };
 
-  // Handle next question after wrong answer
-  const handleNextAfterWrong = () => {
-    if (isLastQuestion) {
-      submitQuiz();
-    } else {
-      nextQuestion();
-    }
+    setTimeout(() => {
+      if (isLastQuestion) {
+        void submitQuiz();
+      } else {
+        nextQuestion();
+      }
+    }, 400);
   };
 
   if (isInvalidated) {
@@ -206,19 +183,21 @@ export const QuizInterface = ({
               <div className="caption text-muted-foreground">SCORE</div>
             </div>
             <div className="p-4 rounded-lg bg-muted">
-              <div className="text-4xl font-bold font-mono">{answers.filter((a, i) => a === shuffledQuestions[i].correctIndex).length}/{totalQuestions}</div>
+              <div className="text-4xl font-bold font-mono">
+                {Math.round((score / 100) * totalQuestions)}/{totalQuestions}
+              </div>
               <div className="caption text-muted-foreground">CORRECT</div>
             </div>
           </div>
 
-          
+
 
           {/* Show answers review */}
           <div className="text-left mb-8 max-h-64 overflow-y-auto scrollbar-tactical">
             {shuffledQuestions.map((q, idx) => {
               const userAnswer = answers[idx];
               const isCorrectAnswer = userAnswer === q.correctIndex;
-              
+
               return (
                 <div key={q.id} className={`p-4 mb-2 rounded-lg ${isCorrectAnswer ? 'bg-success/10' : 'bg-destructive/10'}`}>
                   <div className="flex items-start gap-2">
@@ -247,8 +226,17 @@ export const QuizInterface = ({
               Back
             </Button>
             {passed ? (
-              <Button onClick={() => navigate('/dashboard')} className="gap-2">
-                Continue Learning
+              <Button
+                onClick={() => {
+                  if (quizType === 'level') {
+                    navigate(`/level/${levelId}/final`);
+                  } else {
+                    navigate(returnPath);
+                  }
+                }}
+                className="gap-2"
+              >
+                {quizType === 'level' ? 'Claim Certificate' : 'Continue Learning'}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
@@ -281,7 +269,7 @@ export const QuizInterface = ({
               <span className="mono text-xl font-bold">{timeRemaining}s</span>
             </div>
           </div>
-          
+
           {/* Progress bar */}
           <AnimatedProgress value={progress} className="mt-3 h-2" />
         </div>
@@ -312,10 +300,7 @@ export const QuizInterface = ({
         <div className="space-y-3">
           {currentQuestion.options.map((option, idx) => {
             const isSelected = selectedAnswer === idx;
-            const isCorrectOption = idx === currentQuestion.correctIndex;
-            const showCorrectHighlight = showFeedback && isCorrectOption;
-            const showWrongHighlight = showFeedback && isSelected && !isCorrectOption;
-            
+
             return (
               <button
                 key={idx}
@@ -323,37 +308,19 @@ export const QuizInterface = ({
                 disabled={showFeedback}
                 className={cn(
                   "w-full p-4 text-left rounded-xl border-2 transition-all duration-200",
-                  // Default state
                   !showFeedback && !isSelected && "border-border bg-card hover:border-muted-foreground/50",
-                  // Selected but not submitted
                   !showFeedback && isSelected && "border-primary bg-primary/5",
-                  // Correct answer highlight (green)
-                  showCorrectHighlight && "border-success bg-success/10",
-                  // Wrong answer highlight (red)
-                  showWrongHighlight && "border-destructive bg-destructive/10",
-                  // Disabled state
-                  showFeedback && !showCorrectHighlight && !showWrongHighlight && "opacity-60"
+                  showFeedback && isSelected && "border-primary bg-primary/10",
+                  showFeedback && !isSelected && "opacity-60"
                 )}
               >
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 border-2",
-                    // Default
                     !showFeedback && !isSelected && "border-muted-foreground/30 text-muted-foreground",
-                    // Selected
-                    !showFeedback && isSelected && "border-primary text-primary",
-                    // Correct
-                    showCorrectHighlight && "border-success bg-success text-success-foreground",
-                    // Wrong
-                    showWrongHighlight && "border-destructive bg-destructive text-destructive-foreground"
+                    isSelected && "border-primary text-primary"
                   )}>
-                    {showCorrectHighlight ? (
-                      <CheckCircle className="h-5 w-5" />
-                    ) : showWrongHighlight ? (
-                      <XCircle className="h-5 w-5" />
-                    ) : (
-                      <Circle className="h-4 w-4" />
-                    )}
+                    <Circle className="h-4 w-4" />
                   </div>
                   <span className="flex-1">{option.text}</span>
                 </div>
@@ -361,29 +328,6 @@ export const QuizInterface = ({
             );
           })}
         </div>
-
-        {/* Explanation Card - Shows after wrong answer */}
-        {showFeedback && !isCorrect && (
-          <div className="mt-6 p-4 rounded-xl bg-muted/50 border-l-4 border-primary animate-fade-in">
-            <p className="font-semibold text-sm mb-2 text-foreground">Explanation:</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {currentQuestion.explanation}
-            </p>
-          </div>
-        )}
-
-        {/* Next Question Button - Shows after wrong answer */}
-        {showFeedback && !isCorrect && (
-          <div className="mt-6 flex justify-end">
-            <Button 
-              onClick={handleNextAfterWrong}
-              className="gap-2 px-8"
-            >
-              {isLastQuestion ? 'View Results' : 'Next Question'}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

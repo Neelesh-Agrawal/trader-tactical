@@ -23,7 +23,7 @@ I've successfully created 5 comprehensive legal pages for your trading education
    - Cookie usage
    - Data sharing policies
    - User rights (access, correction, deletion)
-   - Contact email: care@easyoptionlearning.com
+   - Contact email: support@anantasecurities.in
 
 3. **Refund Policy** (`/refund`)
    - General non-refund policy
@@ -108,7 +108,7 @@ Your platform now has comprehensive legal coverage:
 
 ### 📧 Contact Information
 
-All pages reference: **care@easyoptionlearning.com** for inquiries
+All pages reference: **support@anantasecurities.in** for inquiries
 
 ### 🌐 Live Pages
 

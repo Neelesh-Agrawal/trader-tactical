@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useCourses } from '@/hooks/useCourses';
 import { Button } from '@/components/ui/button';
@@ -8,8 +9,8 @@ import { ArrowLeft, CheckCircle, Lock, Play, Trophy } from 'lucide-react';
 const Module = () => {
   const { levelId, moduleId } = useParams();
   const { user, loading: authLoading } = useAuth();
-  const { isLessonCompleted, isModuleCompleted, isLevelUnlocked, loading: progressLoading } = useProgress();
-  const { levels, loading: coursesLoading, getLevelById, getModuleById } = useCourses();
+  const { isLessonCompleted, isModuleCompleted, loading: progressLoading } = useProgress();
+  const { loading: coursesLoading, getLevelById, getModuleById } = useCourses();
   const navigate = useNavigate();
 
   const loading = authLoading || progressLoading || coursesLoading;
@@ -22,7 +23,7 @@ const Module = () => {
     );
   }
 
-  if (!user) {
+  if (isAuthRequired() && !user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -37,7 +38,7 @@ const Module = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  if (!isLevelUnlocked(levelId)) {
+  if (!level.is_unlocked) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -48,18 +49,15 @@ const Module = () => {
   const allLessonsCompleted = completedLessons === module.lessons.length && module.lessons.length > 0;
   const moduleComplete = isModuleCompleted(levelId, moduleId);
 
-  const getLessonStatus = (lessonIndex: number, lessonId: string): 'complete' | 'active' | 'locked' => {
+  const getLessonStatus = (lessonIndex: number, lessonId: string, lessonUnlockedFromApi?: boolean): 'complete' | 'active' | 'locked' => {
     if (isLessonCompleted(levelId, moduleId, lessonId)) return 'complete';
-    
-    // First lesson is always unlocked
-    if (lessonIndex === 0) return 'active';
-    
-    // Unlock if previous lesson is complete
+    if (lessonUnlockedFromApi) return 'active';
+
     const prevLesson = module.lessons[lessonIndex - 1];
     if (prevLesson && isLessonCompleted(levelId, moduleId, prevLesson.id)) {
       return 'active';
     }
-    
+
     return 'locked';
   };
 
@@ -105,7 +103,7 @@ const Module = () => {
           <h2 className="subheader text-muted-foreground mb-6">Mission Objectives</h2>
           
           {module.lessons.map((lesson, index) => {
-            const status = getLessonStatus(index, lesson.id);
+            const status = getLessonStatus(index, lesson.id, lesson.is_unlocked);
             
             return (
               <button

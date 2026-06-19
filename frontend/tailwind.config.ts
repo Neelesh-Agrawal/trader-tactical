@@ -23,13 +23,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Libre Baskerville", "Georgia", "serif"],
-        body: ["Charter", "Georgia", "serif"],
-        ui: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
-        // Legacy aliases for compatibility
-        serif: ["Libre Baskerville", "Georgia", "serif"],
-        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "sans-serif"],
+        display: ['Manrope', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+        ui: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+        serif: ['Manrope', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { getBackendLevelId } from '@/lib/levelIdMap';
 
 interface LessonProgress {
   lesson_id: number; // Backend uses integer IDs
@@ -56,8 +57,12 @@ interface BackendProgressResponse {
 }
 
 const getLevelIdInt = (levelId: string): number => {
-  const levelMap: Record<string, number> = { 'beginner': 1, 'intermediate': 2, 'advanced': 3 };
-  return levelMap[levelId] || parseInt(levelId, 10);
+  const levelMap: Record<string, number> = {
+    beginner: 1,
+    intermediate: 2,
+    advanced: 3,
+  };
+  return levelMap[levelId] || getBackendLevelId(levelId) || parseInt(levelId, 10);
 };
 
 const getModuleIdInt = (moduleId: string): number => {
@@ -130,23 +135,26 @@ export const useProgress = () => {
     fetchProgress();
   }, [user]);
 
-  const isLessonCompleted = (levelId: string, moduleId: string, lessonId: string): boolean => {
+  const isLessonCompleted = (_levelId: string, _moduleId: string, lessonId: string): boolean => {
     const lessonIdInt = getLessonIdInt(lessonId);
     return lessonProgress.some(
       p => p.lesson_id === lessonIdInt && p.completed
     );
   };
 
-  const isModuleUnlocked = (levelId: string, moduleId: string): boolean => {
+  const isModuleUnlocked = (_levelId: string, moduleId: string): boolean => {
     const moduleIdInt = getModuleIdInt(moduleId);
-    const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
+    const progress = moduleProgress.find((p) => p.module_id === moduleIdInt);
     if (progress) return progress.unlocked;
-    
-    // First module is always unlocked
-    return moduleId.includes('1') || moduleId.includes('derivatives-basics');
+
+    const parts = moduleId.split('-');
+    if (parts[0] === 'module' && parts[1] === '1') {
+      return parseInt(parts[2], 10) === 1;
+    }
+    return false;
   };
 
-  const isModuleCompleted = (levelId: string, moduleId: string): boolean => {
+  const isModuleCompleted = (_levelId: string, moduleId: string): boolean => {
     const moduleIdInt = getModuleIdInt(moduleId);
     const progress = moduleProgress.find(p => p.module_id === moduleIdInt);
     return progress?.completed ?? false;
@@ -154,10 +162,9 @@ export const useProgress = () => {
 
   const isLevelUnlocked = (levelId: string): boolean => {
     const levelIdInt = getLevelIdInt(levelId);
-    const progress = levelProgress.find(p => p.level_id === levelIdInt);
+    const progress = levelProgress.find((p) => p.level_id === levelIdInt);
     if (progress) return progress.unlocked;
-    
-    // Beginner is always unlocked
+
     return levelId === 'beginner';
   };
 
@@ -167,11 +174,7 @@ export const useProgress = () => {
     return progress?.completed ?? false;
   };
 
-  const getModuleLessonsCompleted = (levelId: string, moduleId: string, totalLessons: number): number => {
-    return lessonProgress.filter(
-      p => p.completed
-    ).length;
-  };
+
 
   const getCooldownRemaining = (quizType: string, levelId: string, moduleId?: string): number => {
     const cooldown = cooldowns.find(
@@ -188,7 +191,7 @@ export const useProgress = () => {
     return Math.max(0, Math.ceil((cooldownTime - now) / 1000));
   };
 
-  const markLessonComplete = async (levelId: string, moduleId: string, lessonId: string) => {
+  const markLessonComplete = async (_levelId: string, _moduleId: string, lessonId: string) => {
     if (!user) return;
 
     const lessonIdInt = getLessonIdInt(lessonId);
@@ -206,7 +209,7 @@ export const useProgress = () => {
     }
   };
 
-  const markModuleComplete = async (levelId: string, moduleId: string) => {
+  const markModuleComplete = async (_levelId: string, moduleId: string) => {
     if (!user) return;
 
     const moduleIdInt = getModuleIdInt(moduleId);
@@ -225,7 +228,7 @@ export const useProgress = () => {
     }
   };
 
-  const unlockNextModule = async (levelId: string, nextModuleId: string) => {
+  const unlockNextModule = async (_levelId: string, nextModuleId: string) => {
     if (!user) return;
 
     const moduleIdInt = getModuleIdInt(nextModuleId);
@@ -280,23 +283,23 @@ export const useProgress = () => {
     }
   };
 
-  const setCooldown = async (quizType: string, levelId: string, moduleId?: string, durationMinutes: number = 2) => {
+  const setCooldown = async (_quizType: string, _levelId: string, _moduleId?: string, _durationMinutes: number = 2) => {
     // Quiz cooldowns are not yet implemented in the backend API
     // This is a stub for now
     console.warn('Quiz cooldowns not yet implemented in backend');
   };
 
   const recordQuizAttempt = async (
-    quizType: 'lesson' | 'module' | 'level',
-    levelId: string,
-    score: number,
-    totalQuestions: number,
-    passed: boolean,
-    moduleId?: string,
-    lessonId?: string,
-    invalidated: boolean = false,
-    invalidationReason?: string,
-    timeTaken?: number
+    _quizType: 'lesson' | 'module' | 'level',
+    _levelId: string,
+    _score: number,
+    _totalQuestions: number,
+    _passed: boolean,
+    _moduleId?: string,
+    _lessonId?: string,
+    _invalidated: boolean = false,
+    _invalidationReason?: string,
+    _timeTaken?: number
   ) => {
     if (!user) return;
 
@@ -315,7 +318,6 @@ export const useProgress = () => {
     isModuleCompleted,
     isLevelUnlocked,
     isLevelCompleted,
-    getModuleLessonsCompleted,
     getCooldownRemaining,
     markLessonComplete,
     markModuleComplete,

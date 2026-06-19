@@ -63,10 +63,9 @@ export const useQuiz = ({
   lessonId,
   timePerQuestion = 45,
   passingScore = 80,
-  cooldownMinutes = 2,
   quizId
 }: UseQuizOptions) => {
-  const { recordQuizAttempt, setCooldown, markLessonComplete, markModuleComplete, unlockNextModule, markLevelComplete, unlockNextLevel } = useProgress();
+  const { recordQuizAttempt, setCooldown, markLessonComplete, markModuleComplete, markLevelComplete, unlockNextLevel } = useProgress();
   
   // Randomize questions and options on mount
   const [shuffledQuestions] = useState(() => {
@@ -207,30 +206,15 @@ export const useQuiz = ({
     if (state.isSubmitted) return;
 
     const timeTaken = Math.floor((Date.now() - state.startTime) / 1000);
-    
-    // Use ref for accurate answer count (avoids stale closure)
     const latestAnswers = answersRef.current;
+    const wasInvalidated = state.isInvalidated;
+
+    let scorePercentage = 0;
+    let passed = false;
     let correctCount = 0;
-    state.questions.forEach((q, idx) => {
-      if (latestAnswers[idx] === q.correctIndex) {
-        correctCount++;
-      }
-    });
 
-    const scorePercentage = Math.round((correctCount / state.questions.length) * 100);
-    const passed = scorePercentage >= passingScore;
-
-    setState(prev => ({
-      ...prev,
-      isSubmitted: true,
-      score: scorePercentage,
-      passed
-    }));
-
-    // Submit to backend API if quizId is available
     if (quizId) {
       try {
-        // Format answers as { question_id: option_index }
         const formattedAnswers: Record<string, number> = {};
         state.questions.forEach((q, qIdx) => {
           const answerIndex = latestAnswers[qIdx];
@@ -239,16 +223,39 @@ export const useQuiz = ({
           }
         });
 
-        await apiFetch(`/api/quizzes/${quizId}/submit/`, {
-          method: 'POST',
-          body: JSON.stringify({ answers: formattedAnswers }),
-        });
+        const result = await apiFetch<{ score: number; passed: boolean }>(
+          `/api/quizzes/${quizId}/submit/`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ answers: formattedAnswers }),
+          }
+        );
+
+        scorePercentage = Math.round(result.score);
+        passed = result.passed;
+        correctCount = Math.round((scorePercentage / 100) * state.questions.length);
       } catch (err) {
         console.error('Failed to submit quiz to backend:', err);
+        scorePercentage = 0;
+        passed = false;
       }
+    } else {
+      state.questions.forEach((q, idx) => {
+        if (latestAnswers[idx] === q.correctIndex && q.correctIndex >= 0) {
+          correctCount++;
+        }
+      });
+      scorePercentage = Math.round((correctCount / state.questions.length) * 100);
+      passed = scorePercentage >= passingScore;
     }
 
-    // Record attempt
+    setState((prev) => ({
+      ...prev,
+      isSubmitted: true,
+      score: scorePercentage,
+      passed,
+    }));
+
     await recordQuizAttempt(
       quizType,
       levelId,
@@ -257,13 +264,12 @@ export const useQuiz = ({
       passed,
       moduleId,
       lessonId,
-      state.isInvalidated,
+      wasInvalidated,
       state.invalidationReason || undefined,
       timeTaken
     );
 
-    // Handle pass/fail
-    if (passed && !state.isInvalidated) {
+    if (passed && !wasInvalidated) {
       if (quizType === 'lesson' && lessonId && moduleId) {
         await markLessonComplete(levelId, moduleId, lessonId);
       } else if (quizType === 'module' && moduleId) {

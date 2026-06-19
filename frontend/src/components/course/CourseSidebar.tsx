@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/hooks/useProgress';
 import { useCourses } from '@/hooks/useCourses';
 import { ChevronDown, ChevronRight, CheckCircle, Lock, Play, BookOpen } from 'lucide-react';

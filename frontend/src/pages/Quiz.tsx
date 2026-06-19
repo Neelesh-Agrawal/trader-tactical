@@ -1,5 +1,6 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useCourses } from '@/hooks/useCourses';
 import { QuizInterface } from '@/components/quiz/QuizInterface';
@@ -78,7 +79,7 @@ const Quiz = () => {
     );
   }
 
-  if (!user) {
+  if (isAuthRequired() && !user) {
     return <Navigate to="/login" replace />;
   }
 

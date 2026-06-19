@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, MessageSquare, Send } from 'lucide-react';
+import { MessageSquare, Send } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,7 @@ export const ContactSection = () => {
     setLoading(true);
 
     try {
-      await apiFetch('/api/feedback/', {
+      await apiFetch('/api/auth/feedback/', {
         method: 'POST',
         auth: false,
         body: JSON.stringify({
@@ -67,10 +67,10 @@ export const ContactSection = () => {
         <AnimatedSection direction="up" delay={0}>
           <div className="max-w-xl mx-auto text-center">
             <h2 className={`${typography.heading.h1} font-display font-bold mb-4 text-foreground`}>
-              Contact <span className="text-success">Us</span>
+              Still got questions? <span className="text-success">Contact us</span>
             </h2>
             <p className={`${typography.body.lg} font-body text-muted-foreground mb-8`}>
-            Got a question? We're happy to help.
+            We're happy to help.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

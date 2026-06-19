@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { setLevelIdMap, getBackendLevelId } from '@/lib/levelIdMap';
 
 export interface Question {
   id: string;
@@ -44,8 +45,10 @@ export interface Module {
 
 export interface Level {
   id: string;
+  backendId: number;
   title: string;
   order: number;
+  is_unlocked: boolean;
   modules: Module[];
   finalAssessment: Question[];
 }
@@ -66,6 +69,7 @@ interface BackendLevelResponse {
   id: number;
   title: string;
   order: number;
+  is_unlocked: boolean;
   modules: BackendModuleResponse[];
 }
 
@@ -103,7 +107,7 @@ interface BackendLessonDetailResponse {
 interface BackendQuizOption {
   id: number;
   text: string;
-  is_correct: boolean;
+  is_correct?: boolean;
 }
 
 interface BackendQuizQuestion {
@@ -124,9 +128,7 @@ interface BackendQuiz {
   name: string;
 }
 
-interface QuizSubmission {
-  answers: Record<string, number>; // { question_id: option_id }
-}
+
 
 export const useCourses = () => {
   const { user } = useAuth();
@@ -140,10 +142,7 @@ export const useCourses = () => {
     return icons[index % icons.length];
   };
 
-  const mapBackendIdToFrontend = (backendId: number, type: 'level' | 'module' | 'lesson'): string => {
-    const levelMap: Record<number, string> = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
-    return type === 'level' ? String(backendId) : String(backendId);
-  };
+
 
   const fetchCourses = useCallback(async () => {
     if (!user) {
@@ -167,14 +166,56 @@ export const useCourses = () => {
 
       if (mappedCourses.length > 0) {
         const firstCourseId = mappedCourses[0].id;
-        const levelsData = await apiFetch<BackendLevelResponse[]>(`/api/courses/${firstCourseId}/levels/`);
+
+        let levelsData: BackendLevelResponse[];
+        try {
+          levelsData = await apiFetch<BackendLevelResponse[]>(
+            `/api/courses/${firstCourseId}/levels/`
+          );
+        } catch (err) {
+          const status = (err as { status?: number }).status;
+          if (status === 404) {
+            await apiFetch('/api/courses/enroll/', {
+              method: 'POST',
+              body: JSON.stringify({ course_id: firstCourseId }),
+            });
+            levelsData = await apiFetch<BackendLevelResponse[]>(
+              `/api/courses/${firstCourseId}/levels/`
+            );
+          } else {
+            throw err;
+          }
+        }
         
-        const levelIdMap: Record<number, string> = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
-        
-        const mappedLevels: Level[] = levelsData.map((l, index) => ({
-          id: levelIdMap[l.id] || String(l.id),
+        const levelIdByBackendId: Record<number, string> = {
+          1: 'beginner',
+          2: 'intermediate',
+          3: 'advanced',
+        };
+        const levelSlugByOrder: Record<number, string> = {
+          1: 'beginner',
+          2: 'intermediate',
+          3: 'advanced',
+        };
+        const levelSlugByTitle: Record<string, string> = {
+          Beginner: 'beginner',
+          Intermediate: 'intermediate',
+          Advanced: 'advanced',
+        };
+
+        const mappedLevels: Level[] = levelsData.map((l) => {
+          const levelSlug =
+            levelIdByBackendId[l.id] ||
+            levelSlugByOrder[l.order] ||
+            levelSlugByTitle[l.title] ||
+            String(l.id);
+
+          return {
+          id: levelSlug,
+          backendId: l.id,
           title: l.title,
           order: l.order,
+          is_unlocked: l.is_unlocked,
           modules: l.modules.map((m, mIndex) => ({
             id: `module-${l.id}-${m.id}`,
             title: m.title,
@@ -183,7 +224,7 @@ export const useCourses = () => {
             order: m.order,
             is_unlocked: m.is_unlocked,
             finalQuiz: [],
-            lessons: m.lessons.map(les => ({
+            lessons: m.lessons.map((les) => ({
               id: `lesson-${l.id}-${m.id}-${les.id}`,
               title: les.title,
               lesson_objective: les.lesson_objective,
@@ -199,9 +240,11 @@ export const useCourses = () => {
             })),
           })),
           finalAssessment: [],
-        }));
+        };
+        });
         
         setLevels(mappedLevels);
+        setLevelIdMap(mappedLevels.map((level) => ({ id: level.id, backendId: level.backendId })));
       }
     } catch (err) {
       console.error('Failed to fetch courses:', err);
@@ -283,8 +326,15 @@ export const useCourses = () => {
       idValue = typeof moduleId === 'number' ? moduleId : parseInt(moduleId.toString().split('-').pop() || '0', 10);
     } else if (quizType === 'level' && levelId) {
       queryParam = 'level_id';
-      const levelMap: Record<string, number> = { 'beginner': 1, 'intermediate': 2, 'advanced': 3 };
-      idValue = typeof levelId === 'number' ? levelId : (levelMap[String(levelId)] || parseInt(levelId, 10));
+      const levelMap: Record<string, number> = {
+        beginner: 1,
+        intermediate: 2,
+        advanced: 3,
+      };
+      idValue =
+        typeof levelId === 'number'
+          ? levelId
+          : levelMap[String(levelId)] || getBackendLevelId(String(levelId));
     } else {
       console.error('Invalid quiz type or missing ID');
       return null;
@@ -306,17 +356,15 @@ export const useCourses = () => {
       const quiz = quizzes[0];
 
       // Convert backend format to frontend format
-      const questions: Question[] = quiz.questions.map(q => {
-        // Find the index of the correct option
-        const correctIndex = q.options.findIndex(o => o.is_correct);
-        
+      const questions: Question[] = quiz.questions.map((q) => {
+        const correctIndex = q.options.findIndex((o) => o.is_correct);
         return {
           id: String(q.id),
           question: q.text,
-          options: q.options.map(o => ({
+          options: q.options.map((o) => ({
             id: String(o.id),
             text: o.text,
-            is_correct: o.is_correct,
+            is_correct: o.is_correct ?? false,
           })),
           correctIndex,
           explanation: q.explanation || '',

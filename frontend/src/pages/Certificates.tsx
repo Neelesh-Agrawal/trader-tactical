@@ -4,6 +4,7 @@ import { ArrowLeft, Award, Download, Loader2 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { isAuthRequired } from '@/config/appConfig';
 import { useCertificates } from '@/hooks/useCertificates';
 
 const Certificates = () => {
@@ -22,7 +23,7 @@ const Certificates = () => {
     );
   }
 
-  if (!user) {
+  if (isAuthRequired() && !user) {
     return <Navigate to="/login" replace />;
   }
 

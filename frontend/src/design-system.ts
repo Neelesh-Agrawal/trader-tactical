@@ -78,13 +78,13 @@ export const levelColors = {
   },
   advanced: {
     name: 'Advanced',
-    primary: 'hsl(270, 70%, 55%)',
-    light: 'hsl(270, 70%, 55% / 0.1)',
-    lighter: 'hsl(270, 70%, 55% / 0.05)',
-    border: 'hsl(270, 70%, 55% / 0.3)',
-    borderHover: 'hsl(270, 70%, 55% / 0.5)',
-    text: 'hsl(270, 70%, 55%)',
-    icon: 'hsl(270, 70%, 55%)',
+    primary: 'hsl(var(--success))',
+    light: 'hsl(var(--success) / 0.1)',
+    lighter: 'hsl(var(--success) / 0.05)',
+    border: 'hsl(var(--success) / 0.3)',
+    borderHover: 'hsl(var(--success) / 0.5)',
+    text: 'hsl(var(--success))',
+    icon: 'hsl(var(--success))',
   },
 } as const;
 
@@ -119,59 +119,50 @@ export const statsColors = {
  * Consistent typography across the platform
  */
 export const fontFamilies = {
-  display: '"Libre Baskerville", Georgia, serif',
-  body: '"Lora", Georgia, serif',
-  ui: '"Work Sans", system-ui, sans-serif',
+  display: '"Manrope", system-ui, sans-serif',
+  body: '"Inter", system-ui, sans-serif',
+  ui: '"Inter", system-ui, sans-serif',
   mono: '"JetBrains Mono", monospace',
 } as const;
 
-/**
- * Typography Scale
- * Consistent text sizes for all components
- */
 export const typography = {
-  // Display Text (Headlines, Hero sections)
   display: {
-    xl: 'text-5xl md:text-6xl',      // 48px -> 60px
-    lg: 'text-4xl md:text-5xl',      // 36px -> 48px
-    md: 'text-3xl md:text-4xl',      // 30px -> 36px
-    sm: 'text-2xl md:text-3xl',      // 24px -> 30px
+    xl: 'text-[32px] md:text-[40px] leading-[1.1]',
+    lg: 'text-[30px] md:text-[40px] leading-[1.1]',
+    md: 'text-[24px] md:text-[32px] leading-[1.15]',
+    sm: 'text-[20px] md:text-[26px] leading-[1.2]',
   },
-  
-  // Headings (Section titles, Card titles)
+
   heading: {
-    h1: 'text-3xl sm:text-4xl',      // 30px -> 36px
-    h2: 'text-2xl sm:text-3xl',      // 24px -> 30px
-    h3: 'text-xl sm:text-2xl',       // 20px -> 24px
-    h4: 'text-lg sm:text-xl',        // 18px -> 20px
-    h5: 'text-base sm:text-lg',      // 16px -> 18px
-    h6: 'text-sm sm:text-base',      // 14px -> 16px
+    h1: 'text-[26px] md:text-[40px]',
+    h2: 'text-[20px] md:text-[30px]',
+    h3: 'text-[17px] md:text-[20px]',
+    h4: 'text-[15px] md:text-[17px]',
+    h5: 'text-[14px] md:text-[15px]',
+    h6: 'text-[13px] md:text-[14px]',
   },
-  
-  // Body Text
+
   body: {
-    xl: 'text-xl',                    // 20px
-    lg: 'text-lg',                    // 18px
-    md: 'text-base',                  // 16px
-    sm: 'text-sm',                    // 14px
-    xs: 'text-xs',                    // 12px
+    xl: 'text-[16px]',
+    lg: 'text-[15px]',
+    md: 'text-[14px]',
+    sm: 'text-[13px]',
+    xs: 'text-[11px]',
   },
-  
-  // UI Text (Buttons, Labels, Badges)
+
   ui: {
-    lg: 'text-base md:text-lg',      // 16px -> 18px
-    md: 'text-sm md:text-base',      // 14px -> 16px
-    sm: 'text-xs sm:text-sm',        // 12px -> 14px
-    xs: 'text-[10px] sm:text-xs',    // 10px -> 12px
+    lg: 'text-[15px]',
+    md: 'text-[14px]',
+    sm: 'text-[13px]',
+    xs: 'text-[11px]',
   },
-  
-  // Monospace (Data, Code, Stats)
+
   mono: {
-    xl: 'text-2xl sm:text-3xl',      // 24px -> 30px
-    lg: 'text-xl sm:text-2xl',       // 20px -> 24px
-    md: 'text-base sm:text-lg',      // 16px -> 18px
-    sm: 'text-sm',                    // 14px
-    xs: 'text-xs',                    // 12px
+    xl: 'text-[20px]',
+    lg: 'text-[17px]',
+    md: 'text-[15px]',
+    sm: 'text-[13px]',
+    xs: 'text-[11px]',
   },
 } as const;
 

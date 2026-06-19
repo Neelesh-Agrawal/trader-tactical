@@ -1,32 +1,26 @@
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '@/hooks/useProgress';
-import { useEnrollment } from '@/hooks/useEnrollment';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { CheckCircle, Clock, BookOpen, Lock, ArrowRight, ChevronLeft } from 'lucide-react';
+import { CheckCircle, Lock, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Level } from '@/hooks/useCourses';
 
 interface LevelOverviewProps {
   level: Level;
-  onModuleSelect: (moduleId: string) => void;
   onLessonSelect: (moduleId: string, lessonId: string) => void;
 }
 
-export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOverviewProps) => {
+export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => {
   const navigate = useNavigate();
-  const { isModuleUnlocked, isModuleCompleted, isLessonCompleted } = useProgress();
-  const { getEnrollment, getRemainingDays } = useEnrollment();
-
-  const enrollment = getEnrollment(level.id);
-  const remainingDays = enrollment ? getRemainingDays(level.id) : null;
+  const { isModuleUnlocked, isModuleCompleted, isLessonCompleted, isLevelCompleted } = useProgress();
 
   const getModuleProgress = (moduleId: string) => {
     const module = level.modules.find(m => m.id === moduleId);
     if (!module) return { completed: 0, total: 0, percent: 0 };
-    
+
     let completed = 0;
     module.lessons.forEach(lesson => {
       if (isLessonCompleted(level.id, moduleId, lesson.id)) completed++;
@@ -38,11 +32,19 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
     };
   };
 
-  const getModuleStatus = (moduleId: string) => {
+  const getModuleStatus = (moduleId: string, moduleUnlockedFromApi?: boolean) => {
+    if (moduleUnlockedFromApi) {
+      const isComplete = isModuleCompleted(level.id, moduleId);
+      if (isComplete) return 'completed';
+      const { percent } = getModuleProgress(moduleId);
+      if (percent > 0) return 'in-progress';
+      return 'available';
+    }
+
     const isUnlocked = isModuleUnlocked(level.id, moduleId);
     const isComplete = isModuleCompleted(level.id, moduleId);
     const { percent } = getModuleProgress(moduleId);
-    
+
     if (isComplete) return 'completed';
     if (isUnlocked && percent > 0) return 'in-progress';
     if (isUnlocked) return 'available';
@@ -58,6 +60,7 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
   const allModulesCompleted =
     level.modules.length > 0 &&
     level.modules.every(module => isModuleCompleted(level.id, module.id));
+  const levelComplete = isLevelCompleted(level.id);
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-fade-in">
@@ -71,21 +74,14 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
           <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           <span className="text-sm sm:text-base font-medium">Back to Dashboard</span>
         </button>
-        
+
         <Breadcrumb items={[{ label: `${levelDisplayName} Level` }]} />
       </div>
 
       {/* Level Header */}
       <div className="text-center pb-6 sm:pb-8 border-b border-border">
-        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2 capitalize text-foreground">{level.id} Level</h1>
-        <p className="font-body text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2 leading-relaxed">{level.description}</p>
-        
-        {enrollment && remainingDays !== null && remainingDays > 0 && (
-          <div className="inline-flex items-center gap-2 mt-4 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-warning/10 border border-warning/20 text-warning text-sm">
-            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
-            <span className="font-medium">{remainingDays} days remaining</span>
-          </div>
-        )}
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2 capitalize text-foreground">{level.title}</h1>
+
       </div>
 
       {/* Stats Row */}
@@ -111,12 +107,12 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
       {/* Module Accordion */}
       <div className="space-y-4">
         <h2 className="font-ui text-lg sm:text-xl font-semibold">Modules</h2>
-        
+
         <Accordion type="single" collapsible className="space-y-3">
-          {level.modules.map((module, index) => {
-            const status = getModuleStatus(module.id);
+          {level.modules.map((module) => {
+            const status = getModuleStatus(module.id, module.is_unlocked);
             const progress = getModuleProgress(module.id);
-            const isUnlocked = status !== 'locked';
+            const isUnlocked = module.is_unlocked || status !== 'locked';
 
             return (
               <AccordionItem
@@ -179,11 +175,12 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
                     {module.lessons.map((lesson, lessonIndex) => {
                       const isCompleted = isLessonCompleted(level.id, module.id, lesson.id);
                       const readingTime = getLessonReadingTime(lesson.content);
-                      
+
                       // Determine if lesson is accessible
                       let isAccessible = false;
                       if (isUnlocked) {
-                        if (lessonIndex === 0) isAccessible = true;
+                        if (lesson.is_unlocked) isAccessible = true;
+                        else if (lessonIndex === 0) isAccessible = true;
                         else {
                           const prevLesson = module.lessons[lessonIndex - 1];
                           if (prevLesson && isLessonCompleted(level.id, module.id, prevLesson.id)) {
@@ -272,29 +269,44 @@ export const LevelOverview = ({ level, onModuleSelect, onLessonSelect }: LevelOv
             🏆
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-ui text-lg sm:text-xl font-semibold mb-1">Final Assessment</h3>
+            <h3 className="font-ui text-lg sm:text-xl font-semibold mb-1">
+              {levelComplete ? 'Level Completed! 🎉' : 'Final Assessment'}
+            </h3>
             <p className="font-body text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-              Complete all modules to unlock the final assessment and earn your certificate.
+              {levelComplete
+                ? "Congratulations! You have completed all modules and passed the level assessment. Claim your certificate now."
+                : "Complete all modules to unlock the final assessment and earn your certificate."}
             </p>
-            <Button
-              variant={allModulesCompleted ? 'default' : 'secondary'}
-              className="gap-2 h-9 sm:h-10 text-xs sm:text-sm touch-manipulation"
-              disabled={!allModulesCompleted}
-              onClick={() => navigate(`/quiz/level/${level.id}`)}
-            >
-              {allModulesCompleted ? (
-                <>
-                  <ArrowRight className="h-4 w-4" />
-                  Take Level Quiz
-                </>
-              ) : (
-                <>
-                  <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Complete all modules to unlock</span>
-                  <span className="sm:hidden">Locked</span>
-                </>
-              )}
-            </Button>
+            {levelComplete ? (
+              <Button
+                variant="default"
+                className="gap-2 h-9 sm:h-10 text-xs sm:text-sm touch-manipulation bg-success hover:bg-success/90 text-white"
+                onClick={() => navigate(`/level/${level.id}/final`)}
+              >
+                <ArrowRight className="h-4 w-4" />
+                Claim Certificate
+              </Button>
+            ) : (
+              <Button
+                variant={allModulesCompleted ? 'default' : 'secondary'}
+                className="gap-2 h-9 sm:h-10 text-xs sm:text-sm touch-manipulation"
+                disabled={!allModulesCompleted}
+                onClick={() => navigate(`/quiz/level/${level.id}`)}
+              >
+                {allModulesCompleted ? (
+                  <>
+                    <ArrowRight className="h-4 w-4" />
+                    Take Level Quiz
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Complete all modules to unlock</span>
+                    <span className="sm:hidden">Locked</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
