@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 # Same OTP copy as trader-tactical (DLT-approved for ANTSPL / Fortius template).
 OTP_SMS_TEMPLATE = (
-    "Your TradeMaster verification code is: {otp}. This code expires in 5 minutes."
+    "{otp} is your login OTP and is valid for 10 minutes. Do not share this with anyone. Team Ananta"
 )
 
 
@@ -21,7 +21,9 @@ def _normalize_mobile_fortius(phone_number: str) -> str:
     digits = re.sub(r"\D", "", phone_number)
     if len(digits) == 10:
         return f"91{digits}"
-    return digits
+    else:
+        logger.error(digits[2:])
+        return digits[2:]
 
 
 def _send_sms_moplet(phone_number: str, message: str) -> bool:
@@ -70,7 +72,7 @@ def _send_sms_fortius(phone_number: str, message: str) -> bool:
         params = {
             "apikey": api_key,
             "senderid": sender_id,
-            "mobile": _normalize_mobile_fortius(phone_number),
+            "number": _normalize_mobile_fortius(phone_number),
             "message": message,
         }
         if template_id:
@@ -104,8 +106,8 @@ def send_sms(phone_number: str, message: str) -> bool:
     """
     Send SMS — Moplet first (trader-tactical), then Fortius if configured.
     """
-    if _send_sms_moplet(phone_number, message):
-        return True
+    # if _send_sms_moplet(phone_number, message):
+    #     return True
 
     if _send_sms_fortius(phone_number, message):
         return True

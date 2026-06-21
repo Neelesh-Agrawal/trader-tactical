@@ -226,11 +226,15 @@ const Register = () => {
     setPhoneOtpError('');
     
     try {
-      const response = await apiFetch<{ message: string; otp?: string }>('/api/auth/send-otp/', {
+      const response = await apiFetch<{ message: string; otp?: string; user_exists?: boolean }>('/api/auth/send-otp/', {
         method: 'POST',
         auth: false,
         body: JSON.stringify({ phone: normalizedPhone }),
       });
+
+      if (response.user_exists) {
+        throw new Error('An account with this phone number already exists. Please sign in instead.');
+      }
       
       setPhoneResendTimer(60);
       const timer = setInterval(() => {
@@ -285,11 +289,15 @@ const Register = () => {
     setEmailOtpError('');
     
     try {
-      const response = await apiFetch<{ message: string; otp?: string }>('/api/auth/send-email-otp/', {
+      const response = await apiFetch<{ message: string; otp?: string; email_exists?: boolean }>('/api/auth/send-email-otp/', {
         method: 'POST',
         auth: false,
         body: JSON.stringify({ email: formData.email.toLowerCase() }),
       });
+
+      if (response.email_exists) {
+        throw new Error('An account with this email already exists. Please sign in instead.');
+      }
       
       setEmailResendTimer(60);
       const timer = setInterval(() => {

@@ -25,6 +25,10 @@ from .sms import send_otp_sms
 from .email import send_email_otp, send_password_reset_otp
 
 
+def should_expose_debug_otp():
+    return getattr(settings, "DEBUG", False) and getattr(settings, "APP_MODE", "PROD") == "DEV"
+
+
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
@@ -124,7 +128,7 @@ class SendOTPView(APIView):
 
         if not sent:
             # In development mode, return OTP in response for testing
-            if getattr(settings, "DEBUG", False):
+            if should_expose_debug_otp():
                 return Response(
                     {
                         "message": "OTP sent (development mode)",
@@ -234,6 +238,7 @@ class SendEmailOTPView(APIView):
             )
 
         email = email.lower().strip()
+        email_exists = User.objects.filter(email=email).exists()
 
         # Delete any existing unverified OTPs for this email
         EmailVerification.objects.filter(email=email, verified=False).delete()
@@ -249,11 +254,12 @@ class SendEmailOTPView(APIView):
         sent = send_email_otp(email, otp)
 
         if not sent:
-            if getattr(settings, "DEBUG", False):
+            if should_expose_debug_otp():
                 return Response(
                     {
                         "message": "OTP sent (development mode)",
                         "otp": otp,
+                        "email_exists": email_exists,
                     }
                 )
             return Response(
@@ -262,7 +268,7 @@ class SendEmailOTPView(APIView):
             )
 
         logger.info(f"SendEmailOTPView: Successfully sent email OTP to {email}")
-        return Response({"message": "OTP sent successfully"})
+        return Response({"message": "OTP sent successfully", "email_exists": email_exists})
 
 
 class VerifyEmailOTPView(APIView):
@@ -354,7 +360,7 @@ class SendPasswordResetOTPView(APIView):
         PasswordResetOTP.objects.create(email=email, otp=otp, expires_at=expires_at)
 
         sent = send_password_reset_otp(email, otp)
-        if not sent and getattr(settings, "DEBUG", False):
+        if not sent and should_expose_debug_otp():
             response_data["otp"] = otp
 
         logger.info(f"SendPasswordResetOTPView: OTP requested for user {user.id}")

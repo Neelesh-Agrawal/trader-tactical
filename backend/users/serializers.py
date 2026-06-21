@@ -27,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             "first_name": {"required": True},
-            "last_name": {"required": True},
+            "last_name": {"required": False, "allow_blank": True},
             "phone": {"required": True},
         }
 
@@ -37,7 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=validated_data["password"],
             first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
+            last_name=validated_data.get("last_name", ""),
             phone=validated_data["phone"],
             occupation=validated_data.get("occupation"),
             sex=validated_data.get("sex", "N"),

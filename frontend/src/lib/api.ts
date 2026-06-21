@@ -70,9 +70,11 @@ export async function apiFetch<T>(
       const data = await response.json();
       details = data;
 
-      // Common DRF error shapes: { detail: "..." } or field errors
-      if (typeof data === 'object' && data && 'detail' in data) {
-        message = (data as { detail: string }).detail;
+      if (typeof data === 'object' && data) {
+        const extractedMessage = extractApiErrorMessage(data);
+        if (extractedMessage) {
+          message = extractedMessage;
+        }
       }
     } catch {
       // Ignore JSON parse errors, keep default message
@@ -94,3 +96,44 @@ export async function apiFetch<T>(
   return (await response.json()) as T;
 }
 
+function extractApiErrorMessage(data: Record<string, unknown>): string | null {
+  if (typeof data.detail === 'string' && data.detail.trim()) {
+    return data.detail;
+  }
+
+  if (typeof data.error === 'string' && data.error.trim()) {
+    return data.error;
+  }
+
+  if (Array.isArray(data.non_field_errors) && data.non_field_errors.length > 0) {
+    const firstError = data.non_field_errors[0];
+    if (typeof firstError === 'string' && firstError.trim()) {
+      return firstError;
+    }
+  }
+
+  for (const [field, value] of Object.entries(data)) {
+    if (field === 'detail' || field === 'error' || field === 'non_field_errors') {
+      continue;
+    }
+
+    if (Array.isArray(value) && value.length > 0) {
+      const firstError = value[0];
+      if (typeof firstError === 'string' && firstError.trim()) {
+        return `${formatErrorField(field)}: ${firstError}`;
+      }
+    }
+
+    if (typeof value === 'string' && value.trim()) {
+      return `${formatErrorField(field)}: ${value}`;
+    }
+  }
+
+  return null;
+}
+
+function formatErrorField(field: string): string {
+  return field
+    .replace(/_/g, ' ')
+    .replace(/^./, (character) => character.toUpperCase());
+}
