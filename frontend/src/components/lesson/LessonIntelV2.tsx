@@ -1,5 +1,6 @@
 import { Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { normalizeRichHtml } from './html';
 
 interface LessonIntelV2Props {
   content: string;
@@ -19,12 +20,12 @@ export const LessonIntelV2 = ({ content }: LessonIntelV2Props) => {
 
   // Render HTML content directly from CKEditor
   if (isHtml) {
-    return (
-      <div 
-        className="lesson-content ck-content"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
-    );
+      return (
+        <div 
+          className="lesson-content ck-content"
+          dangerouslySetInnerHTML={{ __html: normalizeRichHtml(content) }}
+        />
+      );
   }
 
   // Original plain text rendering

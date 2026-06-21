@@ -6,6 +6,7 @@ LEVEL_CHOICES = [
     ("Beginner", "Beginner"),
     ("Intermediate", "Intermediate"),
     ("Advanced", "Advanced"),
+    ("NISM", "NISM")
 ]
 
 User = settings.AUTH_USER_MODEL

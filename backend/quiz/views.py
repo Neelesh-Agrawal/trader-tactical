@@ -132,6 +132,12 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet):
 
         correct_count = 0
         total_questions = quiz.questions.count()
+        correct_answers = {}
+
+        for question in quiz.questions.prefetch_related("options"):
+            correct_option = question.options.filter(is_correct=True).first()
+            if correct_option:
+                correct_answers[str(question.id)] = correct_option.id
 
         for question_id, option_id in answers.items():
             try:
@@ -153,7 +159,9 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet):
         if passed and quiz.quiz_type == "level" and quiz.level:
             maybe_issue_level_certificate(request.user, quiz.level)
 
-        return Response(QuizAttemptSerializer(attempt).data)
+        response_data = QuizAttemptSerializer(attempt).data
+        response_data["correct_answers"] = correct_answers
+        return Response(response_data)
 
     @action(detail=True, methods=["get"])
     def user_attempts(self, request, pk=None):

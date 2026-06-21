@@ -1,4 +1,5 @@
 import { Target } from 'lucide-react';
+import { normalizeRichHtml } from './html';
 
 interface LessonObjectivesProps {
   objective: string;
@@ -25,7 +26,7 @@ export const LessonObjectives = ({ objective, keyTakeaways }: LessonObjectivesPr
       {objective && (
         <div
           className="lesson-content ck-content mb-5"
-          dangerouslySetInnerHTML={{ __html: objective }}
+          dangerouslySetInnerHTML={{ __html: normalizeRichHtml(objective) }}
         />
       )}
 

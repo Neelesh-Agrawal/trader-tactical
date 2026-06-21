@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -10,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Flame, Moon, Sun, User, LogOut, ChevronDown, Menu, X, Award } from 'lucide-react';
+import { Flame, User, LogOut, ChevronDown, Menu, X, Award } from 'lucide-react';
 
 interface HeaderProps {
   showAuth?: boolean;
@@ -22,7 +21,6 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   const { user, profile, streak, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('#levels');
 
@@ -139,17 +137,6 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
               <span className="mono text-xs sm:text-sm font-medium">{streak.current_streak}</span>
             </div>
           )}
-
-          {/* Theme Toggle */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full h-9 w-9 sm:h-10 sm:w-10 touch-manipulation"
-            onClick={toggleTheme}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDark ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />}
-          </Button>
 
           {user && profile ? (
             <DropdownMenu>

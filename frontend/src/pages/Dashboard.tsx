@@ -9,7 +9,7 @@ import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { Target, TrendingUp, BookOpen, CheckCircle, ArrowRight, Lock, Check, Download, ExternalLink } from 'lucide-react';
 import { AnimatedSection } from '@/components/landing/AnimatedSection';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
-import { courseConfig, nismConfig, siteConfig } from '@/config/courseConfig';
+import { courseConfig, courseConfigList, nismConfig, siteConfig } from '@/config/courseConfig';
 import type { Level } from '@/hooks/useCourses';
 
 const Dashboard = () => {
@@ -30,6 +30,7 @@ const Dashboard = () => {
   };
 
   const currentLevel = getCurrentLevel();
+  const backendLevelsById = new Map(levels.map((level) => [level.id, level]));
 
   const completedLessons = (lessonProgress || []).filter((l) => l.completed).length;
 
@@ -169,26 +170,26 @@ const Dashboard = () => {
               </div>
             )}
 
-            {!coursesLoading && levels.map((level, index) => {
-              const levelId = level.id;
-              const status = getLevelStatus(level);
+            {!coursesLoading && courseConfigList.map((config, index) => {
+              const level = backendLevelsById.get(config.id);
+              const levelId = config.id;
+              const status = level ? getLevelStatus(level) : 'locked';
               const isLocked = status === 'locked';
               const isCompleted = status === 'completed';
               const isActive = status === 'active';
-              const progress = getLevelProgressPercent(level);
+              const progress = level ? getLevelProgressPercent(level) : 0;
               const cardLink = `/level/${levelId}`;
 
-              const config = courseConfig[levelId as 'beginner' | 'intermediate' | 'advanced'];
-              const title = level.title || config?.title || levelId;
-              const description = config?.description ?? '';
-              const modules = level.modules;
-              const price = config ? `₹${config.price}` : '';
-              const emoji = config?.emoji ?? '📚';
-              const badge = config?.badge ?? `Level ${level.order}`;
-              const bestFor = config?.bestFor ?? '';
+              const title = level?.title || config.name || levelId;
+              const description = config.description ?? '';
+              const modules = level?.modules ?? config.points.map((point, pointIndex) => ({ id: `${config.id}-${pointIndex}`, title: point }));
+              const price = `₹${config.price}`;
+              const emoji = config.emoji ?? '📚';
+              const badge = config.badge ?? `Level ${config.number}`;
+              const bestFor = config.bestFor ?? '';
 
               return (
-                <AnimatedSection key={level.id} direction="up" delay={120 + index * 100}>
+                <AnimatedSection key={config.id} direction="up" delay={120 + index * 100}>
                   <div
                     className={`db-card relative flex flex-col h-full rounded-2xl border p-6 bg-card transition-all duration-300 ${
                       isCompleted ? 'border-success/40 shadow-md' :
@@ -307,7 +308,7 @@ const Dashboard = () => {
 
                     {/* CTA */}
                     <a
-                      href={isLocked ? `/pricing?level=${level.id}` : cardLink}
+                       href={isLocked ? `/pricing?level=${config.id}` : cardLink}
                       className={`db-cta-btn mt-auto inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
                         isLocked
                           ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'

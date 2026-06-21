@@ -4,7 +4,7 @@ import { ProgressRing } from '@/components/ui/progress-ring';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { CheckCircle, Lock, ArrowRight, ChevronLeft } from 'lucide-react';
+import { CheckCircle, Lock, ArrowRight, ChevronLeft, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Level } from '@/hooks/useCourses';
 

@@ -1,6 +1,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { HelpCircle } from 'lucide-react';
 import { AnimatedSection } from '@/components/landing/AnimatedSection';
+import { normalizeRichHtml } from './html';
 
 interface FAQ {
   question: string;
@@ -32,7 +33,10 @@ export const LessonFAQs = ({ faqs }: LessonFAQsProps) => {
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-3 sm:pb-4 text-sm sm:text-base">
-                {faq.answer}
+                <div
+                  className="lesson-content ck-content"
+                  dangerouslySetInnerHTML={{ __html: normalizeRichHtml(faq.answer) }}
+                />
               </AccordionContent>
             </AccordionItem>
           ))}

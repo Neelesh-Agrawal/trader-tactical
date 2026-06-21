@@ -17,14 +17,15 @@ export const LessonActions = ({
 }: LessonActionsProps) => {
   return (
     <AnimatedSection>
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8 sm:mt-12 pb-6 sm:pb-8">
+      <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pb-6 sm:mt-12 sm:pb-8">
         {!isCompleted ? (
           <Button 
             size="lg" 
+            variant="success"
             onClick={onStartQuiz} 
             className="gap-2 text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 touch-manipulation w-full sm:w-auto"
           >
-            Begin Execution (Quiz) <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+            Start Lesson Quiz <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         ) : (
           <>

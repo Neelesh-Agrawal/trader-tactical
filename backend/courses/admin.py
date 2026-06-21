@@ -6,6 +6,7 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.urls import reverse
 from django.utils.html import format_html
+from django_ckeditor_5.widgets import CKEditor5Widget
 from quiz.models import Quiz, Question, Option
 
 from .models import (
@@ -21,8 +22,49 @@ logger = logging.getLogger(__name__)
 logger.info("courses.admin loaded")
 
 
+class CourseAdminForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = "__all__"
+        widgets = {
+            "description": CKEditor5Widget(config_name="default"),
+        }
+
+
+class ModuleAdminForm(forms.ModelForm):
+    class Meta:
+        model = Module
+        fields = "__all__"
+        widgets = {
+            "description": CKEditor5Widget(config_name="default"),
+        }
+
+
+class LessonAdminForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = "__all__"
+        widgets = {
+            "lesson_objective": CKEditor5Widget(config_name="default"),
+            "content": CKEditor5Widget(config_name="default"),
+            "common_mistakes": CKEditor5Widget(config_name="default"),
+            "key_takeaway": CKEditor5Widget(config_name="default"),
+            "practical_task": CKEditor5Widget(config_name="default"),
+        }
+
+
+class LessonFAQAdminForm(forms.ModelForm):
+    class Meta:
+        model = LessonFAQ
+        fields = "__all__"
+        widgets = {
+            "answer": CKEditor5Widget(config_name="default"),
+        }
+
+
 class LessonFAQInline(nested_admin.NestedStackedInline):
     model = LessonFAQ
+    form = LessonFAQAdminForm
     extra = 1
 
 
@@ -126,6 +168,7 @@ class LessonQuizInline(nested_admin.NestedStackedInline):
 
 @admin.register(Lesson)
 class LessonAdmin(nested_admin.NestedModelAdmin):
+    form = LessonAdminForm
     list_display = ("title", "module", "order")
     list_filter = ("module__level", "module")
     ordering = ("module", "order")
@@ -215,6 +258,7 @@ class LessonAdmin(nested_admin.NestedModelAdmin):
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
+    form = ModuleAdminForm
     list_display = ("title", "level", "order")
     list_filter = ("level",)
     ordering = ("level", "order")
@@ -229,6 +273,7 @@ class LevelAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
+    form = CourseAdminForm
     list_display = ("title", "is_published", "created_at")
     list_filter = ("is_published",)
     search_fields = ("title",)

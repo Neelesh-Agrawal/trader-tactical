@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useSearchParams, Navigate } from 'react-router-dom';
+import { useParams, useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isAuthRequired } from '@/config/appConfig';
 import { useProgress } from '@/hooks/useProgress';
@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 const Level = () => {
   const { levelId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { loading: progressLoading } = useProgress();
   const { loading: coursesLoading, error: coursesError, getLevelById, getModuleById, getLessonById, fetchLessonDetail } = useCourses();
@@ -131,7 +132,7 @@ const Level = () => {
               Run: python manage.py seed_course
             </p>
             <button
-              onClick={() => window.location.assign('/dashboard')}
+              onClick={() => navigate('/dashboard')}
               className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-primary-foreground"
             >
               Back to Dashboard

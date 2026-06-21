@@ -205,9 +205,9 @@ export const useCourses = () => {
 
         const mappedLevels: Level[] = levelsData.map((l) => {
           const levelSlug =
-            levelIdByBackendId[l.id] ||
-            levelSlugByOrder[l.order] ||
             levelSlugByTitle[l.title] ||
+            levelSlugByOrder[l.order] ||
+            levelIdByBackendId[l.id] ||
             String(l.id);
 
           return {
@@ -334,7 +334,7 @@ export const useCourses = () => {
       idValue =
         typeof levelId === 'number'
           ? levelId
-          : levelMap[String(levelId)] || getBackendLevelId(String(levelId));
+          : getBackendLevelId(String(levelId)) || levelMap[String(levelId)];
     } else {
       console.error('Invalid quiz type or missing ID');
       return null;

@@ -333,7 +333,9 @@
   .ck-content strong { @apply font-bold text-foreground; }
   .ck-content em { @apply italic; }
   .ck-content a { @apply text-primary underline; }
-  .ck-content table { @apply w-full mb-4 border-collapse; }
+  .ck-content figure { @apply block w-full max-w-full mb-6; }
+  .ck-content figure.table { @apply block w-full clear-both mb-8 overflow-x-auto; }
+  .ck-content table { @apply block w-full max-w-full mb-8 border-collapse; }
   .ck-content td, .ck-content th { @apply border border-border p-2; }
   .ck-content th { @apply bg-muted font-bold; }
   .ck-content hr { @apply my-6 border-border; }

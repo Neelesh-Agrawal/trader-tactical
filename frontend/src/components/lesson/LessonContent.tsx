@@ -9,9 +9,11 @@ import { JumpToQuizButton } from './JumpToQuizButton';
 import { ReadingTimeRemaining } from './ReadingTimeRemaining';
 import { LessonObjectives } from './LessonObjectives';
 import { LessonIntelV2 } from './LessonIntelV2';
+import { extractParagraphText } from './html';
 import { LessonKeyTakeaways } from './LessonKeyTakeaways';
+import { Button } from '@/components/ui/button';
 import { 
-  ChevronLeft, Clock, BookOpen
+  ChevronLeft, Clock, BookOpen, ArrowRight
 } from 'lucide-react';
 import type { Lesson, Module } from '@/hooks/useCourses';
 
@@ -29,9 +31,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
   const { isLessonCompleted } = useProgress();
   const quizRef = useRef<HTMLDivElement>(null);
 
-  const keyTakeaways = lesson.key_takeaway
-    ? [lesson.key_takeaway.replace(/<[^>]*>/g, '').trim()].filter(Boolean)
-    : [];
+  const keyTakeaways = extractParagraphText(lesson.key_takeaway);
   const faqs = lesson.faqs || [];
 
   const isCompleted = isLessonCompleted(levelId, module.id, lesson.id);
@@ -117,6 +117,21 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
 
         {/* FAQs */}
         <LessonFAQs faqs={faqs} />
+
+        <div className="mb-6 flex flex-col items-center gap-3 text-center">
+          <p className="text-sm text-muted-foreground">
+            {isCompleted ? 'Quiz completed. You can retake it anytime.' : 'Ready when you are: take the lesson quiz.'}
+          </p>
+          <Button
+            size="lg"
+            variant={isCompleted ? 'outline' : 'success'}
+            onClick={handleStartQuiz}
+            className="gap-2 w-full sm:w-auto"
+          >
+            {isCompleted ? 'Retake Quiz' : 'Start Lesson Quiz'}
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          </Button>
+        </div>
 
         {/* Action Buttons */}
         <div ref={quizRef}>

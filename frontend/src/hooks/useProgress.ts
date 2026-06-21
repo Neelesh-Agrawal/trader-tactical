@@ -62,7 +62,7 @@ const getLevelIdInt = (levelId: string): number => {
     intermediate: 2,
     advanced: 3,
   };
-  return levelMap[levelId] || getBackendLevelId(levelId) || parseInt(levelId, 10);
+  return getBackendLevelId(levelId) || levelMap[levelId] || parseInt(levelId, 10);
 };
 
 const getModuleIdInt = (moduleId: string): number => {

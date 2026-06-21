@@ -12,7 +12,7 @@ const Quiz = () => {
   const { quizType, levelId, moduleId, lessonId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const { getCooldownRemaining, loading: progressLoading } = useProgress();
-  const { fetchQuiz, loading: coursesLoading } = useCourses();
+  const { fetchQuiz, getModuleById, loading: coursesLoading } = useCourses();
   const navigate = useNavigate();
   const [accepted, setAccepted] = useState(false);
   const [cooldown, setCooldown] = useState(0);
@@ -95,16 +95,27 @@ const Quiz = () => {
   const quizInfo = quizData.quizInfo;
   let returnPath = '/dashboard';
   let quizTitle = '';
+  let continuePath = '/dashboard';
+  let continueLabel = 'Continue Learning';
 
   if (quizType === 'lesson' && moduleId && lessonId) {
     returnPath = `/lesson/${levelId}/${moduleId}/${lessonId}`;
     quizTitle = 'Lesson Quiz';
+    const module = getModuleById(levelId, moduleId);
+    const currentLessonIndex = module?.lessons.findIndex((lesson) => lesson.id === lessonId) ?? -1;
+    const nextLesson = currentLessonIndex >= 0 ? module?.lessons[currentLessonIndex + 1] : undefined;
+    continuePath = nextLesson
+      ? `/lesson/${levelId}/${moduleId}/${nextLesson.id}`
+      : `/module/${levelId}/${moduleId}`;
+    continueLabel = nextLesson ? 'Next Lesson' : 'Back to Module';
   } else if (quizType === 'module' && moduleId) {
     returnPath = `/module/${levelId}/${moduleId}`;
     quizTitle = 'Module Final';
+    continuePath = returnPath;
   } else if (quizType === 'level') {
     returnPath = '/dashboard';
     quizTitle = 'Level Assessment';
+    continuePath = returnPath;
   }
 
   if (questions.length === 0) {
@@ -198,6 +209,8 @@ const Quiz = () => {
       moduleId={moduleId}
       lessonId={lessonId}
       returnPath={returnPath}
+      continuePath={continuePath}
+      continueLabel={continueLabel}
       quizId={quizInfo.id}
       passPercentage={quizInfo.passPercentage}
       timePerQuestion={quizInfo.timeLimit}

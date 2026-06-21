@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Check, ChevronDown, Moon, Sun, BookOpen, Download, ExternalLink } from 'lucide-react';
+import { Check, ChevronDown, BookOpen, Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/hooks/useTheme';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { courseConfigList, courseConfig, nismConfig, pricingFaqConfig } from '@/config/courseConfig';
 import { CourseLevelCard } from '@/components/course/CourseLevelCard';
@@ -29,7 +28,6 @@ const FAQItem = ({ q, a }: { q: string; a: string }) => {
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { isDark, toggleTheme } = useTheme();
   const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
 
   return (
@@ -79,13 +77,6 @@ const Pricing = () => {
           <img src={logoSrc} alt="Easy Option Learning" className="h-8 w-8 object-contain rounded-lg" />
           <span className="font-bold text-sm text-foreground hidden sm:inline">Easy Option Learning</span>
         </Link>
-        <button
-          onClick={toggleTheme}
-          className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-success/40 transition-all duration-200"
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </button>
       </div>
 
       {/* ── HERO ── */}

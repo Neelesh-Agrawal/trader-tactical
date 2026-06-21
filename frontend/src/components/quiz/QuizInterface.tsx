@@ -16,6 +16,8 @@ interface QuizInterfaceProps {
   moduleId?: string;
   lessonId?: string;
   returnPath: string;
+  continuePath?: string;
+  continueLabel?: string;
   quizId?: number;
   passPercentage?: number;
   timePerQuestion?: number;
@@ -28,6 +30,8 @@ export const QuizInterface = ({
   moduleId,
   lessonId,
   returnPath,
+  continuePath = returnPath,
+  continueLabel = 'Continue Learning',
   quizId,
   passPercentage = 80,
   timePerQuestion = 45
@@ -51,6 +55,7 @@ export const QuizInterface = ({
     invalidationReason,
     score,
     passed,
+    correctAnswers,
     progress,
     isLastQuestion,
     questions: shuffledQuestions,
@@ -196,7 +201,10 @@ export const QuizInterface = ({
           <div className="text-left mb-8 max-h-64 overflow-y-auto scrollbar-tactical">
             {shuffledQuestions.map((q, idx) => {
               const userAnswer = answers[idx];
-              const isCorrectAnswer = userAnswer === q.correctIndex;
+              const selectedOptionId = userAnswer !== null ? parseInt(q.options[userAnswer]?.id || '0', 10) : null;
+              const correctOptionId = correctAnswers[q.id];
+              const correctOption = q.options.find((option) => parseInt(option.id, 10) === correctOptionId);
+              const isCorrectAnswer = selectedOptionId !== null && selectedOptionId === correctOptionId;
 
               return (
                 <div key={q.id} className={`p-4 mb-2 rounded-lg ${isCorrectAnswer ? 'bg-success/10' : 'bg-destructive/10'}`}>
@@ -210,7 +218,7 @@ export const QuizInterface = ({
                       <p className="text-sm font-medium mb-1">{q.question}</p>
                       {!isCorrectAnswer && (
                         <p className="text-xs text-muted-foreground">
-                          Correct: {q.options[q.correctIndex]?.text}
+                          Correct: {correctOption?.text || 'Unavailable'}
                         </p>
                       )}
                     </div>
@@ -231,12 +239,12 @@ export const QuizInterface = ({
                   if (quizType === 'level') {
                     navigate(`/level/${levelId}/final`);
                   } else {
-                    navigate(returnPath);
+                    navigate(continuePath);
                   }
                 }}
                 className="gap-2"
               >
-                {quizType === 'level' ? 'Claim Certificate' : 'Continue Learning'}
+                {quizType === 'level' ? 'Claim Certificate' : continueLabel}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (

@@ -12,8 +12,9 @@ interface QuizState {
   isInvalidated: boolean;
   invalidationReason: string | null;
   score: number;
-  passed: boolean;
-  startTime: number;
+    passed: boolean;
+    startTime: number;
+    correctAnswers: Record<string, number>;
 }
 
 interface UseQuizOptions {
@@ -82,9 +83,10 @@ export const useQuiz = ({
     isInvalidated: false,
     invalidationReason: null,
     score: 0,
-    passed: false,
-    startTime: Date.now()
-  });
+        passed: false,
+        startTime: Date.now(),
+        correctAnswers: {}
+    });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const tabSwitchCountRef = useRef(0);
@@ -223,7 +225,7 @@ export const useQuiz = ({
           }
         });
 
-        const result = await apiFetch<{ score: number; passed: boolean }>(
+        const result = await apiFetch<{ score: number; passed: boolean; correct_answers?: Record<string, number> }>(
           `/api/quizzes/${quizId}/submit/`,
           {
             method: 'POST',
@@ -234,19 +236,34 @@ export const useQuiz = ({
         scorePercentage = Math.round(result.score);
         passed = result.passed;
         correctCount = Math.round((scorePercentage / 100) * state.questions.length);
+
+        setState((prev) => ({
+          ...prev,
+          correctAnswers: result.correct_answers || {},
+        }));
       } catch (err) {
         console.error('Failed to submit quiz to backend:', err);
         scorePercentage = 0;
         passed = false;
       }
     } else {
+      const localCorrectAnswers: Record<string, number> = {};
       state.questions.forEach((q, idx) => {
+        const correctOption = q.options[q.correctIndex];
+        if (correctOption) {
+          localCorrectAnswers[q.id] = parseInt(correctOption.id, 10);
+        }
         if (latestAnswers[idx] === q.correctIndex && q.correctIndex >= 0) {
           correctCount++;
         }
       });
       scorePercentage = Math.round((correctCount / state.questions.length) * 100);
       passed = scorePercentage >= passingScore;
+
+      setState((prev) => ({
+        ...prev,
+        correctAnswers: localCorrectAnswers,
+      }));
     }
 
     setState((prev) => ({
@@ -310,6 +327,7 @@ export const useQuiz = ({
     invalidationReason: state.invalidationReason,
     score: state.score,
     passed: state.passed,
+    correctAnswers: state.correctAnswers,
     progress,
     answeredCount,
     canSubmit,
