@@ -38,12 +38,21 @@ const queryClient = new QueryClient({
   },
 });
 
+const GA_MEASUREMENT_ID = "G-1MWXLLHFBF";
+
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("config", GA_MEASUREMENT_ID, {
+      page_path: pathname + search,
+    });
+  }, [pathname, search]);
 
   return null;
 };
