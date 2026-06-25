@@ -242,21 +242,27 @@ export const useQuiz = ({
           correctAnswers: result.correct_answers || {},
         }));
       } catch (err) {
-        console.error('Failed to submit quiz to backend:', err);
+        const errorDetails = err instanceof Error ? err.message : String(err);
+        console.error('Failed to submit quiz to backend:', errorDetails, err);
         scorePercentage = 0;
         passed = false;
       }
     } else {
       const localCorrectAnswers: Record<string, number> = {};
-      state.questions.forEach((q, idx) => {
-        const correctOption = q.options[q.correctIndex];
-        if (correctOption) {
-          localCorrectAnswers[q.id] = parseInt(correctOption.id, 10);
-        }
-        if (latestAnswers[idx] === q.correctIndex && q.correctIndex >= 0) {
-          correctCount++;
-        }
-      });
+      const hasValidCorrectIndex = state.questions.some((q) => q.correctIndex >= 0);
+      if (hasValidCorrectIndex) {
+        state.questions.forEach((q, idx) => {
+          const correctOption = q.options[q.correctIndex];
+          if (correctOption) {
+            localCorrectAnswers[q.id] = parseInt(correctOption.id, 10);
+          }
+          if (latestAnswers[idx] === q.correctIndex && q.correctIndex >= 0) {
+            correctCount++;
+          }
+        });
+      } else {
+        console.warn('Local scoring unavailable: correctIndex missing (is_correct hidden by API).');
+      }
       scorePercentage = Math.round((correctCount / state.questions.length) * 100);
       passed = scorePercentage >= passingScore;
 

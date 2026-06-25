@@ -8,6 +8,7 @@ import { ContinueLearning } from '@/components/dashboard/ContinueLearning';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { Target, TrendingUp, BookOpen, CheckCircle, ArrowRight, Lock, Check, Download, ExternalLink } from 'lucide-react';
 import { AnimatedSection } from '@/components/landing/AnimatedSection';
+import { Link } from 'react-router-dom';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { courseConfig, courseConfigList, nismConfig, siteConfig } from '@/config/courseConfig';
 import type { Level } from '@/hooks/useCourses';
@@ -307,8 +308,8 @@ const Dashboard = () => {
                     </div>
 
                     {/* CTA */}
-                    <a
-                       href={isLocked ? `/pricing?level=${config.id}` : cardLink}
+                    <Link
+                       to={isLocked ? `/pricing?level=${config.id}` : cardLink}
                       className={`db-cta-btn mt-auto inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
                         isLocked
                           ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
@@ -317,7 +318,7 @@ const Dashboard = () => {
                     >
                       {isLocked ? 'Unlock — ' + price : isCompleted ? 'Review Level' : 'Continue Learning'}
                       {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </a>
+                    </Link>
                   </div>
                 </AnimatedSection>
               );
