@@ -28,4 +28,7 @@ dist-ssr
 
 **/__pycache__/*
 *.pyc
-.venv/*
+.venv/
+**/.venv/
+*.sqlite3
+backend/lms_db
