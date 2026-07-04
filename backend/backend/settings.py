@@ -353,3 +353,9 @@ SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "")
 SMS_OTP_TEMPLATE_ID = os.getenv("SMS_OTP_TEMPLATE_ID", "")
 # Leave blank to use trader-tactical default TradeMaster OTP text in users/sms.py
 SMS_OTP_MESSAGE_TEMPLATE = os.getenv("SMS_OTP_MESSAGE_TEMPLATE", "")
+
+# PayU hosted checkout
+PAYU_MERCHANT_KEY = os.getenv("PAYU_MERCHANT_KEY", "")
+PAYU_MERCHANT_SALT = os.getenv("PAYU_MERCHANT_SALT", "")
+PAYU_CHECKOUT_URL = os.getenv("PAYU_CHECKOUT_URL", "https://test.payu.in/_payment")
+FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:8080")

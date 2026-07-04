@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Check, ChevronDown, BookOpen, Download, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { courseConfigList, courseConfig, nismConfig, pricingFaqConfig } from '@/config/courseConfig';
 import { CourseLevelCard } from '@/components/course/CourseLevelCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { startHostedCheckout } from '@/hooks/useCheckout';
+import { isAuthRequired } from '@/config/appConfig';
+import { useCourses } from '@/hooks/useCourses';
+import { findCourseIdForConfig } from '@/lib/courseCatalog';
 
 const plans = courseConfigList;
 
@@ -28,7 +34,29 @@ const FAQItem = ({ q, a }: { q: string; a: string }) => {
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { courses } = useCourses();
   const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
+
+  const handleCourseCheckout = async (levelId: keyof typeof courseConfig) => {
+    if (isAuthRequired() && !user) {
+      navigate('/login');
+      return;
+    }
+
+    const backendCourseId = findCourseIdForConfig(courseConfig[levelId], courses);
+    if (!backendCourseId) {
+      toast.error('This course is not available for purchase right now.');
+      return;
+    }
+
+    try {
+      await startHostedCheckout(backendCourseId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to start payment right now.';
+      toast.error(message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,7 +160,7 @@ const Pricing = () => {
                 level={plan}
                 variant="pricing"
                 index={i}
-                onCtaClick={() => navigate('/dashboard')}
+                onCtaClick={() => handleCourseCheckout(plan.id)}
                 className={cn(
                   i === 0 && 'pr-c1',
                   i === 1 && 'pr-c2',
@@ -271,9 +299,9 @@ const Pricing = () => {
             <p className="text-sm text-muted-foreground mb-5">Start with the Foundation level — you can always progress from there.</p>
             <Button
               className="pr-btn bg-success hover:bg-success/90 text-white rounded-xl px-8 h-11 font-semibold shadow-lg shadow-success/20"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => handleCourseCheckout('beginner')}
             >
-              Start with Foundation —{' '}
+              Buy Foundation —{' '}
               <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>₹{courseConfig.beginner.price}</span>
             </Button>
           </div>

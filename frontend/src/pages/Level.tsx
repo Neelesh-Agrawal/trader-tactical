@@ -143,7 +143,7 @@ const Level = () => {
     );
   }
 
-  if (!level.is_unlocked) {
+  if (!level.is_unlocked && !level.is_enrolled) {
     return <Navigate to={`/pricing?level=${levelId}`} replace />;
   }
 

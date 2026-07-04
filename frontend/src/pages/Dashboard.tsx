@@ -51,6 +51,7 @@ const Dashboard = () => {
 
   const getLevelStatus = (level: Level): 'completed' | 'active' | 'locked' => {
     if (isLevelCompleted(level.id)) return 'completed';
+    if (level.is_enrolled) return 'active';
     if (!level.is_unlocked) return 'locked';
     return 'active';
   };
@@ -171,7 +172,9 @@ const Dashboard = () => {
               </div>
             )}
 
-            {!coursesLoading && courseConfigList.map((config, index) => {
+            {!coursesLoading && courseConfigList
+              .filter((config) => backendLevelsById.has(config.id))
+              .map((config, index) => {
               const level = backendLevelsById.get(config.id);
               const levelId = config.id;
               const status = level ? getLevelStatus(level) : 'locked';
