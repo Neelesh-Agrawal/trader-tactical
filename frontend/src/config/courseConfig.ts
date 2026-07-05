@@ -12,6 +12,8 @@ export interface CourseLevel {
   description: string;
   bestFor: string;
   cta: string;
+  samplePdfPath?: string;
+  sampleDownloadCTA?: string;
   points: string[];
 }
 
@@ -30,6 +32,8 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     description: 'Understand how options work, decode market terminology, and take your first steps toward becoming a smarter trader.',
     bestFor: 'New traders with little or no options trading experience.',
     cta: 'Start Level 1',
+    samplePdfPath: '/Samples/EasyOptionLearning_Beginner_Module1_Sample.pdf',
+    sampleDownloadCTA: 'Download Sample PDF',
     points: [
       'Get Started with Options Trading',
       'Learn How Options Really Work',
@@ -119,7 +123,7 @@ export const nismConfig: NISMConfig = {
   primaryCTA: "Enroll Now",
   secondaryCTA: "Download Sample PDF",
   samplePdfPath: "/Samples/EasyOptionLearning_Chapter1_NISM.pdf",
-  purchaseUrl: "#",
+  purchaseUrl: "/register",
   announcementText: "🏆 New: NISM VIII – Equity Derivatives Summary — Simplified Notes for Quick Revision",
   accentTitle: "Chapter-wise Simplified Notes",
   accentItems: ['Derivatives Basics', 'Futures & Options', 'Hedging Strategies', 'Settlement & Margins', 'Regulatory Framework'],

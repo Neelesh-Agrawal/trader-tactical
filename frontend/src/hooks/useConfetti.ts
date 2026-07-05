@@ -6,13 +6,31 @@ interface UseConfettiOptions {
   colors?: string[];
 }
 
+const DEFAULT_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+type ConfettiFn = import('canvas-confetti').default;
+
 // Use dynamic import to avoid bundling issues with canvas-confetti
-const loadConfetti = () => import('canvas-confetti').then(m => m.default);
+const loadConfetti = async (): Promise<ConfettiFn> => {
+  const mod = await import('canvas-confetti');
+  const fn = (mod as { default?: ConfettiFn }).default ?? (mod as unknown as ConfettiFn);
+  if (typeof fn !== 'function') {
+    throw new Error('Failed to load canvas-confetti');
+  }
+  return fn;
+};
+
+const getConfetti = async (): Promise<ConfettiFn | null> => {
+  try {
+    return await loadConfetti();
+  } catch (error) {
+    console.error('Failed to load confetti:', error);
+    return null;
+  }
+};
 
 export const useConfetti = (options: UseConfettiOptions = {}) => {
-  const {
-    colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6']
-  } = options;
+  const { colors = DEFAULT_COLORS } = options;
 
   const fire = useCallback(async (intensity: ConfettiIntensity = 'medium') => {
     const duration = intensity === 'high' ? 3000 : intensity === 'medium' ? 2000 : 1000;
@@ -23,7 +41,10 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
       return;
     }
 
-    const confetti = await loadConfetti();
+    const confetti = await getConfetti();
+    if (!confetti) {
+      return;
+    }
 
     const defaults = {
       startVelocity: 30,
@@ -59,7 +80,10 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
       return;
     }
 
-    const confetti = await loadConfetti();
+    const confetti = await getConfetti();
+    if (!confetti) {
+      return;
+    }
 
     confetti({
       particleCount: 100,
@@ -76,7 +100,10 @@ export const useConfetti = (options: UseConfettiOptions = {}) => {
       return;
     }
 
-    const confetti = await loadConfetti();
+    const confetti = await getConfetti();
+    if (!confetti) {
+      return;
+    }
 
     const rect = element.getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;

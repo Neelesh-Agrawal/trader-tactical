@@ -123,16 +123,35 @@ class Command(BaseCommand):
                 for lesson_order, lesson_title in enumerate(
                     module_data["lessons"], start=1
                 ):
+                    lesson_slug = lesson_title.lower()
                     Lesson.objects.update_or_create(
                         module=module,
                         order=lesson_order,
                         defaults={
                             "title": lesson_title,
-                            "lesson_objective": f"<p>Learn the core ideas behind {lesson_title.lower()}.</p>",
+                            "lesson_objective": (
+                                "<ul>"
+                                f"<li>Define the core concepts behind {lesson_slug}</li>"
+                                f"<li>Recognize how {lesson_slug} applies in Indian options markets</li>"
+                                f"<li>Identify the next skill to practice after this lesson</li>"
+                                "</ul>"
+                            ),
                             "content": f"<p>This lesson covers <strong>{lesson_title}</strong> with practical examples for Indian markets.</p>",
-                            "common_mistakes": "<p>Avoid trading without a defined risk plan.</p>",
-                            "key_takeaway": f"<p>Key takeaway: master {lesson_title.lower()} before moving on.</p>",
-                            "practical_task": "<p>Review one live chart example and note your observations.</p>",
+                            "common_mistakes": (
+                                "<ul>"
+                                "<li>Trading without a defined risk plan or position size</li>"
+                                "<li>Skipping liquidity checks before entering an options trade</li>"
+                                "<li>Confusing directional bias with a complete trade setup</li>"
+                                "</ul>"
+                            ),
+                            "key_takeaway": f"<p>Key takeaway: master {lesson_slug} before moving on.</p>",
+                            "practical_task": (
+                                "<ul>"
+                                "<li>Open one live chart for NIFTY or BANKNIFTY</li>"
+                                "<li>Mark the levels or signals discussed in this lesson</li>"
+                                "<li>Write three observations you would act on in paper trading</li>"
+                                "</ul>"
+                            ),
                             "estimated_time_minutes": 15,
                         },
                     )

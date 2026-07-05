@@ -9,7 +9,7 @@ import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { Target, TrendingUp, BookOpen, CheckCircle, ArrowRight, Lock, Check, Download, ExternalLink } from 'lucide-react';
 import { AnimatedSection } from '@/components/landing/AnimatedSection';
 import { Link } from 'react-router-dom';
-import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
+import { getPdfUrl, openPdf, SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { courseConfig, courseConfigList, nismConfig, siteConfig } from '@/config/courseConfig';
 import type { Level } from '@/hooks/useCourses';
 
@@ -59,18 +59,11 @@ const Dashboard = () => {
   const getNextMilestone = () => {
     for (const level of levels) {
       for (const module of level.modules) {
-        let completedInModule = 0;
-        const totalInModule = module.lessons.length;
-
-        for (const lesson of module.lessons) {
-          if (isLessonCompleted(level.id, module.id, lesson.id)) {
-            completedInModule++;
-          }
-        }
-
-        if (completedInModule < totalInModule) {
-          const remaining = totalInModule - completedInModule;
-          return `${remaining} lesson${remaining > 1 ? 's' : ''} to complete ${module.title}`;
+        const hasIncompleteLesson = module.lessons.some(
+          (lesson) => !isLessonCompleted(level.id, module.id, lesson.id)
+        );
+        if (hasIncompleteLesson) {
+          return `Module ${module.order}: ${module.title}`;
         }
       }
     }
@@ -85,7 +78,7 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl flex-1">
         {/* Top Overview */}
         <section className="mb-8 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-[32px] border border-slate-200/70 bg-card/95 p-6 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.25)] transition-transform duration-300 hover:-translate-y-1">
+          <div className="rounded-[32px] border border-border/70 bg-card/95 p-6 shadow-[0_24px_80px_-48px_hsl(var(--foreground)/0.12)] transition-transform duration-300 hover:-translate-y-1">
             <div className="flex flex-col gap-4 sm:gap-6">
               <div className="space-y-3">
                 <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Dashboard</p>
@@ -98,21 +91,21 @@ const Dashboard = () => {
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+                <div className="rounded-3xl border border-border bg-muted/50 p-4 shadow-sm">
                   <p className="text-sm font-medium text-muted-foreground">Current level</p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{currentLevel?.title || 'Level'}</p>
                 </div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+                <div className="rounded-3xl border border-border bg-muted/50 p-4 shadow-sm">
                   <p className="text-sm font-medium text-muted-foreground">Lessons completed</p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{completedLessons}</p>
                 </div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+                <div className="rounded-3xl border border-border bg-muted/50 p-4 shadow-sm">
                   <p className="text-sm font-medium text-muted-foreground">Streak</p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{streak?.current_streak || 0} days</p>
                 </div>
               </div>
 
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-5 shadow-sm">
+              <div className="rounded-[28px] border border-border/80 bg-card p-5 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] font-semibold text-muted-foreground">Next milestone</p>
@@ -126,8 +119,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-slate-200/70 bg-card/95 p-5 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.25)] transition-transform duration-300 hover:-translate-y-1">
-            <div className="flex items-center justify-between gap-3 pb-4 border-b border-slate-200/70">
+          <div className="rounded-[32px] border border-border/70 bg-card/95 p-5 shadow-[0_24px_80px_-48px_hsl(var(--foreground)/0.12)] transition-transform duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between gap-3 pb-4 border-b border-border/70">
               <div>
                 <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">Continue learning</p>
                 <p className="mt-1 text-sm text-foreground/80">The little progress you make every day adds up to remarkable growth. 🌱</p>
@@ -150,7 +143,7 @@ const Dashboard = () => {
                 From beginner to advanced — Learn, unlock, and level up at every stage.
               </p>
             </div>
-            <div className="rounded-3xl border border-slate-200/70 bg-slate-50/90 px-4 py-3 text-sm text-muted-foreground">
+            <div className="rounded-3xl border border-border/70 bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
               3 courses, one premium path
             </div>
           </div>
@@ -311,17 +304,31 @@ const Dashboard = () => {
                     </div>
 
                     {/* CTA */}
-                    <Link
-                       to={isLocked ? `/pricing?level=${config.id}` : cardLink}
-                      className={`db-cta-btn mt-auto inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
-                        isLocked
-                          ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
-                          : 'bg-success text-white'
-                      }`}
-                    >
-                      {isLocked ? 'Unlock — ' + price : isCompleted ? 'Review Level' : 'Continue Learning'}
-                      {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </Link>
+                    <div className="mt-auto flex flex-col gap-3">
+                      <Link
+                        to={isLocked ? `/pricing?level=${config.id}` : cardLink}
+                        className={`db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
+                          isLocked
+                            ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
+                            : 'bg-success text-white'
+                        }`}
+                      >
+                        {isLocked ? 'Unlock — ' + price : isCompleted ? 'Review Level' : 'Continue Learning'}
+                        {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
+                      </Link>
+                      {config.samplePdfPath && config.sampleDownloadCTA && (
+                        <a
+                          href={getPdfUrl(config.samplePdfPath)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => openPdf(config.samplePdfPath!, e)}
+                          className="inline-flex items-center justify-center gap-2 w-full rounded-xl h-11 text-sm font-semibold border border-success/30 text-success bg-success/5 hover:bg-success/10 transition-transform duration-200 hover:-translate-y-px"
+                        >
+                          <Download className="w-4 h-4" />
+                          {config.sampleDownloadCTA}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </AnimatedSection>
               );

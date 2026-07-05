@@ -12,7 +12,7 @@ const Quiz = () => {
   const { quizType, levelId, moduleId, lessonId } = useParams();
   const { user, loading: authLoading } = useAuth();
   const { getCooldownRemaining, loading: progressLoading } = useProgress();
-  const { fetchQuiz, getModuleById, loading: coursesLoading } = useCourses();
+  const { fetchQuiz, getModuleById, getLevelById, loading: coursesLoading } = useCourses();
   const navigate = useNavigate();
   const [accepted, setAccepted] = useState(false);
   const [cooldown, setCooldown] = useState(0);
@@ -111,7 +111,11 @@ const Quiz = () => {
   } else if (quizType === 'module' && moduleId) {
     returnPath = `/module/${levelId}/${moduleId}`;
     quizTitle = 'Module Final';
-    continuePath = returnPath;
+    const level = getLevelById(levelId);
+    const moduleIndex = level?.modules.findIndex((module) => module.id === moduleId) ?? -1;
+    const isLastModule = Boolean(level && moduleIndex === level.modules.length - 1);
+    continuePath = isLastModule ? `/level/${levelId}/final` : returnPath;
+    continueLabel = isLastModule ? 'Level Certification' : 'Back to Module';
   } else if (quizType === 'level') {
     returnPath = '/dashboard';
     quizTitle = 'Level Assessment';

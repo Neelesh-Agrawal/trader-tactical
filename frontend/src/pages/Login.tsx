@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PinInput } from '@/components/ui/pin-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 const REMEMBER_ME_KEY = 'trademaster_remember_phone';
 
@@ -81,6 +82,10 @@ const Login = () => {
         />
         <span className="font-semibold text-sm text-foreground">Easy Option Learning</span>
       </Link>
+
+      <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
 
       <style>{`
         /* Card animation & button */

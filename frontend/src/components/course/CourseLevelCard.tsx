@@ -1,6 +1,7 @@
-import { Check, CheckCircle, Lock, ArrowRight } from 'lucide-react';
+import { Check, CheckCircle, Lock, ArrowRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseLevel } from '@/config/courseConfig';
+import { getPdfUrl, openPdf } from '@/lib/pdf';
 import { cn } from '@/lib/utils';
 
 interface CourseLevelCardProps {
@@ -105,7 +106,7 @@ export const CourseLevelCard = ({
       {/* Card Bottom area pinned cleanly */}
       <div className="mt-auto pt-4 border-t border-border/40">
         {/* Stats (Modules, Lessons, Duration) */}
-        <div className="grid grid-cols-3 gap-2 text-center p-3.5 mb-5 rounded-xl border border-border/50 bg-slate-50/80 dark:bg-slate-900/80">
+        <div className="grid grid-cols-3 gap-2 text-center p-3.5 mb-5 rounded-xl border border-border/50 bg-muted/50">
           <div className="space-y-0.5">
             <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">Modules</span>
             <p className="text-[17px] font-extrabold font-mono text-foreground">{level.modules}</p>
@@ -132,30 +133,44 @@ export const CourseLevelCard = ({
           </span>
         </div>
 
-        {/* CTA Button */}
-        <Button
-          className={cn(
-            "w-full font-semibold rounded-xl h-11 gap-2 lv-btn",
-            isFeatured ? "bg-success hover:bg-success/90 text-white" : "bg-background border border-border text-foreground hover:bg-muted"
+        {/* CTAs */}
+        <div className="flex flex-col gap-3">
+          <Button
+            className={cn(
+              "w-full font-semibold rounded-xl h-11 gap-2 lv-btn",
+              isFeatured ? "bg-success hover:bg-success/90 text-white" : "bg-background border border-border text-foreground hover:bg-muted"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onCtaClick) onCtaClick();
+            }}
+            disabled={isLanding && !isActive}
+          >
+            {isLanding && !isActive ? (
+              <>
+                <Lock className="h-4 w-4" />
+                Locked
+              </>
+            ) : (
+              <>
+                <span>{isLanding ? `Enroll Now — ₹${level.price}` : level.cta}</span>
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+          {isLanding && level.samplePdfPath && level.sampleDownloadCTA && (
+            <a
+              href={getPdfUrl(level.samplePdfPath)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => openPdf(level.samplePdfPath!, e)}
+              className="inline-flex items-center justify-center gap-2 px-6 h-11 rounded-xl border border-success/30 text-success bg-success/5 hover:bg-success/10 text-sm font-semibold transition-transform duration-200 hover:-translate-y-px"
+            >
+              <Download className="w-4 h-4" />
+              {level.sampleDownloadCTA}
+            </a>
           )}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onCtaClick) onCtaClick();
-          }}
-          disabled={isLanding && !isActive}
-        >
-          {isLanding && !isActive ? (
-            <>
-              <Lock className="h-4 w-4" />
-              Locked
-            </>
-          ) : (
-            <>
-              <span>{isLanding ? `Enroll Now — ₹${level.price}` : level.cta}</span>
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </Button>
+        </div>
       </div>
     </div>
   );

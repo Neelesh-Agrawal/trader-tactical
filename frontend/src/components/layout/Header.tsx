@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Flame, User, LogOut, ChevronDown, Menu, X, Award } from 'lucide-react';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 interface HeaderProps {
   showAuth?: boolean;
@@ -135,6 +136,8 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
 
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle />
+
           {/* Streak Badge */}
           {showStreak && streak && (
             <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-warning/20 text-warning border border-warning/30">
@@ -154,10 +157,17 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
                   <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground hidden sm:block" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-3 py-2">
-                  <p className="font-medium">{profile.name}</p>
-                  <p className="text-sm text-muted-foreground">{profile.email}</p>
+              <DropdownMenuContent align="end" className="min-w-56 w-max max-w-[calc(100vw-2rem)]">
+                <div className="px-3 py-2 min-w-0">
+                  <p className="font-medium truncate" title={profile.name}>
+                    {profile.name}
+                  </p>
+                  <p
+                    className="text-sm text-muted-foreground break-all"
+                    title={profile.email}
+                  >
+                    {profile.email}
+                  </p>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate('/profile')} className="py-3 touch-manipulation">

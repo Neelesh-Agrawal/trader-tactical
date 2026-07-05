@@ -10,9 +10,12 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Header } from '@/components/layout/Header';
 import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
+import { LessonObjectives } from '@/components/lesson/LessonObjectives';
+import { LessonRichSection } from '@/components/lesson/LessonRichSection';
+import { getLessonReadTimeMinutes } from '@/components/lesson/html';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X, AlertTriangle, Wrench } from 'lucide-react';
+import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X, AlertTriangle, Wrench, Clock } from 'lucide-react';
 
 const Lesson = () => {
   const { levelId, moduleId, lessonId } = useParams();
@@ -29,21 +32,38 @@ const Lesson = () => {
   const loading = authLoading || progressLoading || coursesLoading;
 
   useEffect(() => {
+    let cancelled = false;
+
     const loadLessonDetail = async () => {
-      if (!lessonId) return;
-      
-      setLoadingDetail(true);
+      if (!lessonId) {
+        if (!cancelled) {
+          setLessonDetail(null);
+          setLoadingDetail(false);
+        }
+        return;
+      }
+
+      if (!cancelled) {
+        setLessonDetail(null);
+        setLoadingDetail(true);
+      }
+
       const detail = await fetchLessonDetail(lessonId);
+      if (cancelled) return;
+
       setLessonDetail(detail);
       setLoadingDetail(false);
-      
-      // Track lesson activity for streak
+
       if (user && detail) {
         trackLessonActivity(lessonId);
       }
     };
-    
+
     loadLessonDetail();
+
+    return () => {
+      cancelled = true;
+    };
   }, [lessonId, fetchLessonDetail, user, trackLessonActivity]);
 
   useEffect(() => {
@@ -62,6 +82,10 @@ const Lesson = () => {
 
     loadLessonQuiz();
   }, [levelId, moduleId, lessonId, fetchQuiz]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [lessonId]);
 
   // Save last lesson position to localStorage (backend doesn't have this field yet)
   useEffect(() => {
@@ -87,11 +111,22 @@ const Lesson = () => {
   // Merge basic lesson info with detailed content
   const fullLesson = lesson ? {
     ...lesson,
-    ...lessonDetail,
+    ...(lessonDetail ?? {}),
+    id: lesson.id,
+    lesson_objective:
+      lessonDetail?.lesson_objective || lesson.lesson_objective || '',
+    content: lessonDetail?.content || lesson.content || '',
+    common_mistakes: lessonDetail?.common_mistakes || lesson.common_mistakes || '',
+    key_takeaway: lessonDetail?.key_takeaway || lesson.key_takeaway || '',
+    practical_task: lessonDetail?.practical_task || lesson.practical_task || '',
     faqs: lessonDetail?.faqs || lesson.faqs || [],
+    estimated_time_minutes:
+      lessonDetail?.estimated_time_minutes ?? lesson.estimated_time_minutes ?? null,
   } : null;
   
   if (!module || !fullLesson) return <Navigate to="/dashboard" replace />;
+
+  const readingTime = getLessonReadTimeMinutes(fullLesson.estimated_time_minutes);
 
   const lessonIndex = module.lessons.findIndex(l => l.id === lessonId);
   const nextLesson = module.lessons[lessonIndex + 1];
@@ -150,6 +185,12 @@ const Lesson = () => {
               LESSON {lessonIndex + 1} OF {module.lessons.length}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{fullLesson.title}</h1>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                {readingTime} min read
+              </span>
+            </div>
             {isCompleted && (
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/20 text-success text-sm">
                 <CheckCircle className="h-4 w-4" />
@@ -182,42 +223,31 @@ const Lesson = () => {
             </div>
           )}
 
-          {/* Mission Briefing */}
-            <div className="mission-briefing mb-8">
-              <div className="flex items-center gap-2 mb-3">
-                <Target className="h-5 w-5 text-primary" />
-                <span className="subheader">Mission Briefing</span>
-              </div>
-            {renderHtmlSection(fullLesson.lesson_objective)}
-          </div>
+          {/* Learning Objectives */}
+          <LessonObjectives objective={fullLesson.lesson_objective} />
 
           {/* Intel Section */}
           <div className="tactical-card p-6 md:p-8 mb-8">
             <div className="flex items-center gap-2 mb-6">
-              <BookOpen className="h-5 w-5 text-primary" />
+              <BookOpen className="h-5 w-5 text-primary shrink-0" />
               <span className="subheader">Intel</span>
             </div>
-            <div className="lesson-content space-y-6">
-              {renderHtmlSection(fullLesson.content)}
-            </div>
+            {renderHtmlSection(fullLesson.content)}
           </div>
 
           {/* Common Mistakes */}
-          {fullLesson.common_mistakes && (
-            <div className="tactical-card p-6 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-5 w-5 text-warning" />
-                <span className="subheader">Common Mistakes</span>
-              </div>
-              {renderHtmlSection(fullLesson.common_mistakes)}
-            </div>
-          )}
+          <LessonRichSection
+            title="Common Mistakes"
+            html={fullLesson.common_mistakes}
+            icon={AlertTriangle}
+            iconClassName="text-warning"
+          />
 
           {/* Key Takeaways */}
           {fullLesson.key_takeaway && (
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <Lightbulb className="h-5 w-5 text-warning" />
+                <Lightbulb className="h-5 w-5 text-warning shrink-0" />
                 <span className="subheader">Key Signals</span>
               </div>
               {renderHtmlSection(fullLesson.key_takeaway)}
@@ -228,7 +258,7 @@ const Lesson = () => {
           {fullLesson.faqs && fullLesson.faqs.length > 0 && (
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <HelpCircle className="h-5 w-5 text-primary" />
+                <HelpCircle className="h-5 w-5 text-primary shrink-0" />
                 <span className="subheader">FAQs</span>
               </div>
               <Accordion type="single" collapsible>
@@ -245,15 +275,11 @@ const Lesson = () => {
           )}
 
           {/* Practical Task */}
-          {fullLesson.practical_task && (
-            <div className="tactical-card p-6 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Wrench className="h-5 w-5 text-primary" />
-                <span className="subheader">Practical Task</span>
-              </div>
-              {renderHtmlSection(fullLesson.practical_task)}
-            </div>
-          )}
+          <LessonRichSection
+            title="Practical Task"
+            html={fullLesson.practical_task}
+            icon={Wrench}
+          />
 
           {/* Lesson Checkpoint */}
           <div className="tactical-card mt-12 border-2 border-primary/20 bg-primary/5 p-6 md:p-8">

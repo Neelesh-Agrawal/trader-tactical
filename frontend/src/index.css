@@ -74,37 +74,37 @@
     --background: 222 47% 6%;
     --foreground: 210 40% 96%;
 
-    --card: 222 47% 8%;
+    --card: 222 47% 9%;
     --card-foreground: 210 40% 96%;
 
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 96%;
 
-    --primary: 160 72% 33%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 160 65% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 47% 14%;
+    --secondary: 222 30% 15%;
     --secondary-foreground: 210 40% 96%;
 
-    --muted: 222 30% 18%;
-    --muted-foreground: 215 20% 60%;
+    --muted: 222 30% 16%;
+    --muted-foreground: 215 20% 68%;
 
-    --accent: 222 47% 14%;
+    --accent: 222 30% 15%;
     --accent-foreground: 210 40% 96%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 160 72% 33%;
+    --border: 222 25% 20%;
+    --input: 222 25% 20%;
+    --ring: 160 65% 42%;
 
-    --success: 160 72% 33%;
-    --success-foreground: 160 72% 95%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 38 92% 10%;
-    --locked: 222 30% 25%;
-    --locked-foreground: 222 20% 50%;
+    --success: 160 65% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 38 92% 12%;
+    --locked: 222 25% 22%;
+    --locked-foreground: 215 20% 62%;
 
     --hex-complete: 160 72% 33%;
     --hex-active: 38 92% 50%;
@@ -326,10 +326,10 @@
 
   .streak-flame { animation: flame 0.8s ease-in-out infinite; }
 
-  .lesson-content { @apply prose-body; }
-  .lesson-content p { @apply mb-6; }
-  .lesson-content ul, .lesson-content ol { @apply mb-6 pl-6; }
-  .lesson-content li { @apply mb-2; }
+  .lesson-content.ck-content { @apply prose-body; }
+  .lesson-content:not(.ck-content) p { @apply mb-6; }
+  .lesson-content:not(.ck-content) ul, .lesson-content:not(.ck-content) ol { @apply mb-6 pl-6; }
+  .lesson-content:not(.ck-content) li { @apply mb-2; }
   .lesson-content strong { @apply font-bold; }
   .lesson-content em { @apply italic; }
 
@@ -337,13 +337,14 @@
 
   .ck-content h1, .ck-content h2, .ck-content h3,
   .ck-content h4, .ck-content h5, .ck-content h6 {
-    @apply text-foreground font-bold mt-8 mb-4;
+    @apply text-foreground font-bold mt-6 mb-3;
   }
 
   .ck-content h2 { @apply text-2xl; }
   .ck-content h3 { @apply text-xl; }
   .ck-content h4 { @apply text-lg; }
   .ck-content p { @apply mb-4 leading-relaxed; }
+  .ck-content p:last-child { @apply mb-0; }
   .ck-content ul, .ck-content ol { @apply mb-4 pl-6; }
   .ck-content li { @apply mb-2; }
   .ck-content ul { @apply list-disc; }
@@ -351,9 +352,9 @@
   .ck-content strong { @apply font-bold text-foreground; }
   .ck-content em { @apply italic; }
   .ck-content a { @apply text-primary underline; }
-  .ck-content figure { @apply block w-full max-w-full mb-6; }
-  .ck-content figure.table { @apply block w-full clear-both mb-8 overflow-x-auto; }
-  .ck-content table { @apply block w-full max-w-full mb-8 border-collapse; }
+  .ck-content figure { @apply w-full max-w-full my-4; }
+  .ck-content figure.table { @apply w-full overflow-x-auto my-4; }
+  .ck-content table { @apply w-full border-collapse; }
   .ck-content td, .ck-content th { @apply border border-border p-2; }
   .ck-content th { @apply bg-muted font-bold; }
   .ck-content hr { @apply my-6 border-border; }
@@ -407,9 +408,9 @@
   .glass { @apply bg-card/80 backdrop-blur-md; }
 
   .glass-card {
-    background: hsla(222, 47%, 8%, 0.7);
+    background: hsl(var(--card) / 0.75);
     backdrop-filter: blur(10px);
-    border: 1px solid hsla(210, 40%, 96%, 0.1);
+    border: 1px solid hsl(var(--border) / 0.8);
   }
 
   .hover-scale { @apply transition-transform duration-200 hover:scale-105; }

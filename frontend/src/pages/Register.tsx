@@ -11,6 +11,7 @@ import { RegisterDetailsStep, RegisterFormData } from '@/components/auth/Registe
 import { RegisterPhoneOtpStep } from '@/components/auth/RegisterPhoneOtpStep';
 import { RegisterEmailOtpStep } from '@/components/auth/RegisterEmailOtpStep';
 import { RegisterPinStep } from '@/components/auth/RegisterPinStep';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
@@ -436,6 +437,9 @@ const Register = () => {
         <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Easy Option Learning" className="h-8 w-8 rounded-md object-contain" />
         <span className="font-semibold text-foreground text-sm">Easy Option Learning</span>
       </Link>
+      <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
       <style>{`
         @media (max-width: 768px) {
           .fixed-logo-mobile { left: 1rem; top: 1rem; }

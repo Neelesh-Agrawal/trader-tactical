@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Check, MessageSquare, Mail, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 type Step = 'phone' | 'email' | 'complete';
 
@@ -193,7 +194,10 @@ const Verify = () => {
   const currentStep = step === 'complete' ? 'complete' : (step === 'email' ? 'email' : 'phone');
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
       <Card className="tactical-card w-full max-w-md">
         <CardHeader className="text-center">
           <div className="caption text-primary mb-2">VERIFICATION</div>

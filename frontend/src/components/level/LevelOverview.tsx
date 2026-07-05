@@ -6,6 +6,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle, Lock, ArrowRight, ChevronLeft, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getLessonReadTimeMinutes } from '@/components/lesson/html';
 import type { Level } from '@/hooks/useCourses';
 
 interface LevelOverviewProps {
@@ -51,10 +52,8 @@ export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => 
     return 'locked';
   };
 
-  const getLessonReadingTime = (content: string) => {
-    const wordCount = content.split(/\s+/).length;
-    return Math.max(1, Math.ceil(wordCount / 200));
-  };
+  const getLessonReadingTime = (estimatedTimeMinutes: number | null | undefined) =>
+    getLessonReadTimeMinutes(estimatedTimeMinutes);
 
   const levelDisplayName = level.id.charAt(0).toUpperCase() + level.id.slice(1);
   const allModulesCompleted =
@@ -174,7 +173,7 @@ export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => 
                   <div className="pb-4 space-y-1">
                     {module.lessons.map((lesson, lessonIndex) => {
                       const isCompleted = isLessonCompleted(level.id, module.id, lesson.id);
-                      const readingTime = getLessonReadingTime(lesson.content);
+                      const readingTime = getLessonReadingTime(lesson.estimated_time_minutes);
 
                       // Determine if lesson is accessible
                       let isAccessible = false;

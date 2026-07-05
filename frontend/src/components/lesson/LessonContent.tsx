@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
@@ -9,11 +9,12 @@ import { JumpToQuizButton } from './JumpToQuizButton';
 import { ReadingTimeRemaining } from './ReadingTimeRemaining';
 import { LessonObjectives } from './LessonObjectives';
 import { LessonIntelV2 } from './LessonIntelV2';
-import { extractParagraphText } from './html';
+import { extractParagraphText, getLessonReadTimeMinutes } from './html';
 import { LessonKeyTakeaways } from './LessonKeyTakeaways';
+import { LessonRichSection } from './LessonRichSection';
 import { Button } from '@/components/ui/button';
 import { 
-  ChevronLeft, Clock, BookOpen, ArrowRight
+  ChevronLeft, Clock, BookOpen, ArrowRight, AlertTriangle, Wrench
 } from 'lucide-react';
 import type { Lesson, Module } from '@/hooks/useCourses';
 
@@ -36,10 +37,11 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
 
   const isCompleted = isLessonCompleted(levelId, module.id, lesson.id);
   const nextLesson = module.lessons[lessonIndex + 1];
+  const readingTime = getLessonReadTimeMinutes(lesson.estimated_time_minutes);
 
-  // Calculate reading time
-  const wordCount = lesson.content.split(/\s+/).length;
-  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [lesson.id]);
 
 
   const handleStartQuiz = async () => {
@@ -106,17 +108,32 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
           </div>
         </div>
 
-        {/* What You'll Learn */}
-        <LessonObjectives objective={lesson.lesson_objective} keyTakeaways={keyTakeaways} />
+        {/* Learning Objectives */}
+        <LessonObjectives objective={lesson.lesson_objective} />
 
         {/* Main Content */}
         <LessonIntelV2 content={lesson.content} />
 
+        {/* Common Mistakes */}
+        <LessonRichSection
+          title="Common Mistakes"
+          html={lesson.common_mistakes}
+          icon={AlertTriangle}
+          iconClassName="text-warning"
+        />
+
         {/* Key Takeaways */}
-        <LessonKeyTakeaways takeaways={keyTakeaways} />
+        {keyTakeaways.length > 0 && <LessonKeyTakeaways takeaways={keyTakeaways} />}
 
         {/* FAQs */}
         <LessonFAQs faqs={faqs} />
+
+        {/* Practical Task */}
+        <LessonRichSection
+          title="Practical Task"
+          html={lesson.practical_task}
+          icon={Wrench}
+        />
 
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <p className="text-sm text-muted-foreground">

@@ -24,6 +24,55 @@ export function normalizeRichHtml(html: string): string {
   return doc.body.innerHTML;
 }
 
+export const DEFAULT_LESSON_READ_TIME = 15;
+
+export function getLessonReadTimeMinutes(estimatedTimeMinutes: number | null | undefined): number {
+  return estimatedTimeMinutes ?? DEFAULT_LESSON_READ_TIME;
+}
+
+const LEARNING_OBJECTIVE_PREFIX = /^by the end of this lesson/i;
+
+export function hasRichHtmlContent(html: string | null | undefined): boolean {
+  return extractParagraphText(html || '').length > 0;
+}
+
+export function extractLearningObjectives(html: string): string[] {
+  if (!html?.trim()) {
+    return [];
+  }
+
+  const listItems = extractListItems(html);
+  if (listItems.length > 0) {
+    return listItems.filter((item) => !LEARNING_OBJECTIVE_PREFIX.test(item.trim()));
+  }
+
+  return extractParagraphText(html).filter(
+    (item) => !LEARNING_OBJECTIVE_PREFIX.test(item.trim()),
+  );
+}
+
+function extractListItems(html: string): string[] {
+  if (typeof document === 'undefined') {
+    const matches = html.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [];
+    return matches
+      .map((item) =>
+        item
+          .replace(/<li[^>]*>/i, '')
+          .replace(/<\/li>/i, '')
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/&amp;nbsp;|&nbsp;|\u00a0/g, ' ')
+          .trim(),
+      )
+      .filter(Boolean);
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(normalizeRichHtml(html), 'text/html');
+  return Array.from(doc.body.querySelectorAll('li'))
+    .map((node) => (node.textContent || '').replace(/\u00a0/g, ' ').trim())
+    .filter(Boolean);
+}
+
 export function extractParagraphText(html: string): string[] {
   if (!html) {
     return [];
@@ -40,7 +89,7 @@ export function extractParagraphText(html: string): string[] {
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(normalizeRichHtml(html), 'text/html');
-  const blocks = Array.from(doc.body.querySelectorAll('p, li'));
+  const blocks = Array.from(doc.body.querySelectorAll('p, li, h2, h3, h4'));
 
   const values = blocks
     .map((node) => (node.textContent || '').replace(/\u00a0/g, ' ').trim())

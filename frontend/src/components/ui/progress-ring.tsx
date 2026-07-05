@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ProgressRingProps {
@@ -28,6 +29,27 @@ export const ProgressRing = React.forwardRef<HTMLDivElement, ProgressRingProps>(
       }
     }, [progress, animated]);
 
+    if (progress >= 100) {
+      return (
+        <div
+          ref={ref}
+          className={cn("relative inline-flex items-center justify-center", className)}
+          aria-label="Complete"
+        >
+          <div
+            className="rounded-full bg-success flex items-center justify-center"
+            style={{ width: size, height: size }}
+          >
+            <Check
+              className="text-success-foreground"
+              style={{ width: size * 0.45, height: size * 0.45 }}
+              strokeWidth={3}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div ref={ref} className={cn("relative inline-flex items-center justify-center", className)}>
         <svg width={size} height={size} className="transform -rotate-90">
@@ -51,10 +73,7 @@ export const ProgressRing = React.forwardRef<HTMLDivElement, ProgressRingProps>(
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
-            className={cn(
-              "transition-all duration-1000 ease-out",
-              progress >= 100 && "stroke-success"
-            )}
+            className="transition-all duration-1000 ease-out"
           />
         </svg>
         {showPercentage && (

@@ -95,11 +95,11 @@ export const LevelsSection = () => {
           {/* Desktop timeline track */}
           <div className="relative flex items-center justify-between hidden md:flex">
             {/* Background line */}
-            <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 z-0" />
+            <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-border -translate-y-1/2 z-0" />
             
             {/* Progress line */}
             <div className="absolute left-6 right-1/2 top-1/2 h-0.5 bg-gradient-to-r from-success/80 to-success/40 -translate-y-1/2 z-0" style={{ width: '45%' }} />
-            <div className="absolute left-1/2 right-6 top-1/2 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 z-0" />
+            <div className="absolute left-1/2 right-6 top-1/2 h-0.5 bg-border -translate-y-1/2 z-0" />
 
             {/* Step 1 */}
             <div className="relative z-10 flex flex-col items-center gap-1 bg-background px-3">
@@ -116,7 +116,7 @@ export const LevelsSection = () => {
 
             {/* Step 2 */}
             <div className="relative z-10 flex flex-col items-center gap-1 bg-background px-3">
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-muted-foreground flex items-center justify-center text-xs font-semibold ring-4 ring-background shadow-sm border border-border">
+              <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-semibold ring-4 ring-background shadow-sm border border-border">
                 2
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Intermediate</span>
@@ -129,7 +129,7 @@ export const LevelsSection = () => {
 
             {/* Step 3 */}
             <div className="relative z-10 flex flex-col items-center gap-1 bg-background px-3">
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-muted-foreground flex items-center justify-center text-xs font-semibold ring-4 ring-background shadow-sm border border-border">
+              <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-semibold ring-4 ring-background shadow-sm border border-border">
                 3
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Advanced</span>

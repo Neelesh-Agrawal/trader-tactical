@@ -84,7 +84,7 @@ export const QuizInterface = ({
     if (isSubmitted && passed && !hasFireRef.current) {
       hasFireRef.current = true;
       const intensity = quizType === 'level' ? 'high' : quizType === 'module' ? 'high' : 'medium';
-      fire(intensity);
+      void fire(intensity);
     }
   }, [isSubmitted, passed, quizType, fire]);
 

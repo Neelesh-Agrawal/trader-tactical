@@ -93,6 +93,9 @@ interface BackendLessonResponse {
   id: number;
   title: string;
   lesson_objective: string;
+  common_mistakes: string;
+  key_takeaway: string;
+  practical_task: string;
   order: number;
   estimated_time_minutes: number | null;
   is_unlocked: boolean;
@@ -255,11 +258,11 @@ const buildDemoCourseData = (): { courses: Course[]; levels: Level[] } => {
           {
             id: `lesson-${config.number}-${numericId}-${numericId}`,
             title: `${point} Overview`,
-            lesson_objective: `<p>${point}</p>`,
+            lesson_objective: `<ul><li>Preview objective for ${point}</li><li>Enroll to unlock the full lesson content</li></ul>`,
             content: `<p>This is preview content for ${config.name}.</p><p>Sign in with an enrolled account to load the complete course data from the backend.</p>`,
-            common_mistakes: '',
+            common_mistakes: '<ul><li>Preview mode does not include full lesson guidance</li></ul>',
             key_takeaway: 'Use an enrolled account to continue with full course content.',
-            practical_task: '',
+            practical_task: '<ul><li>Sign in with an enrolled account to access practical tasks</li></ul>',
             estimated_time_minutes: 5,
             order: 1,
             is_unlocked: levelIndex === 0 && moduleIndex === 0,
@@ -366,11 +369,11 @@ export const useCourses = () => {
                   lessons: m.lessons.map((les) => ({
                     id: `lesson-${l.id}-${m.id}-${les.id}`,
                     title: les.title,
-                    lesson_objective: les.lesson_objective,
+                    lesson_objective: les.lesson_objective || '',
                     content: '',
-                    common_mistakes: '',
-                    key_takeaway: '',
-                    practical_task: '',
+                    common_mistakes: les.common_mistakes || '',
+                    key_takeaway: les.key_takeaway || '',
+                    practical_task: les.practical_task || '',
                     estimated_time_minutes: les.estimated_time_minutes,
                     order: les.order,
                     is_unlocked: les.is_unlocked,
@@ -461,7 +464,7 @@ export const useCourses = () => {
       const data = await apiFetch<BackendLessonDetailResponse>(`/api/courses/lessons/${lessonIdNum}/`);
       
       return {
-        id: String(data.id),
+        id: String(lessonId),
         title: data.title,
         lesson_objective: data.lesson_objective,
         content: data.content,

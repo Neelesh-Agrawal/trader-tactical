@@ -6,6 +6,7 @@ interface ConfettiPiece {
   color: string;
   delay: number;
   duration: number;
+  isCircle: boolean;
 }
 
 export const Confetti = () => {
@@ -27,7 +28,8 @@ export const Confetti = () => {
         x: Math.random() * 100,
         color: colors[Math.floor(Math.random() * colors.length)],
         delay: Math.random() * 0.5,
-        duration: 2 + Math.random() * 2
+        duration: 2 + Math.random() * 2,
+        isCircle: Math.random() > 0.5,
       });
     }
     setPieces(newPieces);
@@ -38,14 +40,12 @@ export const Confetti = () => {
       {pieces.map(piece => (
         <div
           key={piece.id}
-          className="absolute w-3 h-3 animate-confetti"
+          className={`absolute top-0 w-3 h-3 animate-confetti ${piece.isCircle ? 'rounded-full' : ''}`}
           style={{
             left: `${piece.x}%`,
             backgroundColor: piece.color,
             animationDelay: `${piece.delay}s`,
             animationDuration: `${piece.duration}s`,
-            transform: `rotate(${Math.random() * 360}deg)`,
-            borderRadius: Math.random() > 0.5 ? '50%' : '0'
           }}
         />
       ))}

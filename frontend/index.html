@@ -16,6 +16,21 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://anantasecurities.in/easyoptionlearning/logo.png" />
 
+    <script>
+      (function () {
+        var storageKey = 'eol-theme';
+        var stored = localStorage.getItem(storageKey);
+        var theme =
+          stored === 'dark' || stored === 'light'
+            ? stored
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+        document.documentElement.classList.add(theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MWXLLHFBF"></script>
     <script>

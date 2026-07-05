@@ -5,6 +5,10 @@ interface LessonKeyTakeawaysProps {
 }
 
 export const LessonKeyTakeaways = ({ takeaways }: LessonKeyTakeawaysProps) => {
+  if (takeaways.length === 0) {
+    return null;
+  }
+
   return (
     <div className="my-8 sm:my-10 border-l-4 border-l-success rounded-2xl bg-success/5 p-5 sm:p-7">
       <div className="flex items-center gap-3 mb-2">

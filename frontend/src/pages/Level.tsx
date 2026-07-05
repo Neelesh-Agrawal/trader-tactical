@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils';
 const Level = () => {
   const { levelId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const currentModuleId = searchParams.get('module') || undefined;
+  const currentLessonId = searchParams.get('lesson') || undefined;
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { loading: progressLoading } = useProgress();
@@ -26,12 +28,9 @@ const Level = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [lessonDetail, setLessonDetail] = useState<Lesson | null>(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(() => Boolean(currentLessonId));
 
   const loading = authLoading || progressLoading || coursesLoading || loadingDetail;
-
-  const currentModuleId = searchParams.get('module') || undefined;
-  const currentLessonId = searchParams.get('lesson') || undefined;
 
   // Fetch lesson detail when lesson changes
   useEffect(() => {
@@ -39,11 +38,18 @@ const Level = () => {
     
     const loadLessonDetail = async () => {
       if (!currentLessonId) {
-        if (!cancelled) setLessonDetail(null);
+        if (!cancelled) {
+          setLessonDetail(null);
+          setLoadingDetail(false);
+        }
         return;
       }
-      
-      if (!cancelled) setLoadingDetail(true);
+
+      if (!cancelled) {
+        setLessonDetail(null);
+        setLoadingDetail(true);
+      }
+
       const detail = await fetchLessonDetail(currentLessonId);
       if (!cancelled) {
         setLessonDetail(detail);
@@ -54,6 +60,10 @@ const Level = () => {
     loadLessonDetail();
     
     return () => { cancelled = true; };
+  }, [currentLessonId, fetchLessonDetail]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [currentLessonId]);
 
   // Minimum swipe distance for gesture detection
@@ -155,12 +165,16 @@ const Level = () => {
   // Merge basic lesson with detailed content from API
   const currentLesson = basicLesson ? {
     ...basicLesson,
-    ...lessonDetail,
+    ...(lessonDetail ?? {}),
+    id: basicLesson.id,
     lesson_objective:
       lessonDetail?.lesson_objective || basicLesson.lesson_objective || '',
     common_mistakes: lessonDetail?.common_mistakes || basicLesson.common_mistakes || '',
     key_takeaway: lessonDetail?.key_takeaway || basicLesson.key_takeaway || '',
     practical_task: lessonDetail?.practical_task || basicLesson.practical_task || '',
+    content: lessonDetail?.content || basicLesson.content || '',
+    estimated_time_minutes:
+      lessonDetail?.estimated_time_minutes ?? basicLesson.estimated_time_minutes ?? null,
     faqs: lessonDetail?.faqs || [],
   } : undefined;
 

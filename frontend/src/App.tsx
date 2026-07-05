@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { isAuthRequired } from "@/config/appConfig";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SkipLink } from "@/components/ui/skip-link";
@@ -83,6 +84,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <ErrorBoundary>
+    <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
@@ -197,6 +199,7 @@ const App = () => (
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </ThemeProvider>
   </ErrorBoundary>
 );
 
