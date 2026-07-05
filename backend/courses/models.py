@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django_ckeditor_5.fields import CKEditor5Field
@@ -18,6 +20,7 @@ class Course(models.Model):
     thumbnail = models.ImageField(
         upload_to="courses/thumbnails/", null=True, blank=True
     )
+    price_inr = models.PositiveIntegerField(default=0)
     is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -111,3 +114,43 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.user} → {self.course}"
+
+
+class CoursePayment(models.Model):
+    STATUS_INITIATED = "initiated"
+    STATUS_SUCCESS = "success"
+    STATUS_FAILED = "failed"
+    STATUS_PENDING = "pending"
+    STATUS_HASH_MISMATCH = "hash_mismatch"
+
+    STATUS_CHOICES = [
+        (STATUS_INITIATED, "Initiated"),
+        (STATUS_SUCCESS, "Success"),
+        (STATUS_FAILED, "Failed"),
+        (STATUS_PENDING, "Pending"),
+        (STATUS_HASH_MISMATCH, "Hash Mismatch"),
+    ]
+
+    reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    txnid = models.CharField(max_length=64, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="course_payments")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="payments")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="INR")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_INITIATED)
+    payu_status = models.CharField(max_length=40, blank=True, default="")
+    payu_payment_id = models.CharField(max_length=64, blank=True, default="")
+    bank_ref_num = models.CharField(max_length=128, blank=True, default="")
+    payment_mode = models.CharField(max_length=40, blank=True, default="")
+    error_message = models.TextField(blank=True, default="")
+    request_payload = models.JSONField(default=dict, blank=True)
+    response_payload = models.JSONField(default=dict, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.txnid} ({self.status})"

@@ -4,6 +4,8 @@ from .views import (
     CourseDetailView,
     EnrolledCourseListView,
     EnrollCourseView,
+    PaymentCheckoutView,
+    PaymentReturnView,
     LevelListView,
     LevelDetailView,
     ModuleListView,
@@ -18,6 +20,8 @@ urlpatterns = [
     path('', EnrolledCourseListView.as_view(), name='enrolled-courses'),
     path('all/', CourseListView.as_view(), name='all-courses'),
     path('enroll/', EnrollCourseView.as_view(), name='enroll-course'),
+    path('payments/initiate/', PaymentCheckoutView.as_view(), name='payment-initiate'),
+    path('payments/payu/return/', PaymentReturnView.as_view(), name='payment-return'),
     path('<int:course_id>/', CourseDetailView.as_view(), name='course-detail'),
 
     # Level endpoints

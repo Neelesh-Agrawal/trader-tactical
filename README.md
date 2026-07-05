@@ -36,6 +36,19 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+### PayU checkout setup
+
+Add these variables to `.env` before using course checkout:
+
+```env
+PAYU_MERCHANT_KEY=your_test_or_live_key
+PAYU_MERCHANT_SALT=your_test_or_live_salt
+PAYU_CHECKOUT_URL=https://test.payu.in/_payment
+FRONTEND_BASE_URL=http://localhost:8080
+```
+
+Use `https://secure.payu.in/_payment` for production. Your PayU `surl` and `furl` will be handled by the backend at `/api/courses/payments/payu/return/`, which then redirects the learner to `/purchase/result` on the frontend.
+
 Admin: http://localhost:8000/admin/
 
 ### 3. Frontend

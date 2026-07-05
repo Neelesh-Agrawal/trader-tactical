@@ -11,6 +11,7 @@ class Command(BaseCommand):
             defaults={
                 "title": "Options Trading Mastery",
                 "description": "A structured path from beginner to advanced options trading.",
+                "price_inr": 999,
                 "is_published": True,
             },
         )
@@ -19,6 +20,7 @@ class Command(BaseCommand):
             course.description = (
                 "A structured path from beginner to advanced options trading."
             )
+            course.price_inr = 999
             course.is_published = True
             course.save()
 

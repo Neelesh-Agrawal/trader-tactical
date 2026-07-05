@@ -31,4 +31,5 @@ dist-ssr
 .venv/
 **/.venv/
 *.sqlite3
+**/*.sql
 backend/lms_db

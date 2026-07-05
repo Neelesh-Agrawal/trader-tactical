@@ -1,6 +1,7 @@
 import logging
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +103,48 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
     phone = serializers.CharField(required=True)
     pin = serializers.CharField(required=True, write_only=True)
 
+    def _phone_candidates(self, phone):
+        raw_phone = phone.strip()
+        digits_only = "".join(character for character in raw_phone if character.isdigit())
+        candidates = []
+
+        def add_candidate(value):
+            if value and value not in candidates:
+                candidates.append(value)
+
+        add_candidate(raw_phone)
+
+        try:
+            from phonenumber_field.phonenumber import PhoneNumber
+
+            phone_number = PhoneNumber.from_string(raw_phone, region="IN")
+            add_candidate(str(phone_number))
+            if digits_only:
+                add_candidate(digits_only)
+                if len(digits_only) == 10:
+                    add_candidate(f"+91{digits_only}")
+                elif len(digits_only) == 12 and digits_only.startswith("91"):
+                    add_candidate(f"+{digits_only}")
+                    add_candidate(digits_only[2:])
+        except Exception:
+            add_candidate(digits_only)
+            if len(digits_only) == 10:
+                add_candidate(f"+91{digits_only}")
+            elif len(digits_only) == 12 and digits_only.startswith("91"):
+                add_candidate(f"+{digits_only}")
+                add_candidate(digits_only[2:])
+
+        return candidates
+
+    def _get_user_by_phone(self, phone):
+        candidates = self._phone_candidates(phone)
+        phone_query = Q()
+
+        for candidate in candidates:
+            phone_query |= Q(phone=candidate)
+
+        return User.objects.filter(phone_query).first()
+
     def validate(self, attrs):
         phone = attrs.get("phone")
         pin = attrs.get("pin")
@@ -109,36 +152,9 @@ class PhoneTokenObtainPairSerializer(serializers.Serializer):
         if not phone or not pin:
             raise serializers.ValidationError("Phone and PIN are required")
 
-        # Normalize phone number - PhoneNumberField stores in E.164 format
-        # We'll try to parse it the same way PhoneNumberField does
-        try:
-            from phonenumber_field.phonenumber import PhoneNumber
-
-            # Create PhoneNumber object from string (handles normalization)
-            phone_number = PhoneNumber.from_string(phone, region=None)
-
-            # Look up user by phone (PhoneNumberField handles format matching)
-            try:
-                user = User.objects.get(phone=phone_number)
-            except User.DoesNotExist:
-                # Try with string representation as fallback
-                try:
-                    user = User.objects.get(phone=str(phone_number))
-                except User.DoesNotExist:
-                    raise serializers.ValidationError("Invalid phone number or PIN")
-
-        except Exception:
-            # Fallback: try direct lookup with normalized string
-            normalized_phone = (
-                phone.replace(" ", "")
-                .replace("-", "")
-                .replace("(", "")
-                .replace(")", "")
-            )
-            try:
-                user = User.objects.get(phone=normalized_phone)
-            except User.DoesNotExist:
-                raise serializers.ValidationError("Invalid phone number or PIN")
+        user = self._get_user_by_phone(phone)
+        if user is None:
+            raise serializers.ValidationError("Invalid phone number or PIN")
 
         # Verify PIN (which is stored as password)
         if not user.check_password(pin):

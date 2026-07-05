@@ -11,6 +11,7 @@ from quiz.models import Quiz, Question, Option
 
 from .models import (
     Course,
+    CoursePayment,
     Level,
     Module,
     Lesson,
@@ -274,7 +275,7 @@ class LevelAdmin(admin.ModelAdmin):
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     form = CourseAdminForm
-    list_display = ("title", "is_published", "created_at")
+    list_display = ("title", "price_inr", "is_published", "created_at")
     list_filter = ("is_published",)
     search_fields = ("title",)
 
@@ -284,3 +285,11 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ("user", "course", "enrolled_at", "is_active")
     list_filter = ("is_active", "course")
     search_fields = ("user__email", "course__title")
+
+
+@admin.register(CoursePayment)
+class CoursePaymentAdmin(admin.ModelAdmin):
+    list_display = ("txnid", "user", "course", "amount", "status", "created_at")
+    list_filter = ("status", "course")
+    search_fields = ("txnid", "user__email", "course__title", "payu_payment_id")
+    readonly_fields = ("reference", "request_payload", "response_payload", "created_at", "updated_at")

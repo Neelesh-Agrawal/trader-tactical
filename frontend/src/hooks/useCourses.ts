@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getAuthTokens } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { setLevelIdMap, getBackendLevelId } from '@/lib/levelIdMap';
+import { courseConfigList } from '@/config/courseConfig';
+import { isAuthRequired } from '@/config/appConfig';
 
 export interface Question {
   id: string;
@@ -46,9 +48,12 @@ export interface Module {
 export interface Level {
   id: string;
   backendId: number;
+  courseId: number;
+  courseTitle: string;
   title: string;
   order: number;
   is_unlocked: boolean;
+  is_enrolled: boolean;
   modules: Module[];
   finalAssessment: Question[];
 }
@@ -63,6 +68,7 @@ interface BackendCourseResponse {
   id: number;
   title: string;
   description: string;
+  is_published: boolean;
 }
 
 interface BackendLevelResponse {
@@ -128,6 +134,147 @@ interface BackendQuiz {
   name: string;
 }
 
+const levelIdByBackendId: Record<number, string> = {
+  1: 'beginner',
+  2: 'intermediate',
+  3: 'advanced',
+};
+
+const levelSlugByOrder: Record<number, string> = {
+  1: 'beginner',
+  2: 'intermediate',
+  3: 'advanced',
+};
+
+const levelSlugByTitle: Record<string, string> = {
+  Beginner: 'beginner',
+  Intermediate: 'intermediate',
+  Advanced: 'advanced',
+};
+
+const getConfigForCourse = (course: Pick<Course, 'id' | 'title'>) => {
+  const normalizedTitle = course.title.trim().toLowerCase();
+
+  return courseConfigList.find((config) => (
+    config.number === course.id ||
+    config.id === normalizedTitle ||
+    config.name.trim().toLowerCase() === normalizedTitle ||
+    config.title.trim().toLowerCase() === normalizedTitle
+  ));
+};
+
+const getLevelSlug = ({
+  backendLevelId,
+  order,
+  title,
+  course,
+}: {
+  backendLevelId?: number;
+  order?: number;
+  title?: string;
+  course: Pick<Course, 'id' | 'title'>;
+}): string => {
+  const config = getConfigForCourse(course);
+
+  if (config) {
+    return config.id;
+  }
+
+  if (backendLevelId && levelIdByBackendId[backendLevelId] && course.id === backendLevelId) {
+    return levelIdByBackendId[backendLevelId];
+  }
+
+  if (order && title) {
+    return `${course.id}-${order}-${title.toLowerCase()}`;
+  }
+
+  return String(backendLevelId || course.id || order || title || '');
+};
+
+const buildPreviewLevel = (course: Course): Level => {
+  const config = getConfigForCourse(course);
+  const slug = getLevelSlug({
+    course,
+    title: config?.name || course.title,
+    order: config?.number || course.id,
+    backendLevelId: course.id,
+  });
+  const moduleTitles = config?.points.length ? config.points : ['Course overview'];
+
+  return {
+    id: slug,
+    backendId: course.id,
+    courseId: course.id,
+    courseTitle: course.title,
+    title: config?.name || course.title,
+    order: config?.number || course.id,
+    is_unlocked: false,
+    is_enrolled: false,
+    modules: moduleTitles.map((point, moduleIndex) => ({
+      id: `module-preview-${course.id}-${moduleIndex + 1}`,
+      title: point,
+      description: `Enroll in ${course.title} to unlock this module.`,
+      icon: config?.emoji || '📚',
+      order: moduleIndex + 1,
+      is_unlocked: false,
+      finalQuiz: [],
+      lessons: [],
+    })),
+    finalAssessment: [],
+  };
+};
+
+const buildDemoCourseData = (): { courses: Course[]; levels: Level[] } => {
+  const courses: Course[] = courseConfigList.map((config) => ({
+    id: config.number,
+    title: config.name,
+    description: config.description,
+  }));
+
+  const levels: Level[] = courseConfigList.map((config, levelIndex) => ({
+    id: config.id,
+    backendId: config.number,
+    courseId: config.number,
+    courseTitle: config.name,
+    title: config.name,
+    order: config.number,
+    is_unlocked: levelIndex === 0,
+    is_enrolled: levelIndex === 0,
+    modules: config.points.map((point, moduleIndex) => {
+      const numericId = config.number * 100 + moduleIndex + 1;
+
+      return {
+        id: `module-${config.number}-${numericId}`,
+        title: point,
+        description: `Preview module for ${config.name}. Sign in with an enrolled account to load the full lesson content.`,
+        icon: config.emoji,
+        order: moduleIndex + 1,
+        is_unlocked: levelIndex === 0 && moduleIndex === 0,
+        finalQuiz: [],
+        lessons: [
+          {
+            id: `lesson-${config.number}-${numericId}-${numericId}`,
+            title: `${point} Overview`,
+            lesson_objective: `<p>${point}</p>`,
+            content: `<p>This is preview content for ${config.name}.</p><p>Sign in with an enrolled account to load the complete course data from the backend.</p>`,
+            common_mistakes: '',
+            key_takeaway: 'Use an enrolled account to continue with full course content.',
+            practical_task: '',
+            estimated_time_minutes: 5,
+            order: 1,
+            is_unlocked: levelIndex === 0 && moduleIndex === 0,
+            faqs: [],
+            quiz: [],
+          },
+        ],
+      };
+    }),
+    finalAssessment: [],
+  }));
+
+  return { courses, levels };
+};
+
 
 
 export const useCourses = () => {
@@ -142,6 +289,14 @@ export const useCourses = () => {
     return icons[index % icons.length];
   };
 
+  const applyDemoCourseData = useCallback(() => {
+    const demoData = buildDemoCourseData();
+    setCourses(demoData.courses);
+    setLevels(demoData.levels);
+    setLevelIdMap(demoData.levels.map((level) => ({ id: level.id, backendId: level.backendId })));
+    setError(null);
+  }, []);
+
 
 
   const fetchCourses = useCallback(async () => {
@@ -153,106 +308,117 @@ export const useCourses = () => {
     setLoading(true);
     setError(null);
 
+    if (!isAuthRequired() && !getAuthTokens()?.access) {
+      applyDemoCourseData();
+      setLoading(false);
+      return;
+    }
+
     try {
-      const coursesData = await apiFetch<BackendCourseResponse[]>('/api/courses/all/');
-      
-      const mappedCourses: Course[] = coursesData.map(c => ({
-        id: c.id,
-        title: c.title,
-        description: c.description,
+      const [publishedCoursesData, enrolledCoursesData] = await Promise.all([
+        apiFetch<BackendCourseResponse[]>('/api/courses/all/'),
+        apiFetch<BackendCourseResponse[]>('/api/courses/'),
+      ]);
+
+      const publishedCourses = publishedCoursesData.map((course) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
       }));
-      
-      setCourses(mappedCourses);
+      const enrolledCourseIds = new Set(enrolledCoursesData.map((course) => course.id));
 
-      if (mappedCourses.length > 0) {
-        const firstCourseId = mappedCourses[0].id;
+      setCourses(publishedCourses);
 
-        let levelsData: BackendLevelResponse[];
-        try {
-          levelsData = await apiFetch<BackendLevelResponse[]>(
-            `/api/courses/${firstCourseId}/levels/`
-          );
-        } catch (err) {
-          const status = (err as { status?: number }).status;
-          if (status === 404) {
-            await apiFetch('/api/courses/enroll/', {
-              method: 'POST',
-              body: JSON.stringify({ course_id: firstCourseId }),
-            });
-            levelsData = await apiFetch<BackendLevelResponse[]>(
-              `/api/courses/${firstCourseId}/levels/`
+      if (publishedCourses.length > 0) {
+        const levelsByCourse = await Promise.allSettled(
+          publishedCourses
+            .filter((course) => enrolledCourseIds.has(course.id))
+            .map(async (course) => {
+            const levelsData = await apiFetch<BackendLevelResponse[]>(
+              `/api/courses/${course.id}/levels/`
             );
-          } else {
-            throw err;
+
+            return levelsData.map((l) => {
+              const levelSlug = getLevelSlug({
+                course,
+                backendLevelId: l.id,
+                order: l.order,
+                title: l.title,
+              });
+
+              return {
+                id: levelSlug,
+                backendId: l.id,
+                courseId: course.id,
+                courseTitle: course.title,
+                title: l.title,
+                order: l.order,
+                is_unlocked: l.is_unlocked,
+                is_enrolled: true,
+                modules: l.modules.map((m, mIndex) => ({
+                  id: `module-${l.id}-${m.id}`,
+                  title: m.title,
+                  description: m.description,
+                  icon: m.icon || getDefaultIcon(mIndex),
+                  order: m.order,
+                  is_unlocked: m.is_unlocked,
+                  finalQuiz: [],
+                  lessons: m.lessons.map((les) => ({
+                    id: `lesson-${l.id}-${m.id}-${les.id}`,
+                    title: les.title,
+                    lesson_objective: les.lesson_objective,
+                    content: '',
+                    common_mistakes: '',
+                    key_takeaway: '',
+                    practical_task: '',
+                    estimated_time_minutes: les.estimated_time_minutes,
+                    order: les.order,
+                    is_unlocked: les.is_unlocked,
+                    faqs: [],
+                    quiz: [],
+                  })),
+                })),
+                finalAssessment: [],
+              };
+            });
+          })
+        );
+
+        const mappedLevels: Level[] = levelsByCourse.flatMap((result, index) => {
+          if (result.status === 'fulfilled') {
+            return result.value;
           }
-        }
-        
-        const levelIdByBackendId: Record<number, string> = {
-          1: 'beginner',
-          2: 'intermediate',
-          3: 'advanced',
-        };
-        const levelSlugByOrder: Record<number, string> = {
-          1: 'beginner',
-          2: 'intermediate',
-          3: 'advanced',
-        };
-        const levelSlugByTitle: Record<string, string> = {
-          Beginner: 'beginner',
-          Intermediate: 'intermediate',
-          Advanced: 'advanced',
-        };
 
-        const mappedLevels: Level[] = levelsData.map((l) => {
-          const levelSlug =
-            levelSlugByTitle[l.title] ||
-            levelSlugByOrder[l.order] ||
-            levelIdByBackendId[l.id] ||
-            String(l.id);
-
-          return {
-          id: levelSlug,
-          backendId: l.id,
-          title: l.title,
-          order: l.order,
-          is_unlocked: l.is_unlocked,
-          modules: l.modules.map((m, mIndex) => ({
-            id: `module-${l.id}-${m.id}`,
-            title: m.title,
-            description: m.description,
-            icon: m.icon || getDefaultIcon(mIndex),
-            order: m.order,
-            is_unlocked: m.is_unlocked,
-            finalQuiz: [],
-            lessons: m.lessons.map((les) => ({
-              id: `lesson-${l.id}-${m.id}-${les.id}`,
-              title: les.title,
-              lesson_objective: les.lesson_objective,
-              content: '',
-              common_mistakes: '',
-              key_takeaway: '',
-              practical_task: '',
-              estimated_time_minutes: les.estimated_time_minutes,
-              order: les.order,
-              is_unlocked: les.is_unlocked,
-              faqs: [],
-              quiz: [],
-            })),
-          })),
-          finalAssessment: [],
-        };
+          console.error(
+            `Failed to fetch levels for enrolled course ${Array.from(enrolledCourseIds)[index]}:`,
+            result.reason,
+          );
+          return [];
         });
-        
-        setLevels(mappedLevels);
-        setLevelIdMap(mappedLevels.map((level) => ({ id: level.id, backendId: level.backendId })));
+
+        const lockedPreviewLevels = publishedCourses
+          .filter((course) => !enrolledCourseIds.has(course.id))
+          .map(buildPreviewLevel);
+
+        const allLevels = [...mappedLevels, ...lockedPreviewLevels].sort((a, b) => a.order - b.order);
+         
+        setLevels(allLevels);
+        setLevelIdMap(allLevels.map((level) => ({ id: level.id, backendId: level.backendId })));
+      } else {
+        setLevels([]);
       }
     } catch (err) {
       console.error('Failed to fetch courses:', err);
-      setError('Failed to load course data');
+
+      if (!isAuthRequired()) {
+        applyDemoCourseData();
+      } else {
+        setError('Failed to load course data');
+      }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [applyDemoCourseData, user]);
 
   useEffect(() => {
     fetchCourses();

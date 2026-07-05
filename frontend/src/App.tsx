@@ -28,6 +28,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import RiskDisclosure from "./pages/RiskDisclosure";
 import Disclaimer from "./pages/Disclaimer";
 import Pricing from "./pages/Pricing";
+import PurchaseResult from "./pages/PurchaseResult";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -184,6 +185,7 @@ const App = () => (
                 }
               />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/purchase/result" element={<PurchaseResult />} />
               <Route path="/terms" element={<TermsConditions />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/refund" element={<RefundPolicy />} />
