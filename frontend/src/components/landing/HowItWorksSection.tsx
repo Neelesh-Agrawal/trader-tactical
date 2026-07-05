@@ -80,16 +80,16 @@ export const HowItWorksSection = () => {
             {/* Connection line */}
             <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-success/20 via-success/40 to-success/20 -translate-y-1/2" />
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 items-stretch">
               {learningFlow.map((item, index) => (
-                <AnimatedSection key={item.title} direction="up" delay={150 + index * 100}>
-                  <div className="relative group">
-                    <div className="tactical-card p-4 md:p-5 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full min-h-[200px] md:min-h-[220px] flex flex-col">
+                <AnimatedSection key={item.title} direction="up" delay={150 + index * 100} className="h-full">
+                  <div className="relative group h-full">
+                    <div className="tactical-card p-4 md:p-5 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full flex flex-col">
                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-success/10 flex items-center justify-center mx-auto mb-3 shrink-0 text-success">
                         <item.icon />
                       </div>
-                      <h4 className={`${typography.heading.h5} font-ui font-semibold mb-2 text-foreground`}>{item.title}</h4>
-                      <p className={`${typography.body.sm} font-body text-muted-foreground line-clamp-3`}>{item.description}</p>
+                      <h4 className={`${typography.heading.h5} font-ui font-semibold mb-2 text-foreground shrink-0`}>{item.title}</h4>
+                      <p className={`${typography.body.sm} font-body text-muted-foreground leading-relaxed flex-1`}>{item.description}</p>
                     </div>
                   </div>
                 </AnimatedSection>

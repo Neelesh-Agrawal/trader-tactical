@@ -229,7 +229,7 @@ const Lesson = () => {
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <HelpCircle className="h-5 w-5 text-primary" />
-                <span className="subheader">Recon (FAQs)</span>
+                <span className="subheader">FAQs</span>
               </div>
               <Accordion type="single" collapsible>
                 {fullLesson.faqs.map((faq, index) => (

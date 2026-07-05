@@ -11,7 +11,7 @@ export const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden py-12 md:py-16 lg:py-20 bg-background">
+    <section id="home" className="relative overflow-hidden py-12 md:py-16 lg:py-20 bg-background">
       <div className="container mx-auto px-4 relative">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content */}

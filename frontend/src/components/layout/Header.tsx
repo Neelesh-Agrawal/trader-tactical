@@ -22,7 +22,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('#levels');
+  const [activeSection, setActiveSection] = useState('#home');
 
   const getInitials = (name: string) => {
     const parts = name.split(' ').filter(Boolean);
@@ -49,6 +49,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   };
 
   const navLinks = [
+    { label: 'Home', href: '#home' },
     { label: 'Levels', href: '#levels' },
     { label: 'FAQs', href: '#faqs' },
     { label: 'Contact Us', href: '#contact' }
@@ -87,8 +88,12 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   }, [user, location.pathname]);
 
   return (
-    <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50" role="banner">
-      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+    <>
+      <header
+        className="border-b border-border fixed top-0 inset-x-0 z-[100] w-full bg-background shadow-sm lg:sticky lg:top-0 lg:z-50 lg:bg-background/95 lg:shadow-none backdrop-blur supports-[backdrop-filter]:lg:bg-background/95"
+        role="banner"
+      >
+        <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
         {/* Logo */}
         <Link 
           to={user ? '/dashboard' : '/'}
@@ -204,12 +209,12 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
       {/* Mobile Menu */}
       {!user && mobileMenuOpen && (
         <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur animate-fade-in">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
+          <nav className="container mx-auto px-4 py-4 flex flex-col items-center gap-2">
             {navLinks.map((link) => (
               <button
                 key={link.label}
                 onClick={() => handleNavClick(link.href)}
-                className={`relative text-left py-3 px-4 rounded-lg transition-colors duration-300 font-medium ${
+                className={`relative w-full max-w-xs text-center py-3 px-4 rounded-lg transition-colors duration-300 font-medium ${
                   activeSection === link.href
                     ? 'text-foreground'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -217,22 +222,24 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
               >
                 {link.label}
                 <span
-                  className={`absolute left-4 right-4 bottom-1 h-0.5 bg-success transition-all duration-300 ${
+                  className={`absolute left-1/2 -translate-x-1/2 bottom-1 h-0.5 w-12 bg-success transition-all duration-300 ${
                     activeSection === link.href ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-                  } origin-left`}
+                  } origin-center`}
                 />
               </button>
             ))}
             <Button 
               variant="ghost" 
               onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} 
-              className="justify-start mt-2"
+              className="justify-center w-full max-w-xs mt-2"
             >
               Login
             </Button>
           </nav>
         </div>
       )}
-    </header>
+      </header>
+      <div className="h-14 sm:h-[3.75rem] lg:hidden shrink-0" aria-hidden="true" />
+    </>
   );
 };

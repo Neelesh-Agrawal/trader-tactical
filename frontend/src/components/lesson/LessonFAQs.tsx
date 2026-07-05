@@ -20,7 +20,7 @@ export const LessonFAQs = ({ faqs }: LessonFAQsProps) => {
       <div className="tactical-card p-4 sm:p-6 mb-6 sm:mb-8">
         <div className="flex items-center gap-2 mb-3 sm:mb-4">
           <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-          <span className="subheader text-sm sm:text-base">Recon (FAQs)</span>
+          <span className="subheader text-sm sm:text-base">FAQs</span>
         </div>
         <Accordion type="single" collapsible className="space-y-2">
           {faqs.map((faq, index) => (

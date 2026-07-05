@@ -145,10 +145,8 @@
 
   html {
     scroll-behavior: smooth;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
+    overflow-x: clip;
+    width: 100%;
   }
 
   body {
@@ -161,6 +159,26 @@
     font-feature-settings: "lnum" 1, "tnum" 1;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    overflow-x: clip;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #root {
+    overflow-x: clip;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
   }
 
   h1, h2, h3, h4, h5, h6 {

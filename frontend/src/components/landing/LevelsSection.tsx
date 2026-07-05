@@ -35,15 +35,26 @@ export const LevelsSection = () => {
         }
         
         .lv-card-featured {
-          transform: scale(1.025);
           border-color: rgba(22, 163, 74, 0.4);
           box-shadow: 0 10px 30px -10px rgba(22, 163, 74, 0.15);
         }
         
+        @media (min-width: 768px) {
+          .lv-card-featured {
+            transform: scale(1.025);
+          }
+        }
+        
         .lv-card-featured:hover {
-          transform: translateY(-8px) scale(1.025);
+          transform: translateY(-8px);
           border-color: #15803d !important;
           box-shadow: 0 24px 48px -12px rgba(22, 163, 74, 0.25);
+        }
+
+        @media (min-width: 768px) {
+          .lv-card-featured:hover {
+            transform: translateY(-8px) scale(1.025);
+          }
         }
         
         .lv-btn {

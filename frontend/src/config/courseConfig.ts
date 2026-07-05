@@ -26,7 +26,7 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     price: 999,
     modules: 5,
     lessons: 40,
-    duration: '12-15 weeks',
+    duration: '6-7 weeks',
     description: 'Understand how options work, decode market terminology, and take your first steps toward becoming a smarter trader.',
     bestFor: 'New traders with little or no options trading experience.',
     cta: 'Start Level 1',
@@ -49,7 +49,7 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     price: 1999,
     modules: 6,
     lessons: 35,
-    duration: '10-12 weeks',
+    duration: '6-7 weeks',
     description: 'Trade options with better strategies, smarter decisions, and more confidence.',
     bestFor: 'Traders who understand the basics and want structured trade execution skills.',
     cta: 'Start Level 2',
@@ -72,7 +72,7 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     price: 2999,
     modules: 7,
     lessons: 50,
-    duration: '18-20 weeks',
+    duration: '6-7 weeks',
     description: 'This level turns you from someone who knows options into someone who trades them like a pro.',
     bestFor: 'Traders looking to achieve consistency and long-term growth.',
     cta: 'Start Level 3',
@@ -180,9 +180,9 @@ export interface AboutConfig {
 
 export const aboutConfig: AboutConfig = {
   badge: "THE REAL STRUGGLE",
-  titlePart1: "If this sounds familiar,",
-  titlePart2: " you're not alone.",
-  subtitle: "Effort isn’t the problem. Structure is.",
+  titlePart1: "Effort isn’t the problem. ",
+  titlePart2: "Structure is.",
+  subtitle: "If this sounds familiar, you're not alone.",
   features: [
     {
       iconKey: 'lightbulb',
@@ -289,7 +289,7 @@ export const landingFaqConfig: FAQ[] = [
   },
   {
     question: "How much time will I need to commit?",
-    answer: "Each level typically takes 6–8 weeks, and you can learn at your own pace."
+    answer: "Each level typically takes 6–7 weeks, and you can learn at your own pace."
   },
   {
     question: "Can I really learn without rushing?",
