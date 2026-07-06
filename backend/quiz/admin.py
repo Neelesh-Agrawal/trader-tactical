@@ -1,7 +1,8 @@
 import nested_admin
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django import forms
+from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 from .models import (
@@ -10,29 +11,30 @@ from .models import (
     Option,
     QuizAttempt,
 )
-from django.db import models
+from .forms import FixedOptionInlineFormSet, QuestionAdminForm
 
 
-class QuestionAdminForm(forms.ModelForm):
-    class Meta:
-        model = Question
-        fields = "__all__"
-        widgets = {
-            "text": CKEditor5Widget(config_name="default"),
-            "explanation": CKEditor5Widget(config_name="default"),
-        }
+class CKEditorAdminMixin:
+    formfield_overrides = {
+        CKEditor5Field: {"widget": CKEditor5Widget(config_name="default")},
+    }
 
 
 class OptionInline(nested_admin.NestedTabularInline):
     model = Option
+    formset = FixedOptionInlineFormSet
     extra = 4
+    min_num = 4
+    max_num = 4
+    validate_min = True
+    validate_max = True
     fields = (
         "text",
         "is_correct",
     )
 
 
-class QuestionInline(nested_admin.NestedStackedInline):
+class QuestionInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = Question
     form = QuestionAdminForm
     extra = 1
@@ -45,7 +47,7 @@ class QuestionInline(nested_admin.NestedStackedInline):
 
 
 @admin.register(Quiz)
-class QuizAdmin(nested_admin.NestedModelAdmin):
+class QuizAdmin(CKEditorAdminMixin, nested_admin.NestedModelAdmin):
     list_display = (
         "quiz_type",
         "attached_to",
