@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 from .models import User
 from django.contrib.auth.password_validation import validate_password
-from courses.models import Enrollment, Course
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -46,21 +45,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone_verified=True,  # User verified phone via OTP before registration
             email_verified=True,  # User verified email via OTP before registration
         )
-
-        # Auto-enroll user in course ID 1
-        try:
-            course = Course.objects.get(id=1)
-            _, created = Enrollment.objects.get_or_create(
-                user=user, course=course, defaults={"is_active": True}
-            )
-            if created:
-                from progress.services import unlock_initial_course_progress
-
-                unlock_initial_course_progress(user, course)
-        except Course.DoesNotExist:
-            pass
-        except Exception as e:
-            logger.error(f"Auto-enrollment error: {e}")
 
         return user
 
