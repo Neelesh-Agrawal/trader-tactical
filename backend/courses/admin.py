@@ -74,7 +74,7 @@ class LessonFAQAdminForm(forms.ModelForm):
 class LessonFAQInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = LessonFAQ
     form = LessonFAQAdminForm
-    extra = 1
+    extra = 0
 
 
 class QuizOptionInline(nested_admin.NestedTabularInline):
@@ -91,7 +91,7 @@ class QuizOptionInline(nested_admin.NestedTabularInline):
 class QuizQuestionInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = Question
     form = QuestionAdminForm
-    extra = 1
+    extra = 0
     fields = ("text", "explanation", "order")
     readonly_fields = ("order",)
     inlines = [QuizOptionInline]
