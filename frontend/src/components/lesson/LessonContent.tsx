@@ -111,8 +111,14 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         {/* Learning Objectives */}
         <LessonObjectives objective={lesson.lesson_objective} />
 
-        {/* Main Content */}
-        <LessonIntelV2 content={lesson.content} />
+        {/* Content */}
+        <div className="tactical-card p-5 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="h-5 w-5 shrink-0 text-primary" />
+            <h2 className="subheader text-[17px] md:text-[18px]">Content</h2>
+          </div>
+          <LessonIntelV2 content={lesson.content} />
+        </div>
 
         {/* Common Mistakes */}
         <LessonRichSection
@@ -136,7 +142,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
         />
 
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
             {isCompleted ? 'Quiz completed. You can retake it anytime.' : 'Ready when you are: take the lesson quiz.'}
           </p>
           <Button

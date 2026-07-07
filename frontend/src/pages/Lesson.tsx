@@ -226,11 +226,11 @@ const Lesson = () => {
           {/* Learning Objectives */}
           <LessonObjectives objective={fullLesson.lesson_objective} />
 
-          {/* Intel Section */}
+          {/* Content Section */}
           <div className="tactical-card p-6 md:p-8 mb-8">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="h-5 w-5 text-primary shrink-0" />
-              <span className="subheader">Intel</span>
+              <span className="subheader">Content</span>
             </div>
             {renderHtmlSection(fullLesson.content)}
           </div>
@@ -248,7 +248,7 @@ const Lesson = () => {
             <div className="tactical-card p-6 mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="h-5 w-5 text-warning shrink-0" />
-                <span className="subheader">Key Signals</span>
+                <span className="subheader">Key Takeaways</span>
               </div>
               {renderHtmlSection(fullLesson.key_takeaway)}
             </div>
@@ -286,10 +286,10 @@ const Lesson = () => {
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="space-y-2">
                 <div className="caption text-primary">LESSON CHECKPOINT</div>
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-xl md:text-2xl font-bold">
                   {isCompleted ? 'Quiz Completed' : 'Ready for the Quiz?'}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                   {isCompleted
                     ? 'You can retake the lesson quiz or move on to the next step.'
                     : 'Take the lesson quiz to lock in the material and mark this lesson complete.'}

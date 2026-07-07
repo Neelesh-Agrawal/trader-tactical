@@ -135,9 +135,9 @@ export const QuizInterface = ({
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="tactical-card max-w-md w-full p-8 text-center border-destructive">
           <XCircle className="h-16 w-16 mx-auto mb-6 text-destructive" />
-          <h2 className="text-2xl font-bold mb-4">Quiz Invalidated</h2>
-          <p className="text-muted-foreground mb-6">{invalidationReason}</p>
-          <p className="text-sm text-muted-foreground mb-8">
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Quiz Invalidated</h2>
+          <p className="text-sm md:text-base text-muted-foreground mb-6">{invalidationReason}</p>
+          <p className="text-xs md:text-sm text-muted-foreground mb-8">
             This attempt has been recorded. You may retry after the cooldown period.
           </p>
           <Button onClick={() => navigate(returnPath)} className="gap-2">
@@ -153,7 +153,7 @@ export const QuizInterface = ({
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className={cn(
-          "tactical-card max-w-lg w-full p-8 text-center animate-scale-in",
+          "tactical-card max-w-lg w-full p-5 sm:p-8 text-center animate-scale-in",
           passed ? "border-success" : "border-destructive"
         )}>
           {passed ? (
@@ -164,31 +164,31 @@ export const QuizInterface = ({
                   <Trophy className="h-12 w-12 text-warning animate-bounce-in" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold mb-2 text-success">Mission Complete!</h2>
-              <p className="text-muted-foreground mb-6">
+              <h2 className="text-xl md:text-2xl font-bold mb-2 text-success">Mission Complete!</h2>
+              <p className="text-sm md:text-base text-muted-foreground mb-6">
                 Outstanding performance, trader.
               </p>
             </>
           ) : (
             <>
               <XCircle className="h-16 w-16 mx-auto mb-6 text-destructive animate-scale-in" />
-              <h2 className="text-2xl font-bold mb-2 text-destructive">Mission Failed</h2>
-              <p className="text-muted-foreground mb-6">
+              <h2 className="text-xl md:text-2xl font-bold mb-2 text-destructive">Mission Failed</h2>
+              <p className="text-sm md:text-base text-muted-foreground mb-6">
                 Review the material and try again.
               </p>
             </>
           )}
 
-          <div className="flex justify-center gap-8 mb-8">
+          <div className="flex justify-center gap-4 sm:gap-8 mb-6 sm:mb-8">
             <div className={cn(
-              "p-4 rounded-lg",
+              "p-3 sm:p-4 rounded-lg",
               passed ? "bg-success/10" : "bg-muted"
             )}>
-              <div className="text-4xl font-bold font-mono">{scoreCount}%</div>
+              <div className="text-3xl md:text-4xl font-bold font-mono">{scoreCount}%</div>
               <div className="caption text-muted-foreground">SCORE</div>
             </div>
-            <div className="p-4 rounded-lg bg-muted">
-              <div className="text-4xl font-bold font-mono">
+            <div className="p-3 sm:p-4 rounded-lg bg-muted">
+              <div className="text-3xl md:text-4xl font-bold font-mono">
                 {Math.round((score / 100) * totalQuestions)}/{totalQuestions}
               </div>
               <div className="caption text-muted-foreground">CORRECT</div>
@@ -215,9 +215,9 @@ export const QuizInterface = ({
                       <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm font-medium mb-1">{q.question}</p>
+                      <p className="text-[14px] md:text-[15px] font-medium leading-relaxed mb-1">{q.question}</p>
                       {!isCorrectAnswer && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
                           Correct: {correctOption?.text || 'Unavailable'}
                         </p>
                       )}
@@ -273,8 +273,8 @@ export const QuizInterface = ({
 
             {/* Timer */}
             <div className={`flex items-center gap-2 ${getTimerColor()}`}>
-              <Clock className="h-5 w-5" />
-              <span className="mono text-xl font-bold">{timeRemaining}s</span>
+              <Clock className="h-4 w-4" />
+              <span className="font-mono text-[14px] font-bold">{timeRemaining}s</span>
             </div>
           </div>
 
@@ -296,12 +296,12 @@ export const QuizInterface = ({
       {/* Question */}
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-6">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-[12px] text-muted-foreground">
             Question {currentQuestionIndex + 1} of {totalQuestions}
           </span>
         </div>
 
-        <h2 className="text-xl md:text-2xl font-bold mb-8 leading-relaxed text-foreground">
+        <h2 className="text-[16px] md:text-[24px] font-bold mb-6 md:mb-8 leading-relaxed text-foreground">
           {currentQuestion.question}
         </h2>
 
@@ -330,7 +330,7 @@ export const QuizInterface = ({
                   )}>
                     <Circle className="h-4 w-4" />
                   </div>
-                  <span className="flex-1">{option.text}</span>
+                  <span className="flex-1 text-[14px] leading-relaxed">{option.text}</span>
                 </div>
               </button>
             );

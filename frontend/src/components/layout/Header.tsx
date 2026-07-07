@@ -91,7 +91,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
   return (
     <>
       <header
-        className="border-b border-border fixed top-0 inset-x-0 z-[100] w-full bg-background shadow-sm lg:sticky lg:top-0 lg:z-50 lg:bg-background/95 lg:shadow-none backdrop-blur supports-[backdrop-filter]:lg:bg-background/95"
+        className="border-b border-border fixed top-0 inset-x-0 z-[100] w-full bg-background/95 backdrop-blur shadow-sm supports-[backdrop-filter]:bg-background/95"
         role="banner"
       >
         <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
@@ -147,7 +147,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
           )}
 
           {user && profile ? (
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-1.5 sm:gap-2 px-1.5 sm:px-2 h-9 sm:h-10 touch-manipulation">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-xs sm:text-sm">
@@ -157,7 +157,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
                   <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground hidden sm:block" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-56 w-max max-w-[calc(100vw-2rem)]">
+              <DropdownMenuContent align="end" className="z-[110] min-w-56 w-max max-w-[calc(100vw-2rem)]">
                 <div className="px-3 py-2 min-w-0">
                   <p className="font-medium truncate" title={profile.name}>
                     {profile.name}
@@ -249,7 +249,7 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
         </div>
       )}
       </header>
-      <div className="h-14 sm:h-[3.75rem] lg:hidden shrink-0" aria-hidden="true" />
+      <div className="h-14 sm:h-[3.75rem] shrink-0" aria-hidden="true" />
     </>
   );
 };

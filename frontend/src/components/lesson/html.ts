@@ -36,6 +36,28 @@ export function hasRichHtmlContent(html: string | null | undefined): boolean {
   return extractParagraphText(html || '').length > 0;
 }
 
+export function prepareLessonObjectiveHtml(html: string): string {
+  if (!html?.trim()) {
+    return '';
+  }
+
+  if (typeof document === 'undefined') {
+    return html;
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(normalizeRichHtml(html), 'text/html');
+
+  doc.body.querySelectorAll('p, li, h2, h3, h4').forEach((node) => {
+    const text = (node.textContent || '').trim();
+    if (LEARNING_OBJECTIVE_PREFIX.test(text)) {
+      node.remove();
+    }
+  });
+
+  return doc.body.innerHTML.trim();
+}
+
 export function extractLearningObjectives(html: string): string[] {
   if (!html?.trim()) {
     return [];
