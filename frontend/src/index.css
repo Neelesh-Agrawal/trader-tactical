@@ -326,7 +326,7 @@
 
   .streak-flame { animation: flame 0.8s ease-in-out infinite; }
 
-  .lesson-content.ck-content { @apply prose-body; }
+  .lesson-content.ck-content { @apply prose-body max-w-full min-w-0; }
 
   /* FAQ answers — match lesson body typography (Inter 15px, readable line-height) */
   .faq-answer-content,
@@ -404,10 +404,32 @@
   .ck-content strong { @apply font-bold text-foreground; }
   .ck-content em { @apply italic; }
   .ck-content a { @apply text-primary underline; }
-  .ck-content figure { @apply w-full max-w-full my-4; }
-  .ck-content figure.table { @apply w-full overflow-x-auto my-4; }
-  .ck-content table { @apply w-full border-collapse; }
-  .ck-content td, .ck-content th { @apply border border-border p-2; }
+  .ck-content figure {
+    @apply w-full max-w-full my-4;
+    float: none !important;
+    position: static !important;
+    clear: both;
+  }
+  .ck-content .lesson-table-scroll,
+  .ck-content figure.table {
+    @apply w-full max-w-full my-4;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    clear: both;
+  }
+  .ck-content table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: auto;
+    @apply border-collapse;
+  }
+  .ck-content td, .ck-content th {
+    @apply border border-border p-2;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+  }
   .ck-content th { @apply bg-muted font-bold; }
   .ck-content hr { @apply my-6 border-border; }
   .ck-content blockquote { @apply border-l-4 border-primary pl-4 italic my-4; }

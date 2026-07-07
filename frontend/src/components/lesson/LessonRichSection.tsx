@@ -19,7 +19,7 @@ export const LessonRichSection = ({
   }
 
   return (
-    <div className="tactical-card p-5 sm:p-6 mb-6 sm:mb-8">
+    <div className="tactical-card p-5 sm:p-6 mb-6 sm:mb-8 min-w-0 max-w-full overflow-hidden">
       <div className="flex items-center gap-2 mb-4">
         <Icon className={`h-5 w-5 shrink-0 ${iconClassName}`} />
         <h2 className="subheader text-base sm:text-lg">{title}</h2>

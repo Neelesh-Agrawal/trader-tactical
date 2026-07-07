@@ -22,7 +22,7 @@ export const LessonIntelV2 = ({ content }: LessonIntelV2Props) => {
   if (isHtml) {
       return (
         <div 
-          className="lesson-content ck-content prose-body"
+          className="lesson-content ck-content prose-body min-w-0 max-w-full"
           dangerouslySetInnerHTML={{ __html: normalizeRichHtml(content) }}
         />
       );

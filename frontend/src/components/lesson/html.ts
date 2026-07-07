@@ -1,3 +1,38 @@
+function wrapLessonTables(doc: Document) {
+  doc.body.querySelectorAll('figure').forEach((figure) => {
+    if (!figure.querySelector('table')) return;
+    figure.classList.add('lesson-table-scroll');
+    figure.removeAttribute('style');
+  });
+
+  doc.body.querySelectorAll('table').forEach((table) => {
+    const parent = table.parentElement;
+    if (parent?.classList.contains('lesson-table-scroll')) {
+      table.removeAttribute('width');
+      table.style.removeProperty('width');
+      table.style.maxWidth = '100%';
+      return;
+    }
+
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'lesson-table-scroll';
+    table.parentNode?.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+
+    table.removeAttribute('width');
+    table.style.removeProperty('width');
+    table.style.maxWidth = '100%';
+    table.style.tableLayout = 'auto';
+  });
+
+  doc.body.querySelectorAll('[style*="float"], [style*="position:absolute"], [style*="position: absolute"]').forEach((node) => {
+    if (node instanceof HTMLElement && node.querySelector('table')) {
+      node.style.removeProperty('float');
+      node.style.removeProperty('position');
+    }
+  });
+}
+
 export function normalizeRichHtml(html: string): string {
   if (!html) {
     return '';
@@ -20,6 +55,8 @@ export function normalizeRichHtml(html: string): string {
     currentNode.textContent = (currentNode.textContent || '').replace(/\u00a0/g, ' ');
     currentNode = walker.nextNode();
   }
+
+  wrapLessonTables(doc);
 
   return doc.body.innerHTML;
 }

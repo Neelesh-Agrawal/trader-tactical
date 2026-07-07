@@ -12,7 +12,7 @@ import { QnAWidget } from '@/components/qna/QnAWidget';
 import { LessonSkeleton } from '@/components/layout/LoadingSkeleton';
 import { LessonObjectives } from '@/components/lesson/LessonObjectives';
 import { LessonRichSection } from '@/components/lesson/LessonRichSection';
-import { getLessonReadTimeMinutes } from '@/components/lesson/html';
+import { getLessonReadTimeMinutes, normalizeRichHtml } from '@/components/lesson/html';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ArrowRight, Target, BookOpen, Lightbulb, HelpCircle, CheckCircle, Menu, X, AlertTriangle, Wrench, Clock } from 'lucide-react';
@@ -146,7 +146,7 @@ const Lesson = () => {
   };
 
   const renderHtmlSection = (html: string) => (
-    <div className="lesson-content ck-content" dangerouslySetInnerHTML={{ __html: normalizeLessonHtml(html) }} />
+    <div className="lesson-content ck-content min-w-0 max-w-full" dangerouslySetInnerHTML={{ __html: normalizeRichHtml(html) }} />
   );
 
   return (
@@ -227,7 +227,7 @@ const Lesson = () => {
           <LessonObjectives objective={fullLesson.lesson_objective} />
 
           {/* Content Section */}
-          <div className="tactical-card p-6 md:p-8 mb-8">
+          <div className="tactical-card p-6 md:p-8 mb-8 min-w-0 max-w-full overflow-hidden">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="h-5 w-5 text-primary shrink-0" />
               <span className="subheader">Content</span>
@@ -245,7 +245,7 @@ const Lesson = () => {
 
           {/* Key Takeaways */}
           {fullLesson.key_takeaway && (
-            <div className="tactical-card p-6 mb-8">
+            <div className="tactical-card p-6 mb-8 min-w-0 max-w-full overflow-hidden">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="h-5 w-5 text-warning shrink-0" />
                 <span className="subheader">Key Takeaways</span>
@@ -256,7 +256,7 @@ const Lesson = () => {
 
           {/* FAQs */}
           {fullLesson.faqs && fullLesson.faqs.length > 0 && (
-            <div className="tactical-card p-6 mb-8">
+            <div className="tactical-card p-6 mb-8 min-w-0 max-w-full overflow-hidden">
               <div className="flex items-center gap-2 mb-4">
                 <HelpCircle className="h-5 w-5 text-primary shrink-0" />
                 <span className="subheader">FAQs</span>
@@ -266,7 +266,7 @@ const Lesson = () => {
                     <AccordionItem key={index} value={`faq-${index}`}>
                       <AccordionTrigger className="text-left hover:text-primary">{faq.question}</AccordionTrigger>
                       <AccordionContent className="text-muted-foreground">
-                        <div className="lesson-content ck-content" dangerouslySetInnerHTML={{ __html: normalizeLessonHtml(faq.answer) }} />
+                        <div className="lesson-content ck-content min-w-0 max-w-full" dangerouslySetInnerHTML={{ __html: normalizeRichHtml(faq.answer) }} />
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -329,29 +329,5 @@ const Lesson = () => {
     </div>
   );
 };
-
-function normalizeLessonHtml(html: string) {
-  if (typeof document === 'undefined') {
-    return html.replace(/&amp;nbsp;|&nbsp;|\u00a0/g, ' ');
-  }
-
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = html;
-  const decodedHtml = textarea.value || html;
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(decodedHtml, 'text/html');
-  const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
-
-  let currentNode = walker.nextNode();
-  while (currentNode) {
-    currentNode.textContent = (currentNode.textContent || '')
-      .replace(/\u00a0/g, ' ')
-      .replace(/&nbsp;/g, ' ');
-    currentNode = walker.nextNode();
-  }
-
-  return doc.body.innerHTML;
-}
 
 export default Lesson;
