@@ -40,27 +40,10 @@ export const useEnrollment = () => {
   const isEnrolledInCourse = (courseId = 1): boolean =>
     enrolledCourseIds.includes(courseId);
 
-  const enrollInLevel = async (_levelId: string, courseId = 1): Promise<boolean> => {
-    if (!user) return false;
-
-    try {
-      await apiFetch('/api/courses/enroll/', {
-        method: 'POST',
-        body: JSON.stringify({ course_id: courseId }),
-      });
-      await fetchEnrollments();
-      return true;
-    } catch (error) {
-      console.error('Failed to enroll:', error);
-      return false;
-    }
-  };
-
   return {
     enrolledCourseIds,
     loading,
     isEnrolledInCourse,
-    enrollInLevel,
     refreshEnrollments: fetchEnrollments,
   };
 };

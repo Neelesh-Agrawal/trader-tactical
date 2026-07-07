@@ -6,8 +6,10 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.urls import reverse
 from django.utils.html import format_html
+from django_ckeditor_5.fields import CKEditor5Field
 from django_ckeditor_5.widgets import CKEditor5Widget
 from quiz.models import Quiz, Question, Option
+from quiz.forms import FixedOptionInlineFormSet, QuestionAdminForm
 
 from .models import (
     Course,
@@ -21,6 +23,12 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 logger.info("courses.admin loaded")
+
+
+class CKEditorAdminMixin:
+    formfield_overrides = {
+        CKEditor5Field: {"widget": CKEditor5Widget(config_name="default")},
+    }
 
 
 class CourseAdminForm(forms.ModelForm):
@@ -63,21 +71,27 @@ class LessonFAQAdminForm(forms.ModelForm):
         }
 
 
-class LessonFAQInline(nested_admin.NestedStackedInline):
+class LessonFAQInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = LessonFAQ
     form = LessonFAQAdminForm
-    extra = 1
+    extra = 0
 
 
 class QuizOptionInline(nested_admin.NestedTabularInline):
     model = Option
-    extra = 1
+    formset = FixedOptionInlineFormSet
+    extra = 4
+    min_num = 4
+    max_num = 4
+    validate_min = True
+    validate_max = True
     fields = ("text", "is_correct")
 
 
-class QuizQuestionInline(nested_admin.NestedStackedInline):
+class QuizQuestionInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = Question
-    extra = 1
+    form = QuestionAdminForm
+    extra = 0
     fields = ("text", "explanation", "order")
     readonly_fields = ("order",)
     inlines = [QuizOptionInline]
@@ -153,7 +167,7 @@ class LessonQuizInline(nested_admin.NestedStackedInline):
     fk_name = "lesson"
     form = LessonQuizInlineForm
     formset = LessonQuizInlineFormSet
-    extra = 0
+    extra = 1
     max_num = 1
     inlines = [QuizQuestionInline]
     fields = (
@@ -163,12 +177,8 @@ class LessonQuizInline(nested_admin.NestedStackedInline):
         "time_limit_seconds",
     )
 
-    def has_add_permission(self, request, obj=None):
-        return False
-
-
 @admin.register(Lesson)
-class LessonAdmin(nested_admin.NestedModelAdmin):
+class LessonAdmin(CKEditorAdminMixin, nested_admin.NestedModelAdmin):
     form = LessonAdminForm
     list_display = ("title", "module", "order")
     list_filter = ("module__level", "module")
@@ -258,7 +268,7 @@ class LessonAdmin(nested_admin.NestedModelAdmin):
 
 
 @admin.register(Module)
-class ModuleAdmin(admin.ModelAdmin):
+class ModuleAdmin(CKEditorAdminMixin, admin.ModelAdmin):
     form = ModuleAdminForm
     list_display = ("title", "level", "order")
     list_filter = ("level",)
@@ -273,7 +283,7 @@ class LevelAdmin(admin.ModelAdmin):
 
 
 @admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(CKEditorAdminMixin, admin.ModelAdmin):
     form = CourseAdminForm
     list_display = ("title", "price_inr", "is_published", "created_at")
     list_filter = ("is_published",)

@@ -19,7 +19,8 @@ def add_price_inr_if_missing(apps, schema_editor):
     if "price_inr" in existing_columns:
         return
 
-    field = Course._meta.get_field("price_inr")
+    field = models.PositiveIntegerField(default=0)
+    field.set_attributes_from_name("price_inr")
     schema_editor.add_field(Course, field)
 
 
@@ -38,7 +39,8 @@ def remove_price_inr_if_present(apps, schema_editor):
     if "price_inr" not in existing_columns:
         return
 
-    field = Course._meta.get_field("price_inr")
+    field = models.PositiveIntegerField(default=0)
+    field.set_attributes_from_name("price_inr")
     schema_editor.remove_field(Course, field)
 
 

@@ -66,36 +66,6 @@ class EnrolledCourseListView(APIView):
         return Response(serializer.data)
 
 
-class EnrollCourseView(APIView):
-    """Enroll user in a course"""
-
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        course_id = request.data.get("course_id")
-
-        course = Course.objects.filter(id=course_id, is_published=True).first()
-
-        if not course:
-            return Response(
-                {"detail": "Course not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        enrollment, created = Enrollment.objects.get_or_create(
-            user=request.user, course=course
-        )
-
-        if created:
-            from progress.services import unlock_initial_course_progress
-
-            unlock_initial_course_progress(request.user, course)
-            return Response(
-                {"detail": "Enrolled successfully"}, status=status.HTTP_201_CREATED
-            )
-
-        return Response({"detail": "Already enrolled"}, status=status.HTTP_200_OK)
-
-
 class PaymentCheckoutView(APIView):
     permission_classes = [IsAuthenticated]
 

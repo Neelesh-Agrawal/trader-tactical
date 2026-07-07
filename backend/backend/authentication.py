@@ -32,14 +32,6 @@ class DevModeAuthentication(BaseAuthentication):
                     },
                 )
 
-                # Dynamically import models to prevent circular import issues
-                from courses.models import Course, Enrollment
-
-                # Automatically enroll the dummy user in all available courses
-                courses = Course.objects.all()
-                for course in courses:
-                    Enrollment.objects.get_or_create(user=user, course=course)
-
                 return (user, None)
             except DatabaseError as e:
                 logger.error(
