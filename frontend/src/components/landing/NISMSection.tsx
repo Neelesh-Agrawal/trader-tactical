@@ -1,8 +1,9 @@
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
-import { Download, BookOpen, CheckCircle, ExternalLink } from 'lucide-react';
+import { Download, BookOpen, CheckCircle } from 'lucide-react';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { nismConfig } from '@/config/courseConfig';
+import { NismPrimaryAction } from '@/components/nism/NismPrimaryAction';
 
 export const NISMSection = () => {
   if (!nismConfig.enabled) {
@@ -97,13 +98,7 @@ export const NISMSection = () => {
 
                   {/* CTAs */}
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <a
-                      href={nismConfig.purchaseUrl}
-                      className="nism-btn-primary inline-flex items-center justify-center gap-2 px-6 h-11 rounded-xl bg-success text-white text-sm font-semibold shadow-md"
-                    >
-                      {nismConfig.primaryCTA} — ₹{nismConfig.price}
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                    <NismPrimaryAction className="nism-btn-primary inline-flex items-center justify-center gap-2 px-6 h-11 rounded-xl bg-success text-white text-sm font-semibold shadow-md" />
                     <a
                       href={SAMPLE_PDF_PATH}
                       target="_blank"

@@ -93,6 +93,11 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
 
 export const courseConfigList = Object.values(courseConfig);
 
+export const NISM_LEVEL_SLUG = 'nism' as const;
+
+export const isNismCourseTitle = (title: string) =>
+  title.trim().toLowerCase().includes('nism');
+
 export interface NISMConfig {
   badge: string;
   title: string;
@@ -100,6 +105,7 @@ export interface NISMConfig {
   price: number;
   benefits: string[];
   primaryCTA: string;
+  enrolledCTA: string;
   secondaryCTA: string;
   samplePdfPath: string;
   purchaseUrl: string;
@@ -121,6 +127,7 @@ export const nismConfig: NISMConfig = {
     "Instant access — start today"
   ],
   primaryCTA: "Enroll Now",
+  enrolledCTA: "View Lessons",
   secondaryCTA: "Download Sample PDF",
   samplePdfPath: "/Samples/EasyOptionLearning_Chapter1_NISM.pdf",
   purchaseUrl: "/register",
@@ -129,6 +136,26 @@ export const nismConfig: NISMConfig = {
   accentItems: ['Derivatives Basics', 'Futures & Options', 'Hedging Strategies', 'Settlement & Margins', 'Regulatory Framework'],
   enabled: true
 };
+
+/** Dashboard / pricing card config for the NISM level (matches other level cards). */
+export const nismLevelDisplay = {
+  id: NISM_LEVEL_SLUG,
+  number: 4,
+  name: 'NISM',
+  title: 'NISM VIII — Equity Derivatives',
+  badge: 'Certification',
+  emoji: '📘',
+  price: nismConfig.price,
+  modules: nismConfig.accentItems.length,
+  lessons: 0,
+  duration: 'Self-paced',
+  description: nismConfig.description,
+  bestFor: 'Traders preparing for the NISM Series VIII certification exam.',
+  cta: nismConfig.enrolledCTA,
+  samplePdfPath: nismConfig.samplePdfPath,
+  sampleDownloadCTA: nismConfig.secondaryCTA,
+  points: nismConfig.accentItems,
+} as const;
 
 export interface SiteConfig {
   beginnerStartUrl: string;

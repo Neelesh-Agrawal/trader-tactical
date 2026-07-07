@@ -2,6 +2,7 @@ import { Shield, MapPin, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 const legalLinks = [
   { label: 'Terms & Conditions', href: '/terms' },
@@ -18,8 +19,6 @@ const trustSignals = [
 ];
 
 export const Footer = () => {
-  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
-
   return (
     <footer className="border-t border-border bg-card" role="contentinfo">
       {/* Trust Signals */}
@@ -44,12 +43,12 @@ export const Footer = () => {
           {/* Brand */}
           <AnimatedSection direction="up" delay={100} className="sm:col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img 
-                src={logoSrc}
-                alt="Easy Option Learning" 
-                className="h-10 w-10 object-contain shrink-0 rounded-md"
+              <BrandLogo
+                iconClassName="h-10 w-10 object-contain rounded-md"
+                mobileClassName="h-10 w-auto object-contain"
+                showText
+                textClassName={`${typography.heading.h4} font-display font-bold`}
               />
-              <span className={`${typography.heading.h4} font-display font-bold`}>Easy Option Learning</span>
             </Link>
             <p className={`${typography.body.sm} font-body text-muted-foreground max-w-sm leading-relaxed`}>
               A structured options trading education platform designed to help you think like a trader, 

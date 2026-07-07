@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Check, ChevronDown, BookOpen, Download, ExternalLink } from 'lucide-react';
+import { Check, ChevronDown, BookOpen, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,8 @@ import { startHostedCheckout } from '@/hooks/useCheckout';
 import { isAuthRequired } from '@/config/appConfig';
 import { useCourses } from '@/hooks/useCourses';
 import { findCourseIdForConfig } from '@/lib/courseCatalog';
+import { NismPrimaryAction } from '@/components/nism/NismPrimaryAction';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 const plans = courseConfigList;
 
@@ -36,7 +38,6 @@ const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { courses } = useCourses();
-  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
 
   const handleCourseCheckout = async (levelId: keyof typeof courseConfig) => {
     if (isAuthRequired() && !user) {
@@ -102,8 +103,12 @@ const Pricing = () => {
       {/* ── TOP NAV ── */}
       <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0">
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <img src={logoSrc} alt="Easy Option Learning" className="h-8 w-8 object-contain rounded-lg" />
-          <span className="font-bold text-sm text-foreground hidden sm:inline">Easy Option Learning</span>
+          <BrandLogo
+            iconClassName="h-8 w-8 object-contain rounded-lg"
+            mobileClassName="h-8 w-auto object-contain"
+            showText
+            textClassName="font-bold text-sm text-foreground"
+          />
         </Link>
       </div>
 
@@ -231,13 +236,7 @@ const Pricing = () => {
 
                     {/* CTAs */}
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <a
-                        href={nismConfig.purchaseUrl}
-                        className="pr-btn inline-flex items-center justify-center gap-2 px-6 h-11 rounded-xl bg-success text-white text-sm font-semibold shadow-md"
-                      >
-                        {nismConfig.primaryCTA} — ₹{nismConfig.price}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
+                      <NismPrimaryAction className="pr-btn inline-flex items-center justify-center gap-2 px-6 h-11 rounded-xl bg-success text-white text-sm font-semibold shadow-md" />
                       <a
                         href={SAMPLE_PDF_PATH}
                         target="_blank"

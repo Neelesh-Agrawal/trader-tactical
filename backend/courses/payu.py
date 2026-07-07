@@ -17,6 +17,7 @@ TITLE_PRICE_HINTS = {
     "growth": Decimal("1999.00"),
     "advanced": Decimal("2999.00"),
     "mastery": Decimal("2999.00"),
+    "nism": Decimal("199.00"),
 }
 
 

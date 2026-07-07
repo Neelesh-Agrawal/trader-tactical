@@ -6,32 +6,35 @@ import { Footer } from '@/components/landing/Footer';
 import { QnAWidget } from '@/components/qna/QnAWidget';
 import { ContinueLearning } from '@/components/dashboard/ContinueLearning';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
-import { Target, TrendingUp, BookOpen, CheckCircle, ArrowRight, Lock, Check, Download, ExternalLink } from 'lucide-react';
+import { Target, TrendingUp, CheckCircle, ArrowRight, Lock, Check, Download } from 'lucide-react';
 import { AnimatedSection } from '@/components/landing/AnimatedSection';
 import { Link } from 'react-router-dom';
-import { getPdfUrl, openPdf, SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
-import { courseConfig, courseConfigList, nismConfig, siteConfig } from '@/config/courseConfig';
+import { getPdfUrl, openPdf } from '@/lib/pdf';
+import { courseConfigList, nismConfig, nismLevelDisplay, NISM_LEVEL_SLUG, siteConfig } from '@/config/courseConfig';
+import { useNismCheckout } from '@/hooks/useNismCheckout';
+import { getCurrentLevel } from '@/lib/currentLevel';
 import type { Level } from '@/hooks/useCourses';
 
 const Dashboard = () => {
   const { profile, streak } = useAuth();
   const { levels, loading: coursesLoading, error: coursesError } = useCourses();
+  const { startNismCheckout } = useNismCheckout();
   const {
     isLevelCompleted,
     isLessonCompleted,
     lessonProgress,
   } = useProgress();
 
-  const getCurrentLevel = () => {
-    if (!levels?.length) return undefined;
-    for (const level of levels) {
-      if (!isLevelCompleted(level.id)) return level;
-    }
-    return levels[levels.length - 1];
-  };
+  const getCurrentLevelForDashboard = () =>
+    getCurrentLevel(levels, isLevelCompleted, isLessonCompleted);
 
-  const currentLevel = getCurrentLevel();
+  const currentLevel = getCurrentLevelForDashboard();
   const backendLevelsById = new Map(levels.map((level) => [level.id, level]));
+
+  const learningPathConfigs = [
+    ...courseConfigList.filter((config) => backendLevelsById.has(config.id)),
+    ...(nismConfig.enabled ? [nismLevelDisplay] : []),
+  ];
 
   const completedLessons = (lessonProgress || []).filter((l) => l.completed).length;
 
@@ -140,17 +143,18 @@ const Dashboard = () => {
               <p className="text-xs uppercase tracking-[0.3em] font-semibold text-muted-foreground">Your learning path</p>
               <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">Your learning roadmap</h2>
               <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-                From beginner to advanced — Learn, unlock, and level up at every stage.
+                From beginner to advanced — plus NISM certification prep.
               </p>
             </div>
             <div className="rounded-3xl border border-border/70 bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-              3 courses, one premium path
+              4 learning tracks
             </div>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {coursesLoading && (
               <>
+                <CardSkeleton variant="level" />
                 <CardSkeleton variant="level" />
                 <CardSkeleton variant="level" />
                 <CardSkeleton variant="level" />
@@ -158,18 +162,17 @@ const Dashboard = () => {
             )}
 
             {!coursesLoading && levels.length === 0 && (
-              <div className="xl:col-span-3 rounded-2xl border border-dashed border-border p-8 text-center">
+              <div className="md:col-span-2 xl:col-span-4 rounded-2xl border border-dashed border-border p-8 text-center">
                 <p className="text-muted-foreground">
                   {coursesError || 'No course levels found. Ask your admin to run: python manage.py seed_course'}
                 </p>
               </div>
             )}
 
-            {!coursesLoading && courseConfigList
-              .filter((config) => backendLevelsById.has(config.id))
-              .map((config, index) => {
+            {!coursesLoading && learningPathConfigs.map((config, index) => {
               const level = backendLevelsById.get(config.id);
               const levelId = config.id;
+              const isNism = levelId === NISM_LEVEL_SLUG;
               const status = level ? getLevelStatus(level) : 'locked';
               const isLocked = status === 'locked';
               const isCompleted = status === 'completed';
@@ -305,17 +308,27 @@ const Dashboard = () => {
 
                     {/* CTA */}
                     <div className="mt-auto flex flex-col gap-3">
-                      <Link
-                        to={isLocked ? `/pricing?level=${config.id}` : cardLink}
-                        className={`db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
-                          isLocked
-                            ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
-                            : 'bg-success text-white'
-                        }`}
-                      >
-                        {isLocked ? 'Unlock — ' + price : isCompleted ? 'Review Level' : 'Continue Learning'}
-                        {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
-                      </Link>
+                      {isLocked && isNism ? (
+                        <button
+                          type="button"
+                          onClick={() => void startNismCheckout()}
+                          className="db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white"
+                        >
+                          Unlock — {price}
+                        </button>
+                      ) : (
+                        <Link
+                          to={isLocked ? `/pricing?level=${config.id}` : cardLink}
+                          className={`db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
+                            isLocked
+                              ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
+                              : 'bg-success text-white'
+                          }`}
+                        >
+                          {isLocked ? 'Unlock — ' + price : isCompleted ? 'View Lessons' : 'Continue Learning'}
+                          {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
+                        </Link>
+                      )}
                       {config.samplePdfPath && config.sampleDownloadCTA && (
                         <a
                           href={getPdfUrl(config.samplePdfPath)}
@@ -335,112 +348,6 @@ const Dashboard = () => {
             })}
           </div>
         </section>
-
-        {/* NISM Resource — visually separated with muted background band */}
-        {nismConfig.enabled && (
-          <div className="-mx-4 px-4 py-10 bg-muted/20 mb-10">
-            <AnimatedSection direction="up" delay={0}>
-              {/* Section label */}
-              <div className="flex items-center gap-3 mb-5">
-                <div className="h-px w-6 bg-border" />
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Featured Resource</span>
-              </div>
-
-              <div className="relative overflow-hidden rounded-2xl border border-success/25 bg-card shadow-lg shadow-success/5">
-                <style>{`
-                  @keyframes db-nism-orb1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(14px,-10px)} }
-                  @keyframes db-nism-orb2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-10px,8px)} }
-                  .db-nism-orb1 { animation: db-nism-orb1 9s ease-in-out infinite; }
-                  .db-nism-orb2 { animation: db-nism-orb2 11s ease-in-out infinite; }
-                  .db-nism-btn {
-                    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
-                  }
-                  .db-nism-btn:hover {
-                    transform: translateY(-2px) scale(1.03);
-                    box-shadow: 0 8px 24px -4px hsla(160,72%,33%,0.4);
-                  }
-                  .db-nism-btn:active { transform: scale(0.97); }
-                  .db-nism-btn-ghost { transition: transform 0.2s ease, background 0.2s ease; }
-                  .db-nism-btn-ghost:hover { transform: translateY(-1px); background: hsl(var(--success) / 0.1); }
-                `}</style>
-
-                {/* Top shine line */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-success/50 to-transparent" />
-
-                {/* Orbs */}
-                <div className="db-nism-orb1 absolute -top-10 -right-10 w-44 h-44 rounded-full bg-success/6 blur-3xl pointer-events-none" />
-                <div className="db-nism-orb2 absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-success/5 blur-3xl pointer-events-none" />
-
-                <div className="relative z-10 p-5 sm:p-6">
-                  <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 items-start">
-
-                    {/* Icon */}
-                    <div className="shrink-0 w-12 h-12 rounded-xl bg-success/10 border border-success/20 flex items-center justify-center">
-                      <BookOpen className="w-6 h-6 text-success" />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-bold uppercase tracking-widest mb-2">
-                        {nismConfig.badge}
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold text-foreground mb-1 leading-snug">
-                        {nismConfig.title.split('—')[0]}
-                        {nismConfig.title.split('—')[1] && (
-                          <>
-                            — <span className="text-success">{nismConfig.title.split('—')[1]}</span>
-                          </>
-                        )}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-xl">
-                        {nismConfig.description}
-                      </p>
-
-                      {/* Benefits — 2-column on sm+ */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-5">
-                        {nismConfig.benefits.map((b) => (
-                          <div key={b} className="flex items-center gap-2">
-                            <CheckCircle className="w-3.5 h-3.5 text-success shrink-0" />
-                            <span className="text-xs text-muted-foreground">{b}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* CTAs */}
-                      <div className="flex flex-wrap gap-3">
-                        <a
-                          href={nismConfig.purchaseUrl}
-                          className="db-nism-btn inline-flex items-center gap-2 px-5 h-10 rounded-xl bg-success text-white text-sm font-semibold shadow-md"
-                        >
-                          {nismConfig.primaryCTA} — ₹{nismConfig.price}
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                        <a
-                          href={SAMPLE_PDF_PATH}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={openSamplePdf}
-                          className="db-nism-btn-ghost inline-flex items-center gap-2 px-5 h-10 rounded-xl border border-success/30 text-success bg-success/5 text-sm font-semibold"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          {nismConfig.secondaryCTA}
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Price pill — desktop only */}
-                    <div className="hidden sm:flex shrink-0 flex-col items-center justify-center px-5 py-4 rounded-xl border border-success/15 bg-success/5 text-center">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">One-time</p>
-                      <p className="text-2xl font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                        ₹{nismConfig.price}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </AnimatedSection>
-          </div>
-        )}
 
         {/* Telegram Community */}
         <section className="mb-10">

@@ -51,7 +51,7 @@ export const LessonContent = ({ lesson, module, levelId, lessonIndex, onBack }: 
 
   const handleNextLesson = () => {
     if (nextLesson) {
-      window.location.href = `/level/${levelId}?module=${module.id}&lesson=${nextLesson.id}`;
+      navigate(`/level/${levelId}?module=${module.id}&lesson=${nextLesson.id}`);
     } else {
       onBack();
     }

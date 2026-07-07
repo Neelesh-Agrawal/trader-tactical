@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Flame, User, LogOut, ChevronDown, Menu, X, Award } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 interface HeaderProps {
   showAuth?: boolean;
@@ -18,7 +19,6 @@ interface HeaderProps {
 }
 
 export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => {
-  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
   const { user, profile, streak, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -102,12 +102,10 @@ export const Header = ({ showAuth = true, showStreak = false }: HeaderProps) => 
           className="flex items-center gap-2 hover-scale touch-manipulation"
           aria-label="Easy Option Learning - Go to home"
         >
-          <img 
-            src={logoSrc}
-            alt="Easy Option Learning" 
-            className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
+          <BrandLogo
+            showText
+            textClassName="font-display text-lg sm:text-xl font-bold"
           />
-          <span className="font-display text-lg sm:text-xl font-bold hidden xs:inline">Easy Option Learning</span>
         </Link>
 
         {/* Desktop Nav Links */}

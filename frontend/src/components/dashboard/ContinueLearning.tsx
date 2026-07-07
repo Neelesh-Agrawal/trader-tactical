@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgress } from '@/hooks/useProgress';
-import { useCourses } from '@/hooks/useCourses';
+import { useCourses, type Level } from '@/hooks/useCourses';
 import { AnimatedProgress } from '@/components/ui/animated-progress';
 import { CardSkeleton } from '@/components/ui/card-skeleton';
 import { ArrowRight, BookOpen, Play, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCurrentLevel } from '@/lib/currentLevel';
 
 interface LastLessonData {
   levelId: string;
@@ -14,9 +15,38 @@ interface LastLessonData {
   lessonId: string;
 }
 
+const findFirstIncompleteLessonInLevel = (
+  level: Level,
+  isLessonCompleted: (levelId: string, moduleId: string, lessonId: string) => boolean,
+): LastLessonData | null => {
+  for (const module of level.modules) {
+    for (const lesson of module.lessons) {
+      if (!isLessonCompleted(level.id, module.id, lesson.id)) {
+        return {
+          levelId: level.id,
+          moduleId: module.id,
+          lessonId: lesson.id,
+        };
+      }
+    }
+  }
+  return null;
+};
+
+const findLastLessonInLevel = (level: Level): LastLessonData | null => {
+  const lastModule = level.modules[level.modules.length - 1];
+  if (!lastModule?.lessons.length) return null;
+  const lastLessonItem = lastModule.lessons[lastModule.lessons.length - 1];
+  return {
+    levelId: level.id,
+    moduleId: lastModule.id,
+    lessonId: lastLessonItem.id,
+  };
+};
+
 export const ContinueLearning = () => {
   const { user } = useAuth();
-  const { isLessonCompleted } = useProgress();
+  const { isLessonCompleted, isLevelCompleted } = useProgress();
   const { levels, getLevelById, getModuleById, getLessonById } = useCourses();
   const navigate = useNavigate();
   const [lastLesson, setLastLesson] = useState<LastLessonData | null>(null);
@@ -29,67 +59,54 @@ export const ContinueLearning = () => {
         return;
       }
 
-      // Check if user has any progress
-      const hasProgress = levels.some(level => 
-        level.modules.some(module => 
-          module.lessons.some(lesson => isLessonCompleted(level.id, module.id, lesson.id))
-        )
-      );
-
-      // Only use localStorage if user has some progress
-      if (hasProgress) {
-        try {
-          const saved = localStorage.getItem('last_lesson');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed.levelId && parsed.moduleId && parsed.lessonId) {
-              setLastLesson(parsed);
-              setLoading(false);
-              return;
-            }
-          }
-        } catch (e) {
-          // Ignore localStorage errors
-        }
+      if (!levels.length) {
+        setLoading(false);
+        return;
       }
 
-      // Find the first incomplete lesson across all levels
-      // For new users, this will be Module 1, Lesson 1
-      for (const level of levels) {
-        for (const module of level.modules) {
-          for (const lesson of module.lessons) {
-            if (!isLessonCompleted(level.id, module.id, lesson.id)) {
-              setLastLesson({
-                levelId: level.id,
-                moduleId: module.id,
-                lessonId: lesson.id
-              });
-              setLoading(false);
-              return;
-            }
+      const currentLevel = getCurrentLevel(levels, isLevelCompleted, isLessonCompleted);
+      if (!currentLevel) {
+        setLoading(false);
+        return;
+      }
+
+      const isValidLesson = (data: LastLessonData) =>
+        Boolean(getLessonById(data.levelId, data.moduleId, data.lessonId));
+
+      let resolved: LastLessonData | null = null;
+
+      try {
+        const saved = localStorage.getItem('last_lesson');
+        if (saved) {
+          const parsed = JSON.parse(saved) as LastLessonData;
+          if (
+            parsed.levelId === currentLevel.id &&
+            parsed.moduleId &&
+            parsed.lessonId &&
+            isValidLesson(parsed) &&
+            !isLessonCompleted(parsed.levelId, parsed.moduleId, parsed.lessonId)
+          ) {
+            resolved = parsed;
           }
         }
+      } catch {
+        // Ignore localStorage errors
       }
-      
-      // If all lessons are completed, set to the last lesson of the last level
-      const lastLevel = levels[levels.length - 1];
-      if (lastLevel && lastLevel.modules.length > 0) {
-        const lastModule = lastLevel.modules[lastLevel.modules.length - 1];
-        if (lastModule && lastModule.lessons.length > 0) {
-          const lastLessonItem = lastModule.lessons[lastModule.lessons.length - 1];
-          setLastLesson({
-            levelId: lastLevel.id,
-            moduleId: lastModule.id,
-            lessonId: lastLessonItem.id
-          });
-        }
+
+      if (!resolved) {
+        resolved = findFirstIncompleteLessonInLevel(currentLevel, isLessonCompleted);
       }
-      
+
+      if (!resolved) {
+        resolved = findLastLessonInLevel(currentLevel);
+      }
+
+      setLastLesson(resolved);
       setLoading(false);
     };
 
     fetchLastLesson();
-  }, [user, isLessonCompleted, levels]);
+  }, [user, isLessonCompleted, isLevelCompleted, levels, getLessonById]);
 
   if (loading) {
     return <CardSkeleton variant="hero" />;

@@ -12,6 +12,7 @@ import { RegisterPhoneOtpStep } from '@/components/auth/RegisterPhoneOtpStep';
 import { RegisterEmailOtpStep } from '@/components/auth/RegisterEmailOtpStep';
 import { RegisterPinStep } from '@/components/auth/RegisterPinStep';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 type Step = 'details' | 'phone-otp' | 'email-otp' | 'pin';
 
@@ -434,8 +435,12 @@ const Register = () => {
         <RegisterVisual />
       </div>
       <Link to="/" className="fixed left-6 top-6 z-30 flex items-center gap-3 transition hover:opacity-80 fixed-logo-mobile">
-        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Easy Option Learning" className="h-8 w-8 rounded-md object-contain" />
-        <span className="font-semibold text-foreground text-sm">Easy Option Learning</span>
+        <BrandLogo
+          iconClassName="h-8 w-8 rounded-md object-contain"
+          mobileClassName="h-8 w-auto object-contain"
+          showText
+          textClassName="font-semibold text-foreground text-sm"
+        />
       </Link>
       <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6">
         <ThemeToggle />

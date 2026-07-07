@@ -1,5 +1,6 @@
 import type { Course } from '@/hooks/useCourses';
 import type { CourseLevel } from '@/config/courseConfig';
+import { isNismCourseTitle } from '@/config/courseConfig';
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
@@ -26,3 +27,6 @@ export const findCourseIdForConfig = (
 
   return keywordMatch?.id ?? null;
 };
+
+export const findNismCourseId = (courses: Course[]): number | null =>
+  courses.find((course) => isNismCourseTitle(course.title))?.id ?? null;

@@ -9,6 +9,7 @@ import { PinInput } from '@/components/ui/pin-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 const REMEMBER_ME_KEY = 'trademaster_remember_phone';
 
@@ -75,12 +76,12 @@ const Login = () => {
         to="/"
         className="fixed left-6 top-6 z-30 flex items-center gap-3 transition hover:opacity-80 fixed-logo-mobile"
       >
-        <img
-          src={`${import.meta.env.BASE_URL}logo.png`}
-          alt="Easy Option Learning"
-          className="h-8 w-8 rounded-md object-contain"
+        <BrandLogo
+          iconClassName="h-8 w-8 rounded-md object-contain"
+          mobileClassName="h-8 w-auto object-contain"
+          showText
+          textClassName="font-semibold text-sm text-foreground"
         />
-        <span className="font-semibold text-sm text-foreground">Easy Option Learning</span>
       </Link>
 
       <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6">

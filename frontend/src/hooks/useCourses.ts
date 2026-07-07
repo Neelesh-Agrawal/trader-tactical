@@ -2,7 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiFetch, getAuthTokens } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { setLevelIdMap, getBackendLevelId } from '@/lib/levelIdMap';
-import { courseConfigList } from '@/config/courseConfig';
+import {
+  courseConfigList,
+  isNismCourseTitle,
+  NISM_LEVEL_SLUG,
+  nismConfig,
+} from '@/config/courseConfig';
 import { isAuthRequired } from '@/config/appConfig';
 
 export interface Question {
@@ -153,6 +158,7 @@ const levelSlugByTitle: Record<string, string> = {
   Beginner: 'beginner',
   Intermediate: 'intermediate',
   Advanced: 'advanced',
+  NISM: NISM_LEVEL_SLUG,
 };
 
 const getConfigForCourse = (course: Pick<Course, 'id' | 'title'>) => {
@@ -183,6 +189,14 @@ const getLevelSlug = ({
     return config.id;
   }
 
+  if (title && levelSlugByTitle[title]) {
+    return levelSlugByTitle[title];
+  }
+
+  if (isNismCourseTitle(course.title)) {
+    return NISM_LEVEL_SLUG;
+  }
+
   if (backendLevelId && levelIdByBackendId[backendLevelId] && course.id === backendLevelId) {
     return levelIdByBackendId[backendLevelId];
   }
@@ -196,21 +210,26 @@ const getLevelSlug = ({
 
 const buildPreviewLevel = (course: Course): Level => {
   const config = getConfigForCourse(course);
+  const isNism = isNismCourseTitle(course.title);
   const slug = getLevelSlug({
     course,
-    title: config?.name || course.title,
-    order: config?.number || course.id,
+    title: isNism ? 'NISM' : config?.name || course.title,
+    order: isNism ? 4 : config?.number || course.id,
     backendLevelId: course.id,
   });
-  const moduleTitles = config?.points.length ? config.points : ['Course overview'];
+  const moduleTitles = isNism
+    ? nismConfig.accentItems
+    : config?.points.length
+      ? config.points
+      : ['Course overview'];
 
   return {
     id: slug,
     backendId: course.id,
     courseId: course.id,
     courseTitle: course.title,
-    title: config?.name || course.title,
-    order: config?.number || course.id,
+    title: isNism ? 'NISM' : config?.name || course.title,
+    order: isNism ? 4 : config?.number || course.id,
     is_unlocked: false,
     is_enrolled: false,
     modules: moduleTitles.map((point, moduleIndex) => ({
@@ -342,6 +361,7 @@ export const useCourses = () => {
             );
 
             return levelsData.map((l) => {
+              const isNism = isNismCourseTitle(course.title) || l.title === 'NISM';
               const levelSlug = getLevelSlug({
                 course,
                 backendLevelId: l.id,
@@ -355,7 +375,7 @@ export const useCourses = () => {
                 courseId: course.id,
                 courseTitle: course.title,
                 title: l.title,
-                order: l.order,
+                order: isNism ? 4 : l.order,
                 is_unlocked: l.is_unlocked,
                 is_enrolled: true,
                 modules: l.modules.map((m, mIndex) => ({
@@ -495,15 +515,10 @@ export const useCourses = () => {
       idValue = typeof moduleId === 'number' ? moduleId : parseInt(moduleId.toString().split('-').pop() || '0', 10);
     } else if (quizType === 'level' && levelId) {
       queryParam = 'level_id';
-      const levelMap: Record<string, number> = {
-        beginner: 1,
-        intermediate: 2,
-        advanced: 3,
-      };
       idValue =
         typeof levelId === 'number'
           ? levelId
-          : getBackendLevelId(String(levelId)) || levelMap[String(levelId)];
+          : getBackendLevelId(String(levelId));
     } else {
       console.error('Invalid quiz type or missing ID');
       return null;
