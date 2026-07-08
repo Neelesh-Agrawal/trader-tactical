@@ -8,6 +8,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle, Clock, XCircle, Trop
 import { useConfetti } from '@/hooks/useConfetti';
 import { useCountUp } from '@/hooks/useCountUp';
 import { cn } from '@/lib/utils';
+import { stripHtml } from '@/components/lesson/html';
 
 interface QuizInterfaceProps {
   questions: Question[];
@@ -215,10 +216,10 @@ export const QuizInterface = ({
                       <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     )}
                     <div className="flex-1">
-                      <p className="text-[14px] md:text-[15px] font-medium leading-relaxed mb-1">{q.question}</p>
+                      <p className="text-[14px] md:text-[15px] font-medium leading-relaxed mb-1">{stripHtml(q.question)}</p>
                       {!isCorrectAnswer && (
                         <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                          Correct: {correctOption?.text || 'Unavailable'}
+                          Correct: {correctOption ? stripHtml(correctOption.text) : 'Unavailable'}
                         </p>
                       )}
                     </div>
@@ -302,7 +303,7 @@ export const QuizInterface = ({
         </div>
 
         <h2 className="text-[16px] md:text-[24px] font-bold mb-6 md:mb-8 leading-relaxed text-foreground">
-          {currentQuestion.question}
+          {stripHtml(currentQuestion.question)}
         </h2>
 
         <div className="space-y-3">
@@ -330,7 +331,7 @@ export const QuizInterface = ({
                   )}>
                     <Circle className="h-4 w-4" />
                   </div>
-                  <span className="flex-1 text-[14px] leading-relaxed">{option.text}</span>
+                  <span className="flex-1 text-[14px] leading-relaxed">{stripHtml(option.text)}</span>
                 </div>
               </button>
             );

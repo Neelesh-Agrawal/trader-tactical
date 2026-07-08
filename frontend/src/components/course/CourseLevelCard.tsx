@@ -46,25 +46,25 @@ export const CourseLevelCard = ({
       <div className="flex flex-col flex-1">
         {/* Header */}
         <div className="mb-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{level.emoji}</span>
-              <div>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-2xl shrink-0">{level.emoji}</span>
+              <div className="min-w-0">
                 <p className="text-xs font-semibold text-success uppercase tracking-widest">{level.badge}</p>
-                <h3 className="text-lg font-bold text-foreground">{level.name}</h3>
+                <h3 className="text-lg font-bold text-foreground truncate">{level.name}</h3>
               </div>
             </div>
             {isLanding && (
               <div className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
+                "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap",
                 isActive ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'
               )}>
-                {isActive ? <CheckCircle className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+                {isActive ? <CheckCircle className="h-3 w-3 shrink-0" /> : <Lock className="h-3 w-3 shrink-0" />}
                 {isActive ? 'Active' : 'Locked'}
               </div>
             )}
             {!isLanding && (
-              <div className="text-right">
+              <div className="text-right shrink-0">
                 <span className="text-2xl font-bold text-foreground">₹{level.price}</span>
               </div>
             )}

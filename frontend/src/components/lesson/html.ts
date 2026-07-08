@@ -33,6 +33,29 @@ function wrapLessonTables(doc: Document) {
   });
 }
 
+/** Fix common CMS encoding glitches (bullets/dashes/apostrophes that render as "?"). */
+function repairMojibakeText(text: string): string {
+  return text
+    .replace(/\u00a0/g, ' ')
+    .replace(/\uFFFD/g, '')
+    // Apostrophe corruption: today?s → today's, you?ll → you'll
+    .replace(/([A-Za-z])\?([A-Za-z])/g, "$1'$2")
+    // Spaced "?" usually came from an en/em dash in prose
+    .replace(/\s+\?\s+/g, ' — ')
+    // Leading list markers that became "?" or leftover bullets
+    .replace(/^[\s?•●▪◦·–—\-]+\s*/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Strip HTML tags from CKEditor / admin content for plain-text UI (quiz, etc.). */
+export function stripHtml(html: string): string {
+  if (!html) return '';
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  return repairMojibakeText(doc.body.textContent || '');
+}
+
 export function normalizeRichHtml(html: string): string {
   if (!html) {
     return '';
@@ -52,13 +75,102 @@ export function normalizeRichHtml(html: string): string {
 
   let currentNode = walker.nextNode();
   while (currentNode) {
-    currentNode.textContent = (currentNode.textContent || '').replace(/\u00a0/g, ' ');
+    let text = (currentNode.textContent || '').replace(/\u00a0/g, ' ').replace(/\uFFFD/g, '');
+    // Apostrophe corruption inside rich HTML text nodes
+    text = text.replace(/([A-Za-z])\?([A-Za-z])/g, "$1'$2");
+    // Mid-sentence spaced "?" → em dash (bullet lines handled separately)
+    text = text.replace(/(\S)\s+\?\s+(\S)/g, '$1 — $2');
+    currentNode.textContent = text;
     currentNode = walker.nextNode();
   }
 
   wrapLessonTables(doc);
 
   return doc.body.innerHTML;
+}
+
+const MODULE_OBJECTIVE_HEADING = /^by the end of this module/i;
+
+/**
+ * Split module description HTML into intro copy + objective bullets
+ * so the Module page can render a clean layout.
+ */
+export function parseModuleDescription(html: string): {
+  introHtml: string;
+  objectiveHeading: string | null;
+  objectives: string[];
+} {
+  if (!html?.trim()) {
+    return { introHtml: '', objectiveHeading: null, objectives: [] };
+  }
+
+  if (typeof document === 'undefined') {
+    return {
+      introHtml: normalizeRichHtml(html),
+      objectiveHeading: null,
+      objectives: [],
+    };
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(normalizeRichHtml(html), 'text/html');
+  const blocks = Array.from(doc.body.children);
+  const introNodes: Element[] = [];
+  let objectiveHeading: string | null = null;
+  const objectives: string[] = [];
+  let pastHeading = false;
+
+  for (const block of blocks) {
+    const text = repairMojibakeText(block.textContent || '');
+    if (!text) continue;
+
+    if (MODULE_OBJECTIVE_HEADING.test(text)) {
+      pastHeading = true;
+      objectiveHeading = text.replace(/:?\s*$/, '');
+      continue;
+    }
+
+    if (pastHeading) {
+      // Objectives may be <ul>/<li>, or a <p> with <br>-separated lines / bullet chars
+      if (block.tagName === 'UL' || block.tagName === 'OL') {
+        Array.from(block.querySelectorAll('li')).forEach((li) => {
+          const item = repairMojibakeText(li.textContent || '');
+          if (item) objectives.push(item);
+        });
+      } else {
+        const htmlParts = (block.innerHTML || '')
+          .split(/<br\s*\/?>/i)
+          .map((part) => repairMojibakeText(part.replace(/<[^>]*>/g, ' ')))
+          .filter(Boolean);
+        if (htmlParts.length > 1) {
+          objectives.push(...htmlParts);
+        } else if (text) {
+          objectives.push(text);
+        }
+      }
+      continue;
+    }
+
+    introNodes.push(block);
+  }
+
+  // Fallback: no heading — keep full HTML as intro
+  if (!pastHeading) {
+    return {
+      introHtml: doc.body.innerHTML.trim(),
+      objectiveHeading: null,
+      objectives: [],
+    };
+  }
+
+  const introDoc = document.createElement('div');
+  introNodes.forEach((node) => introDoc.appendChild(node.cloneNode(true)));
+
+  return {
+    introHtml: introDoc.innerHTML.trim(),
+    objectiveHeading,
+    objectives,
+  };
 }
 
 export const DEFAULT_LESSON_READ_TIME = 15;
