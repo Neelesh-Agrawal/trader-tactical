@@ -218,22 +218,22 @@ const Dashboard = () => {
 
                     {/* Header */}
                     <div className="mb-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">{emoji}</span>
-                          <div>
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-2xl shrink-0">{emoji}</span>
+                          <div className="min-w-0">
                             <p className="text-xs font-semibold text-success uppercase tracking-widest">{badge}</p>
-                            <h3 className="text-lg font-bold text-foreground">{title}</h3>
+                            <h3 className="text-lg font-bold text-foreground truncate">{title}</h3>
                           </div>
                         </div>
-                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        <div className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
                           isCompleted ? 'bg-success/10 text-success' :
                           isActive ? 'bg-success/10 text-success' :
                           'bg-muted text-muted-foreground'
                         }`}>
-                          {isCompleted && <CheckCircle className="h-3 w-3" />}
-                          {isLocked && <Lock className="h-3 w-3" />}
-                          {isActive && <TrendingUp className="h-3 w-3" />}
+                          {isCompleted && <CheckCircle className="h-3 w-3 shrink-0" />}
+                          {isLocked && <Lock className="h-3 w-3 shrink-0" />}
+                          {isActive && <TrendingUp className="h-3 w-3 shrink-0" />}
                           {isCompleted ? 'Completed' : isActive ? 'Active' : 'Locked'}
                         </div>
                       </div>

@@ -9,6 +9,10 @@ lerna-debug.log*
 .env
 frontend/.env
 
+# Local MySQL / docker (do not push)
+docker-compose.yml
+docker-compose.*.yml
+!docker-compose.example.yml
 
 node_modules
 dist
