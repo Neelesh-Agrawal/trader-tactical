@@ -33,6 +33,14 @@ function wrapLessonTables(doc: Document) {
   });
 }
 
+/** Strip HTML tags from CKEditor / admin content for plain-text UI (quiz, etc.). */
+export function stripHtml(html: string): string {
+  if (!html) return '';
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  return (doc.body.textContent || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function normalizeRichHtml(html: string): string {
   if (!html) {
     return '';
