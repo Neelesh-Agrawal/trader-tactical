@@ -14,7 +14,7 @@ export const useNismCheckout = () => {
 
   const startNismCheckout = useCallback(async () => {
     if (isAuthRequired() && !user) {
-      navigate('/login');
+      navigate('/register');
       return;
     }
 

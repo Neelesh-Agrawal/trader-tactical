@@ -348,37 +348,6 @@
   .faq-answer-content p { @apply mb-3; }
   .faq-answer-content p:last-child { @apply mb-0; }
 
-  /* Lesson objective — intro paragraphs + numbered/bulleted list from admin */
-  .lesson-objective-content p {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    @apply mb-4 text-foreground/90;
-  }
-
-  .lesson-objective-content p:last-child { @apply mb-0; }
-
-  .lesson-objective-content ol,
-  .lesson-objective-content ul {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    @apply mb-0 pl-6 text-foreground/90;
-  }
-
-  .lesson-objective-content ol { @apply list-decimal; }
-  .lesson-objective-content ul { @apply list-disc; }
-  .lesson-objective-content li { @apply mb-2; }
-  .lesson-objective-content li:last-child { @apply mb-0; }
-  .lesson-objective-content strong { @apply font-bold text-foreground; }
-
-  @media (min-width: 768px) {
-    .lesson-objective-content p,
-    .lesson-objective-content ol,
-    .lesson-objective-content ul {
-      font-size: 16px;
-    }
-  }
   .lesson-content:not(.ck-content) p { @apply mb-6; }
   .lesson-content:not(.ck-content) ul, .lesson-content:not(.ck-content) ol { @apply mb-6 pl-6; }
   .lesson-content:not(.ck-content) li { @apply mb-2; }
@@ -397,6 +366,19 @@
   .ck-content h4 { @apply text-lg; }
   .ck-content p { @apply mb-4 leading-relaxed; }
   .ck-content p:last-child { @apply mb-0; }
+
+  /* Intro line right before a list in lesson content */
+  .ck-content p:has(+ ol),
+  .ck-content p:has(+ ul),
+  .ck-content h2:has(+ ol),
+  .ck-content h2:has(+ ul),
+  .ck-content h3:has(+ ol),
+  .ck-content h3:has(+ ul),
+  .ck-content h4:has(+ ol),
+  .ck-content h4:has(+ ul) {
+    @apply mb-3 font-semibold text-foreground;
+  }
+
   .ck-content ul, .ck-content ol { @apply mb-4 pl-6; }
   .ck-content li { @apply mb-2; }
   .ck-content ul { @apply list-disc; }
