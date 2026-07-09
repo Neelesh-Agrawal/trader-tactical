@@ -182,10 +182,17 @@ export function getLessonReadTimeMinutes(estimatedTimeMinutes: number | null | u
 const LEARNING_OBJECTIVE_PREFIX = /^by the end of this lesson/i;
 
 export function hasRichHtmlContent(html: string | null | undefined): boolean {
-  return extractParagraphText(html || '').length > 0;
+  if (!html?.trim()) return false;
+  const text = html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\u00a0/g, ' ')
+    .trim();
+  return text.length > 0;
 }
 
-export function prepareLessonObjectiveHtml(html: string): string {
+/** Render admin/CKEditor HTML as stored — decode entities only, no text rewriting. */
+export function decodeAdminHtml(html: string): string {
   if (!html?.trim()) {
     return '';
   }
@@ -194,17 +201,13 @@ export function prepareLessonObjectiveHtml(html: string): string {
     return html;
   }
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(normalizeRichHtml(html), 'text/html');
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = html;
+  return textarea.value || html;
+}
 
-  doc.body.querySelectorAll('p, li, h2, h3, h4').forEach((node) => {
-    const text = (node.textContent || '').trim();
-    if (LEARNING_OBJECTIVE_PREFIX.test(text)) {
-      node.remove();
-    }
-  });
-
-  return doc.body.innerHTML.trim();
+export function prepareLessonObjectiveHtml(html: string): string {
+  return decodeAdminHtml(html).trim();
 }
 
 export function extractLearningObjectives(html: string): string[] {

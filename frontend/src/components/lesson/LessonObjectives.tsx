@@ -25,7 +25,7 @@ export const LessonObjectives = ({ objective }: LessonObjectivesProps) => {
       </div>
 
       <div
-        className="lesson-content ck-content prose-body lesson-objective-content"
+        className="lesson-content ck-content min-w-0 max-w-full"
         dangerouslySetInnerHTML={{ __html: objectiveHtml }}
       />
     </div>
