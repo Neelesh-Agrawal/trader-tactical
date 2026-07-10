@@ -85,7 +85,7 @@ export const QnAWidget = ({ contextType, contextId }: QnAWidgetProps) => {
                 <CheckCircle className="h-12 w-12 mx-auto mb-4 text-success" />
                 <h4 className="font-bold mb-2">Question Received!</h4>
                 <p className="text-sm text-muted-foreground">
-                  We'll send the answer to your email: {profile?.email}
+                  We'll send the answer to your email.
                 </p>
               </div>
             ) : (
