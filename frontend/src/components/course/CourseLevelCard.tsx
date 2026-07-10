@@ -11,6 +11,7 @@ interface CourseLevelCardProps {
   onCtaClick?: () => void;
   className?: string;
   index: number;
+  displayPrice?: number;
 }
 
 export const CourseLevelCard = ({ 
@@ -19,10 +20,12 @@ export const CourseLevelCard = ({
   isActive = true, 
   onCtaClick, 
   className,
-  index
+  index,
+  displayPrice,
 }: CourseLevelCardProps) => {
   const isLanding = variant === 'landing';
   const isFeatured = level.id === 'beginner';
+  const resolvedPrice = displayPrice ?? level.price;
 
   return (
     <div
@@ -65,7 +68,7 @@ export const CourseLevelCard = ({
             )}
             {!isLanding && (
               <div className="text-right shrink-0">
-                <span className="text-2xl font-bold text-foreground">₹{level.price}</span>
+                <span className="text-2xl font-bold text-foreground">₹{resolvedPrice}</span>
               </div>
             )}
           </div>
@@ -153,7 +156,7 @@ export const CourseLevelCard = ({
               </>
             ) : (
               <>
-                <span>{isLanding ? `Enroll Now — ₹${level.price}` : level.cta}</span>
+                <span>{isLanding ? `Enroll Now — ₹${resolvedPrice}` : level.cta}</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}

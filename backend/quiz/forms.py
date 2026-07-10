@@ -16,8 +16,32 @@ class QuestionAdminForm(forms.ModelForm):
 
 
 class FixedOptionInlineFormSet(BaseInlineFormSet):
+    def _parent_prefix(self):
+        if "-" not in self.prefix:
+            return None
+        return self.prefix.rsplit("-", 1)[0]
+
+    def _parent_marked_for_delete(self):
+        parent_prefix = self._parent_prefix()
+        if not parent_prefix:
+            return False
+        return self.data.get(f"{parent_prefix}-DELETE") in {True, "on", "1", "true"}
+
+    def _parent_is_blank_new_form(self):
+        if self.instance.pk:
+            return False
+
+        parent_prefix = self._parent_prefix()
+        if not parent_prefix:
+            return False
+
+        return not (self.data.get(f"{parent_prefix}-text") or "").strip()
+
     def clean(self):
         super().clean()
+
+        if self._parent_marked_for_delete() or self._parent_is_blank_new_form():
+            return
 
         option_count = 0
         correct_count = 0

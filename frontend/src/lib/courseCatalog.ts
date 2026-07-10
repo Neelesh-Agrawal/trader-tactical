@@ -8,6 +8,14 @@ export const findCourseIdForConfig = (
   config: CourseLevel,
   courses: Course[],
 ): number | null => {
+  const match = findCourseForConfig(config, courses);
+  return match?.id ?? null;
+};
+
+export const findCourseForConfig = (
+  config: CourseLevel,
+  courses: Course[],
+): Course | null => {
   const configName = normalize(config.name);
   const configTitle = normalize(config.title);
 
@@ -17,7 +25,7 @@ export const findCourseIdForConfig = (
   });
 
   if (exactMatch) {
-    return exactMatch.id;
+    return exactMatch;
   }
 
   const keywordMatch = courses.find((course) => {
@@ -25,7 +33,7 @@ export const findCourseIdForConfig = (
     return title.includes(configName) || title.includes(configTitle);
   });
 
-  return keywordMatch?.id ?? null;
+  return keywordMatch ?? null;
 };
 
 export const findNismCourseId = (courses: Course[]): number | null =>

@@ -85,6 +85,7 @@ class QuizOptionInline(nested_admin.NestedTabularInline):
     max_num = 4
     validate_min = True
     validate_max = True
+    can_delete = True
     fields = ("text", "is_correct")
 
 
@@ -92,6 +93,7 @@ class QuizQuestionInline(CKEditorAdminMixin, nested_admin.NestedStackedInline):
     model = Question
     form = QuestionAdminForm
     extra = 0
+    can_delete = True
     fields = ("text", "explanation", "order")
     readonly_fields = ("order",)
     inlines = [QuizOptionInline]
@@ -169,6 +171,7 @@ class LessonQuizInline(nested_admin.NestedStackedInline):
     formset = LessonQuizInlineFormSet
     extra = 1
     max_num = 1
+    can_delete = True
     inlines = [QuizQuestionInline]
     fields = (
         "quiz_type",

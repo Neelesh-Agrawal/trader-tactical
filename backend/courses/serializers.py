@@ -10,6 +10,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "price_inr",
             "is_published",
         )
 
@@ -17,7 +18,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ("id", "title", "description")
+        fields = ("id", "title", "description", "price_inr")
 
 
 class LessonSerializer(serializers.ModelSerializer):

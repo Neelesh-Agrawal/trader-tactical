@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { startHostedCheckout } from '@/hooks/useCheckout';
 import { isAuthRequired } from '@/config/appConfig';
 import { useCourses } from '@/hooks/useCourses';
-import { findCourseIdForConfig } from '@/lib/courseCatalog';
+import { findCourseForConfig, findCourseIdForConfig } from '@/lib/courseCatalog';
 import { NismPrimaryAction } from '@/components/nism/NismPrimaryAction';
 import { BrandLogo } from '@/components/brand/BrandLogo';
 
@@ -159,12 +159,16 @@ const Pricing = () => {
       <section className="relative pb-20 -mt-4">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
-            {plans.map((plan, i) => (
+            {plans.map((plan, i) => {
+              const matchedCourse = findCourseForConfig(plan, courses);
+
+              return (
               <CourseLevelCard
                 key={plan.id}
                 level={plan}
                 variant="pricing"
                 index={i}
+                displayPrice={matchedCourse?.price_inr}
                 onCtaClick={() => handleCourseCheckout(plan.id)}
                 className={cn(
                   i === 0 && 'pr-c1',
@@ -173,7 +177,8 @@ const Pricing = () => {
                   'pr-card-hover'
                 )}
               />
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

@@ -13,11 +13,12 @@ import { getPdfUrl, openPdf, SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { courseConfigList, nismConfig, siteConfig } from '@/config/courseConfig';
 import { NismPrimaryAction } from '@/components/nism/NismPrimaryAction';
 import { getCurrentLevel } from '@/lib/currentLevel';
+import { findCourseForConfig } from '@/lib/courseCatalog';
 import type { Level } from '@/hooks/useCourses';
 
 const Dashboard = () => {
   const { profile, streak } = useAuth();
-  const { levels, loading: coursesLoading, error: coursesError } = useCourses();
+  const { levels, courses, loading: coursesLoading, error: coursesError } = useCourses();
   const {
     isLevelCompleted,
     isLessonCompleted,
@@ -177,7 +178,8 @@ const Dashboard = () => {
               const title = level?.title || config.name || levelId;
               const description = config.description ?? '';
               const modules = level?.modules ?? config.points.map((point, pointIndex) => ({ id: `${config.id}-${pointIndex}`, title: point }));
-              const price = `₹${config.price}`;
+              const matchedCourse = findCourseForConfig(config, courses);
+              const price = `₹${matchedCourse?.price_inr ?? config.price}`;
               const emoji = config.emoji ?? '📚';
               const badge = config.badge ?? `Level ${config.number}`;
               const bestFor = config.bestFor ?? '';

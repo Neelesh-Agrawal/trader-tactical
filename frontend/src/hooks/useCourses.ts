@@ -67,12 +67,14 @@ export interface Course {
   id: number;
   title: string;
   description: string;
+  price_inr: number;
 }
 
 interface BackendCourseResponse {
   id: number;
   title: string;
   description: string;
+  price_inr: number;
   is_published: boolean;
 }
 
@@ -251,6 +253,7 @@ const buildDemoCourseData = (): { courses: Course[]; levels: Level[] } => {
     id: config.number,
     title: config.name,
     description: config.description,
+    price_inr: config.price,
   }));
 
   const levels: Level[] = courseConfigList.map((config, levelIndex) => ({
@@ -346,6 +349,7 @@ export const useCourses = () => {
         id: course.id,
         title: course.title,
         description: course.description,
+        price_inr: course.price_inr,
       }));
       const enrolledCourseIds = new Set(enrolledCoursesData.map((course) => course.id));
 
