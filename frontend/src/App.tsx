@@ -30,6 +30,7 @@ import RiskDisclosure from "./pages/RiskDisclosure";
 import Disclaimer from "./pages/Disclaimer";
 import Pricing from "./pages/Pricing";
 import PurchaseResult from "./pages/PurchaseResult";
+import { WelcomeOfferPopup } from "@/components/landing/WelcomeOfferPopup";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,6 +94,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <ScrollToTop />
+            <WelcomeOfferPopup />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
