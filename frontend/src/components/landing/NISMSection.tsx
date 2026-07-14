@@ -4,11 +4,17 @@ import { Download, BookOpen, CheckCircle } from 'lucide-react';
 import { SAMPLE_PDF_PATH, openSamplePdf } from '@/lib/pdf';
 import { nismConfig } from '@/config/courseConfig';
 import { NismPrimaryAction } from '@/components/nism/NismPrimaryAction';
+import { useCourses } from '@/hooks/useCourses';
 
 export const NISMSection = () => {
+  const { courses } = useCourses();
+
   if (!nismConfig.enabled) {
     return null;
   }
+
+  const nismCourse = courses.find((course) => course.title.trim().toLowerCase().includes('nism'));
+  const resolvedPrice = nismCourse?.price_inr;
 
   // Handle title highlighting dynamically
   const titleParts = nismConfig.title.split('—');
@@ -133,7 +139,7 @@ export const NISMSection = () => {
                     <div className="mt-4 pt-4 border-t border-success/10">
                       <p className="text-xs text-muted-foreground">One-time access</p>
                       <p className="text-2xl font-bold font-mono text-foreground mt-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                        ₹{nismConfig.price}
+                        {typeof resolvedPrice === 'number' ? `₹${resolvedPrice}` : 'Price unavailable'}
                       </p>
                     </div>
                   </div>

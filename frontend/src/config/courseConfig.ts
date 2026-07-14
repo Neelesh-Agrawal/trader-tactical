@@ -5,7 +5,6 @@ export interface CourseLevel {
   title: string;
   badge: string;
   emoji: string;
-  price: number;
   modules: number;
   lessons: number;
   duration: string;
@@ -25,7 +24,6 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     title: 'Foundations of Options',
     badge: 'Foundation',
     emoji: '🌱',
-    price: 999,
     modules: 5,
     lessons: 40,
     duration: '6-7 weeks',
@@ -50,7 +48,6 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     title: 'Learn Trading with Clarity',
     badge: 'Growth',
     emoji: '📈',
-    price: 1999,
     modules: 6,
     lessons: 35,
     duration: '6-7 weeks',
@@ -73,7 +70,6 @@ export const courseConfig: Record<'beginner' | 'intermediate' | 'advanced', Cour
     title: 'Trade Like a Professional',
     badge: 'Mastery',
     emoji: '🏆',
-    price: 2999,
     modules: 7,
     lessons: 50,
     duration: '6-7 weeks',
@@ -102,7 +98,6 @@ export interface NISMConfig {
   badge: string;
   title: string;
   description: string;
-  price: number;
   benefits: string[];
   primaryCTA: string;
   enrolledCTA: string;
@@ -119,7 +114,6 @@ export const nismConfig: NISMConfig = {
   badge: "NISM Series VIII · Equity Derivatives",
   title: "NISM VIII — Equity Derivatives in a Nutshell",
   description: "Struggling to get through the entire NISM book? Learn the key concepts faster with simplified chapter-wise notes.",
-  price: 199,
   benefits: [
     "Understand concepts faster",
     "Simple, jargon-free explanations",
@@ -145,7 +139,6 @@ export const nismLevelDisplay = {
   title: 'NISM VIII — Equity Derivatives',
   badge: 'Certification',
   emoji: '📘',
-  price: nismConfig.price,
   modules: nismConfig.accentItems.length,
   lessons: 0,
   duration: 'Self-paced',

@@ -32,7 +32,7 @@ class QuestionPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'order', 'options')
+        fields = ('id', 'text', 'explanation', 'order', 'options')
 
 
 class QuizSerializer(serializers.ModelSerializer):

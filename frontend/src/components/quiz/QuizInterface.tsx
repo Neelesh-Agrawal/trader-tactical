@@ -218,9 +218,16 @@ export const QuizInterface = ({
                     <div className="flex-1">
                       <p className="text-[14px] md:text-[15px] font-medium leading-relaxed mb-1">{stripHtml(q.question)}</p>
                       {!isCorrectAnswer && (
-                        <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                          Correct: {correctOption ? stripHtml(correctOption.text) : 'Unavailable'}
-                        </p>
+                        <div className="space-y-1.5">
+                          <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                            Correct: {correctOption ? stripHtml(correctOption.text) : 'Unavailable'}
+                          </p>
+                          {q.explanation && stripHtml(q.explanation) && (
+                            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                              Explanation: {stripHtml(q.explanation)}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>

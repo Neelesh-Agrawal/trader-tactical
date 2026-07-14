@@ -11,7 +11,8 @@ interface CourseLevelCardProps {
   onCtaClick?: () => void;
   className?: string;
   index: number;
-  displayPrice?: number;
+  displayPrice?: number | null;
+  showCta?: boolean;
 }
 
 export const CourseLevelCard = ({ 
@@ -22,10 +23,11 @@ export const CourseLevelCard = ({
   className,
   index,
   displayPrice,
+  showCta = true,
 }: CourseLevelCardProps) => {
   const isLanding = variant === 'landing';
   const isFeatured = level.id === 'beginner';
-  const resolvedPrice = displayPrice ?? level.price;
+  const hasPrice = typeof displayPrice === 'number';
 
   return (
     <div
@@ -68,7 +70,7 @@ export const CourseLevelCard = ({
             )}
             {!isLanding && (
               <div className="text-right shrink-0">
-                <span className="text-2xl font-bold text-foreground">₹{resolvedPrice}</span>
+                <span className="text-2xl font-bold text-foreground">{hasPrice ? `₹${displayPrice}` : 'Price unavailable'}</span>
               </div>
             )}
           </div>
@@ -138,29 +140,31 @@ export const CourseLevelCard = ({
 
         {/* CTAs */}
         <div className="flex flex-col gap-3">
-          <Button
-            className={cn(
-              "w-full font-semibold rounded-xl h-11 gap-2 lv-btn",
-              isFeatured ? "bg-success hover:bg-success/90 text-white" : "bg-background border border-border text-foreground hover:bg-muted"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onCtaClick) onCtaClick();
-            }}
-            disabled={isLanding && !isActive}
-          >
-            {isLanding && !isActive ? (
-              <>
-                <Lock className="h-4 w-4" />
-                Locked
-              </>
-            ) : (
-              <>
-                <span>{isLanding ? `Enroll Now — ₹${resolvedPrice}` : level.cta}</span>
-                <ArrowRight className="h-4 w-4" />
-              </>
-            )}
-          </Button>
+          {showCta && hasPrice && (
+            <Button
+              className={cn(
+                "w-full font-semibold rounded-xl h-11 gap-2 lv-btn",
+                isFeatured ? "bg-success hover:bg-success/90 text-white" : "bg-background border border-border text-foreground hover:bg-muted"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onCtaClick) onCtaClick();
+              }}
+              disabled={isLanding && !isActive}
+            >
+              {isLanding && !isActive ? (
+                <>
+                  <Lock className="h-4 w-4" />
+                  Locked
+                </>
+              ) : (
+                <>
+                  <span>{isLanding ? `Enroll Now — ₹${displayPrice}` : level.cta}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          )}
           {isLanding && level.samplePdfPath && level.sampleDownloadCTA && (
             <a
               href={getPdfUrl(level.samplePdfPath)}

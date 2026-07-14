@@ -38,6 +38,14 @@ class CourseListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
+class CourseCatalogView(generics.ListAPIView):
+    """Public catalog metadata for all courses"""
+
+    queryset = Course.objects.all()
+    serializer_class = CourseListSerializer
+    permission_classes = [permissions.AllowAny]
+
+
 class CourseDetailView(APIView):
     """Get course details (requires enrollment)"""
 
