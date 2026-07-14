@@ -4,6 +4,7 @@ import { useCourses } from '@/hooks/useCourses';
 import { ChevronDown, ChevronRight, CheckCircle, Lock, Play, BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { getModuleDisplayStatus, isModuleAccessible } from '@/lib/moduleStatus';
 
 interface CourseSidebarProps {
   levelId: string;
@@ -58,8 +59,16 @@ export const CourseSidebar = ({ levelId, currentModuleId, currentLessonId }: Cou
 
       <div className="p-2">
         {level.modules.map((module, moduleIndex) => {
-          const isUnlocked = isModuleUnlocked(levelId, module.id);
-          const isComplete = isModuleCompleted(levelId, module.id);
+          const status = getModuleDisplayStatus({
+            levelId,
+            module,
+            currentModuleId,
+            isModuleUnlocked,
+            isModuleCompleted,
+            isLessonCompleted,
+          });
+          const isUnlocked = isModuleAccessible(status);
+          const isComplete = status === 'completed';
           const isExpanded = expandedModules.includes(module.id);
           const isCurrent = module.id === currentModuleId;
 

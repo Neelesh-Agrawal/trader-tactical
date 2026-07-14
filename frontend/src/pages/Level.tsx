@@ -270,6 +270,7 @@ const Level = () => {
             ) : (
               <LevelOverview 
                 level={level}
+                currentModuleId={currentModuleId}
                 onLessonSelect={handleLessonSelect}
               />
             )}

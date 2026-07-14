@@ -8,13 +8,15 @@ import { CheckCircle, Lock, ArrowRight, ChevronLeft, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import { getLessonReadTimeMinutes } from '@/components/lesson/html';
 import type { Level } from '@/hooks/useCourses';
+import { getModuleDisplayStatus, isModuleAccessible } from '@/lib/moduleStatus';
 
 interface LevelOverviewProps {
   level: Level;
   onLessonSelect: (moduleId: string, lessonId: string) => void;
+  currentModuleId?: string;
 }
 
-export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => {
+export const LevelOverview = ({ level, onLessonSelect, currentModuleId }: LevelOverviewProps) => {
   const navigate = useNavigate();
   const { isModuleUnlocked, isModuleCompleted, isLessonCompleted, isLevelCompleted } = useProgress();
 
@@ -31,25 +33,6 @@ export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => 
       total: module.lessons.length,
       percent: Math.round((completed / module.lessons.length) * 100)
     };
-  };
-
-  const getModuleStatus = (moduleId: string, moduleUnlockedFromApi?: boolean) => {
-    if (moduleUnlockedFromApi) {
-      const isComplete = isModuleCompleted(level.id, moduleId);
-      if (isComplete) return 'completed';
-      const { percent } = getModuleProgress(moduleId);
-      if (percent > 0) return 'in-progress';
-      return 'available';
-    }
-
-    const isUnlocked = isModuleUnlocked(level.id, moduleId);
-    const isComplete = isModuleCompleted(level.id, moduleId);
-    const { percent } = getModuleProgress(moduleId);
-
-    if (isComplete) return 'completed';
-    if (isUnlocked && percent > 0) return 'in-progress';
-    if (isUnlocked) return 'available';
-    return 'locked';
   };
 
   const getLessonReadingTime = (estimatedTimeMinutes: number | null | undefined) =>
@@ -109,9 +92,16 @@ export const LevelOverview = ({ level, onLessonSelect }: LevelOverviewProps) => 
 
         <Accordion type="single" collapsible className="space-y-3">
           {level.modules.map((module) => {
-            const status = getModuleStatus(module.id, module.is_unlocked);
+            const status = getModuleDisplayStatus({
+              levelId: level.id,
+              module,
+              currentModuleId,
+              isModuleUnlocked,
+              isModuleCompleted,
+              isLessonCompleted,
+            });
             const progress = getModuleProgress(module.id);
-            const isUnlocked = module.is_unlocked || status !== 'locked';
+            const isUnlocked = isModuleAccessible(status);
 
             return (
               <AccordionItem
