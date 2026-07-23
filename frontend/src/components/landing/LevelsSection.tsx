@@ -4,6 +4,8 @@ import { AnimatedSection } from './AnimatedSection';
 import { typography } from '@/design-system';
 import { courseConfigList } from '@/config/courseConfig';
 import { CourseLevelCard } from '@/components/course/CourseLevelCard';
+import { useCourses } from '@/hooks/useCourses';
+import { findCourseForConfig } from '@/lib/courseCatalog';
 
 const levels = courseConfigList.map(level => ({
   ...level,
@@ -12,6 +14,7 @@ const levels = courseConfigList.map(level => ({
 
 export const LevelsSection = () => {
   const navigate = useNavigate();
+  const { courses } = useCourses();
 
   return (
     <section id="levels" className="py-12 md:py-16 relative overflow-hidden bg-background">
@@ -140,6 +143,7 @@ export const LevelsSection = () => {
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch pt-2">
           {levels.map((level, index) => {
             const isActive = level.status === 'active';
+            const matchedCourse = findCourseForConfig(level, courses);
 
             return (
               <AnimatedSection key={level.id} direction="up" delay={100 + index * 100} className="h-full">
@@ -148,6 +152,8 @@ export const LevelsSection = () => {
                   variant="landing"
                   isActive={isActive}
                   index={index}
+                  displayPrice={matchedCourse?.price_inr}
+                  showCta={typeof matchedCourse?.price_inr === 'number'}
                   onCtaClick={() => navigate('/register')}
                 />
               </AnimatedSection>

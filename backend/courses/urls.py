@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    CourseCatalogView,
     CourseListView,
     CourseDetailView,
     EnrolledCourseListView,
@@ -17,6 +18,7 @@ from .views import (
 urlpatterns = [
     # Course endpoints
     path('', EnrolledCourseListView.as_view(), name='enrolled-courses'),
+    path('catalog/', CourseCatalogView.as_view(), name='course-catalog'),
     path('all/', CourseListView.as_view(), name='all-courses'),
     path('payments/initiate/', PaymentCheckoutView.as_view(), name='payment-initiate'),
     path('payments/payu/return/', PaymentReturnView.as_view(), name='payment-return'),

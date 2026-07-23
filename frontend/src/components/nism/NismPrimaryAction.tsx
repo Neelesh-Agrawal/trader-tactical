@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { nismConfig } from '@/config/courseConfig';
+import { useCourses } from '@/hooks/useCourses';
 import { useNismEnrollment } from '@/hooks/useNismEnrollment';
 import { useNismCheckout } from '@/hooks/useNismCheckout';
 
@@ -14,13 +15,20 @@ export const NismPrimaryAction = ({
   className,
   showPrice = true,
 }: NismPrimaryActionProps) => {
+  const { courses } = useCourses();
   const { isEnrolled, primaryLabel, primaryHref } = useNismEnrollment();
   const { startNismCheckout } = useNismCheckout();
+  const nismCourse = courses.find((course) => course.title.trim().toLowerCase().includes('nism'));
+  const resolvedPrice = nismCourse?.price_inr;
+
+  if (!isEnrolled && (typeof resolvedPrice !== 'number' || !nismCourse)) {
+    return null;
+  }
 
   const label =
     isEnrolled || !showPrice
       ? primaryLabel
-      : `${primaryLabel} — ₹${nismConfig.price}`;
+      : `${primaryLabel} — ₹${resolvedPrice}`;
 
   if (isEnrolled) {
     return (

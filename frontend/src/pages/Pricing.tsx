@@ -38,6 +38,10 @@ const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { courses } = useCourses();
+  const nismCourse = courses.find((course) => course.title.trim().toLowerCase().includes('nism'));
+  const nismPrice = nismCourse?.price_inr;
+  const beginnerCourse = findCourseForConfig(courseConfig.beginner, courses);
+  const beginnerPrice = beginnerCourse?.price_inr;
 
   const handleCourseCheckout = async (levelId: keyof typeof courseConfig) => {
     if (isAuthRequired() && !user) {
@@ -169,6 +173,7 @@ const Pricing = () => {
                 variant="pricing"
                 index={i}
                 displayPrice={matchedCourse?.price_inr}
+                showCta={typeof matchedCourse?.price_inr === 'number'}
                 onCtaClick={() => handleCourseCheckout(plan.id)}
                 className={cn(
                   i === 0 && 'pr-c1',
@@ -274,7 +279,7 @@ const Pricing = () => {
                       <div className="mt-4 pt-4 border-t border-success/10">
                         <p className="text-xs text-muted-foreground">One-time access</p>
                         <p className="text-2xl font-bold text-foreground mt-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                          ₹{nismConfig.price}
+                          {typeof nismPrice === 'number' ? `₹${nismPrice}` : 'Price unavailable'}
                         </p>
                       </div>
                     </div>
@@ -301,13 +306,15 @@ const Pricing = () => {
           <div className="mt-12 text-center p-8 rounded-2xl bg-gradient-to-br from-success/10 to-teal-500/5 border border-success/20">
             <p className="text-base font-semibold text-foreground mb-1">Still not sure where to start?</p>
             <p className="text-sm text-muted-foreground mb-5">Start with the Foundation level — you can always progress from there.</p>
-            <Button
-              className="pr-btn bg-success hover:bg-success/90 text-white rounded-xl px-8 h-11 font-semibold shadow-lg shadow-success/20"
-              onClick={() => handleCourseCheckout('beginner')}
-            >
-              Buy Foundation —{' '}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>₹{courseConfig.beginner.price}</span>
-            </Button>
+            {typeof beginnerPrice === 'number' && (
+              <Button
+                className="pr-btn bg-success hover:bg-success/90 text-white rounded-xl px-8 h-11 font-semibold shadow-lg shadow-success/20"
+                onClick={() => handleCourseCheckout('beginner')}
+              >
+                Buy Foundation —{' '}
+                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>₹{beginnerPrice}</span>
+              </Button>
+            )}
           </div>
         </div>
       </section>

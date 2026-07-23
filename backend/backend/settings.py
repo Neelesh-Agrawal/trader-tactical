@@ -243,8 +243,8 @@ if DEBUG and APP_MODE == "DEV":
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].insert(0, "backend.authentication.DevModeAuthentication")
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 

@@ -67,14 +67,14 @@ export interface Course {
   id: number;
   title: string;
   description: string;
-  price_inr: number;
+  price_inr: number | null;
 }
 
 interface BackendCourseResponse {
   id: number;
   title: string;
   description: string;
-  price_inr: number;
+  price_inr: number | null;
   is_published: boolean;
 }
 
@@ -253,7 +253,7 @@ const buildDemoCourseData = (): { courses: Course[]; levels: Level[] } => {
     id: config.number,
     title: config.name,
     description: config.description,
-    price_inr: config.price,
+    price_inr: null,
   }));
 
   const levels: Level[] = courseConfigList.map((config, levelIndex) => ({
@@ -325,39 +325,42 @@ export const useCourses = () => {
 
 
   const fetchCourses = useCallback(async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
-    if (!isAuthRequired() && !getAuthTokens()?.access) {
-      applyDemoCourseData();
-      setLoading(false);
-      return;
-    }
-
     try {
-      const [publishedCoursesData, enrolledCoursesData] = await Promise.all([
-        apiFetch<BackendCourseResponse[]>('/api/courses/all/'),
-        apiFetch<BackendCourseResponse[]>('/api/courses/'),
-      ]);
+      const catalogCoursesData = await apiFetch<BackendCourseResponse[]>('/api/courses/catalog/', {
+        auth: false,
+      });
 
-      const publishedCourses = publishedCoursesData.map((course) => ({
+      const catalogCourses = catalogCoursesData.map((course) => ({
         id: course.id,
         title: course.title,
         description: course.description,
         price_inr: course.price_inr,
       }));
+
+      setCourses(catalogCourses);
+
+      const hasAuthToken = Boolean(getAuthTokens()?.access);
+      if (!hasAuthToken || !user) {
+        if (!isAuthRequired()) {
+          const previewLevels = buildDemoCourseData().levels;
+          setLevels(previewLevels);
+          setLevelIdMap(previewLevels.map((level) => ({ id: level.id, backendId: level.backendId })));
+          setError(null);
+        } else {
+          setLevels([]);
+        }
+        return;
+      }
+
+      const enrolledCoursesData = await apiFetch<BackendCourseResponse[]>('/api/courses/');
       const enrolledCourseIds = new Set(enrolledCoursesData.map((course) => course.id));
 
-      setCourses(publishedCourses);
-
-      if (publishedCourses.length > 0) {
+      if (catalogCourses.length > 0) {
         const levelsByCourse = await Promise.allSettled(
-          publishedCourses
+          catalogCourses
             .filter((course) => enrolledCourseIds.has(course.id))
             .map(async (course) => {
             const levelsData = await apiFetch<BackendLevelResponse[]>(
@@ -423,7 +426,7 @@ export const useCourses = () => {
           return [];
         });
 
-        const lockedPreviewLevels = publishedCourses
+        const lockedPreviewLevels = catalogCourses
           .filter((course) => !enrolledCourseIds.has(course.id))
           .map(buildPreviewLevel);
 

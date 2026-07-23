@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, CheckCircle, Lock, BookOpen, ArrowRight } fr
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import type { Level } from '@/hooks/useCourses';
+import { getModuleDisplayStatus, isModuleAccessible } from '@/lib/moduleStatus';
 
 interface LevelSidebarProps {
   level: Level;
@@ -97,8 +98,16 @@ export const LevelSidebar = ({
       {/* Modules List */}
       <div className="p-2 flex-1 overflow-y-auto">
         {level.modules.map((module, moduleIndex) => {
-          const isUnlocked = module.is_unlocked || isModuleUnlocked(level.id, module.id);
-          const isComplete = isModuleCompleted(level.id, module.id);
+          const status = getModuleDisplayStatus({
+            levelId: level.id,
+            module,
+            currentModuleId,
+            isModuleUnlocked,
+            isModuleCompleted,
+            isLessonCompleted,
+          });
+          const isUnlocked = isModuleAccessible(status);
+          const isComplete = status === 'completed';
           const isExpanded = expandedModules.includes(module.id);
           const isCurrent = module.id === currentModuleId;
 
@@ -129,9 +138,9 @@ export const LevelSidebar = ({
               >
                 <div className={cn(
                   "w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
-                  isComplete ? "bg-success/20 text-success" :
-                  isCurrent ? "bg-primary/20 text-primary" :
-                  isUnlocked ? "bg-warning/20 text-warning" :
+                    isComplete ? "bg-success/20 text-success" :
+                    isCurrent ? "bg-primary/20 text-primary" :
+                    isUnlocked ? "bg-warning/20 text-warning" :
                   "bg-muted text-muted-foreground"
                 )}>
                   {isComplete ? <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> :

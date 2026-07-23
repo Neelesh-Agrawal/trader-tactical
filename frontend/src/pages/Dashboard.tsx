@@ -30,6 +30,8 @@ const Dashboard = () => {
 
   const currentLevel = getCurrentLevelForDashboard();
   const backendLevelsById = new Map(levels.map((level) => [level.id, level]));
+  const nismCourse = courses.find((course) => course.title.trim().toLowerCase().includes('nism'));
+  const nismPrice = nismCourse?.price_inr;
 
   const completedLessons = (lessonProgress || []).filter((l) => l.completed).length;
 
@@ -179,7 +181,7 @@ const Dashboard = () => {
               const description = config.description ?? '';
               const modules = level?.modules ?? config.points.map((point, pointIndex) => ({ id: `${config.id}-${pointIndex}`, title: point }));
               const matchedCourse = findCourseForConfig(config, courses);
-              const price = `₹${matchedCourse?.price_inr ?? config.price}`;
+              const price = typeof matchedCourse?.price_inr === 'number' ? `₹${matchedCourse.price_inr}` : 'Price unavailable';
               const emoji = config.emoji ?? '📚';
               const badge = config.badge ?? `Level ${config.number}`;
               const bestFor = config.bestFor ?? '';
@@ -304,17 +306,19 @@ const Dashboard = () => {
 
                     {/* CTA */}
                     <div className="mt-auto flex flex-col gap-3">
-                      <Link
-                        to={isLocked ? `/pricing?level=${config.id}` : cardLink}
-                        className={`db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
-                          isLocked
-                            ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
-                            : 'bg-success text-white'
-                        }`}
-                      >
-                        {isLocked ? 'Unlock — ' + price : isCompleted ? 'View Lessons' : 'Continue Learning'}
-                        {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
-                      </Link>
+                      {(!isLocked || typeof matchedCourse?.price_inr === 'number') && (
+                        <Link
+                          to={isLocked ? `/pricing?level=${config.id}` : cardLink}
+                          className={`db-cta-btn inline-flex items-center justify-center w-full rounded-xl h-11 text-sm font-semibold shadow-md ${
+                            isLocked
+                              ? 'bg-success/10 text-success border border-success/30 hover:bg-success hover:text-white'
+                              : 'bg-success text-white'
+                          }`}
+                        >
+                          {isLocked ? 'Unlock — ' + price : isCompleted ? 'View Lessons' : 'Continue Learning'}
+                          {!isLocked && <ArrowRight className="ml-2 h-4 w-4" />}
+                        </Link>
+                      )}
                       {config.samplePdfPath && config.sampleDownloadCTA && (
                         <a
                           href={getPdfUrl(config.samplePdfPath)}
@@ -415,7 +419,7 @@ const Dashboard = () => {
                     <div className="hidden sm:flex shrink-0 flex-col items-center justify-center px-5 py-4 rounded-xl border border-success/15 bg-success/5 text-center">
                       <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">One-time</p>
                       <p className="text-2xl font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                        ₹{nismConfig.price}
+                        {typeof nismPrice === 'number' ? `₹${nismPrice}` : 'Price unavailable'}
                       </p>
                     </div>
                   </div>
