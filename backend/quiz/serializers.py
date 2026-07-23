@@ -12,11 +12,11 @@ class OptionSerializer(serializers.ModelSerializer):
 
 
 class OptionPublicSerializer(serializers.ModelSerializer):
-    """Quiz-taking view: do not expose correct answers."""
+    """Quiz-taking view: includes correctness for instant per-question feedback."""
 
     class Meta:
         model = Option
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'is_correct')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -32,7 +32,7 @@ class QuestionPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'order', 'options')
+        fields = ('id', 'text', 'explanation', 'order', 'options')
 
 
 class QuizSerializer(serializers.ModelSerializer):

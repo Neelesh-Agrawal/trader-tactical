@@ -59,6 +59,7 @@ export const QuizInterface = ({
     correctAnswers,
     progress,
     isLastQuestion,
+    isReviewingAnswer,
     questions: shuffledQuestions,
     selectAnswer,
     nextQuestion,
@@ -89,11 +90,18 @@ export const QuizInterface = ({
     }
   }, [isSubmitted, passed, quizType, fire]);
 
-  // Reset feedback state when question changes
+  // Reset local selection highlight when question changes
   useEffect(() => {
     setSelectedAnswer(null);
     setShowFeedback(false);
   }, [currentQuestionIndex]);
+
+  // Sync feedback UI with hook review state (e.g. after selectAnswer)
+  useEffect(() => {
+    if (isReviewingAnswer) {
+      setShowFeedback(true);
+    }
+  }, [isReviewingAnswer]);
 
   // Warn about leaving
   useEffect(() => {
@@ -114,22 +122,27 @@ export const QuizInterface = ({
     return 'text-foreground';
   };
 
-  // Advance after recording an answer (correctness revealed on final results screen)
   const handleAnswerSelect = (optionIndex: number) => {
-    if (showFeedback) return;
+    if (showFeedback || isReviewingAnswer) return;
 
     setSelectedAnswer(optionIndex);
     selectAnswer(optionIndex);
     setShowFeedback(true);
-
-    setTimeout(() => {
-      if (isLastQuestion) {
-        void submitQuiz();
-      } else {
-        nextQuestion();
-      }
-    }, 400);
   };
+
+  const handleContinue = () => {
+    if (isLastQuestion) {
+      void submitQuiz();
+    } else {
+      nextQuestion();
+    }
+  };
+
+  const explanationText = stripHtml(currentQuestion?.explanation || '');
+  const selectedIsCorrect =
+    selectedAnswer !== null &&
+    currentQuestion != null &&
+    selectedAnswer === currentQuestion.correctIndex;
 
   if (isInvalidated) {
     return (
@@ -222,6 +235,11 @@ export const QuizInterface = ({
                           Correct: {correctOption ? stripHtml(correctOption.text) : 'Unavailable'}
                         </p>
                       )}
+                      {stripHtml(q.explanation || '') && (
+                        <p className="text-xs md:text-sm text-muted-foreground/90 mt-1 leading-relaxed">
+                          {stripHtml(q.explanation)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -309,6 +327,9 @@ export const QuizInterface = ({
         <div className="space-y-3">
           {currentQuestion.options.map((option, idx) => {
             const isSelected = selectedAnswer === idx;
+            const isCorrectOption = idx === currentQuestion.correctIndex;
+            const showAsCorrect = showFeedback && isCorrectOption;
+            const showAsWrong = showFeedback && isSelected && !isCorrectOption;
 
             return (
               <button
@@ -319,17 +340,26 @@ export const QuizInterface = ({
                   "w-full p-4 text-left rounded-xl border-2 transition-all duration-200",
                   !showFeedback && !isSelected && "border-border bg-card hover:border-muted-foreground/50",
                   !showFeedback && isSelected && "border-primary bg-primary/5",
-                  showFeedback && isSelected && "border-primary bg-primary/10",
-                  showFeedback && !isSelected && "opacity-60"
+                  showAsCorrect && "border-success bg-success/10",
+                  showAsWrong && "border-destructive bg-destructive/10",
+                  showFeedback && !isSelected && !isCorrectOption && "opacity-50"
                 )}
               >
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 border-2",
                     !showFeedback && !isSelected && "border-muted-foreground/30 text-muted-foreground",
-                    isSelected && "border-primary text-primary"
+                    !showFeedback && isSelected && "border-primary text-primary",
+                    showAsCorrect && "border-success text-success",
+                    showAsWrong && "border-destructive text-destructive"
                   )}>
-                    <Circle className="h-4 w-4" />
+                    {showAsCorrect ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : showAsWrong ? (
+                      <XCircle className="h-4 w-4" />
+                    ) : (
+                      <Circle className="h-4 w-4" />
+                    )}
                   </div>
                   <span className="flex-1 text-[14px] leading-relaxed">{stripHtml(option.text)}</span>
                 </div>
@@ -337,6 +367,49 @@ export const QuizInterface = ({
             );
           })}
         </div>
+
+        {showFeedback && (
+          <div
+            className={cn(
+              "mt-6 rounded-xl border p-4 text-left animate-scale-in",
+              selectedIsCorrect
+                ? "border-success/40 bg-success/10"
+                : "border-destructive/40 bg-destructive/10"
+            )}
+          >
+            <div className="flex items-start gap-2 mb-2">
+              {selectedIsCorrect ? (
+                <CheckCircle className="h-5 w-5 text-success shrink-0 mt-0.5" />
+              ) : (
+                <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+              )}
+              <p className={cn(
+                "font-semibold text-sm md:text-base",
+                selectedIsCorrect ? "text-success" : "text-destructive"
+              )}>
+                {selectedIsCorrect ? 'Correct!' : 'Incorrect'}
+              </p>
+            </div>
+            {explanationText ? (
+              <p className="text-sm md:text-[15px] text-foreground/90 leading-relaxed pl-7">
+                {explanationText}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground pl-7">
+                {selectedIsCorrect
+                  ? 'Nice work — keep going.'
+                  : 'Review this concept and try to remember it for next time.'}
+              </p>
+            )}
+
+            <div className="mt-4 flex justify-end pl-7">
+              <Button onClick={handleContinue} className="gap-2">
+                {isLastQuestion ? 'See Results' : 'Next Question'}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

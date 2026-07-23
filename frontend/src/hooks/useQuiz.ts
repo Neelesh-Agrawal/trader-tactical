@@ -12,9 +12,11 @@ interface QuizState {
   isInvalidated: boolean;
   invalidationReason: string | null;
   score: number;
-    passed: boolean;
-    startTime: number;
-    correctAnswers: Record<string, number>;
+  passed: boolean;
+  startTime: number;
+  correctAnswers: Record<string, number>;
+  /** Pause timer while learner reads right/wrong feedback + explanation */
+  isReviewingAnswer: boolean;
 }
 
 interface UseQuizOptions {
@@ -83,10 +85,11 @@ export const useQuiz = ({
     isInvalidated: false,
     invalidationReason: null,
     score: 0,
-        passed: false,
-        startTime: Date.now(),
-        correctAnswers: {}
-    });
+    passed: false,
+    startTime: Date.now(),
+    correctAnswers: {},
+    isReviewingAnswer: false,
+  });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const tabSwitchCountRef = useRef(0);
@@ -94,20 +97,22 @@ export const useQuiz = ({
 
   // Timer countdown
   useEffect(() => {
-    if (state.isSubmitted || state.isInvalidated) {
+    if (state.isSubmitted || state.isInvalidated || state.isReviewingAnswer) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
 
     timerRef.current = setInterval(() => {
       setState(prev => {
+        if (prev.isReviewingAnswer) return prev;
         if (prev.timeRemaining <= 1) {
           // Time's up - move to next question or submit
           if (prev.currentQuestionIndex < prev.questions.length - 1) {
             return {
               ...prev,
               currentQuestionIndex: prev.currentQuestionIndex + 1,
-              timeRemaining: timePerQuestion
+              timeRemaining: timePerQuestion,
+              isReviewingAnswer: false,
             };
           } else {
             // Auto-submit on last question timeout
@@ -121,7 +126,7 @@ export const useQuiz = ({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [state.currentQuestionIndex, state.isSubmitted, state.isInvalidated, timePerQuestion]);
+  }, [state.currentQuestionIndex, state.isSubmitted, state.isInvalidated, state.isReviewingAnswer, timePerQuestion]);
 
   // Tab switching detection
   useEffect(() => {
@@ -164,15 +169,15 @@ export const useQuiz = ({
   }, [state.isSubmitted, state.isInvalidated]);
 
   const selectAnswer = useCallback((optionIndex: number) => {
-    if (state.isSubmitted || state.isInvalidated) return;
+    if (state.isSubmitted || state.isInvalidated || state.isReviewingAnswer) return;
 
     setState(prev => {
       const newAnswers = [...prev.answers];
       newAnswers[prev.currentQuestionIndex] = optionIndex;
       answersRef.current = newAnswers;
-      return { ...prev, answers: newAnswers };
+      return { ...prev, answers: newAnswers, isReviewingAnswer: true };
     });
-  }, [state.isSubmitted, state.isInvalidated]);
+  }, [state.isSubmitted, state.isInvalidated, state.isReviewingAnswer]);
 
   const nextQuestion = useCallback(() => {
     if (state.isSubmitted || state.isInvalidated) return;
@@ -182,10 +187,11 @@ export const useQuiz = ({
         return {
           ...prev,
           currentQuestionIndex: prev.currentQuestionIndex + 1,
-          timeRemaining: timePerQuestion
+          timeRemaining: timePerQuestion,
+          isReviewingAnswer: false,
         };
       }
-      return prev;
+      return { ...prev, isReviewingAnswer: false };
     });
   }, [state.isSubmitted, state.isInvalidated, timePerQuestion]);
 
@@ -338,6 +344,7 @@ export const useQuiz = ({
     answeredCount,
     canSubmit,
     isLastQuestion,
+    isReviewingAnswer: state.isReviewingAnswer,
     questions: state.questions,
     selectAnswer,
     nextQuestion,
